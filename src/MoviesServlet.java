@@ -49,8 +49,9 @@ public class MoviesServlet extends HttpServlet {
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) FROM genres_in_movies AS gimov " +
                     "JOIN genres AS g ON gimov.genreId = g.id WHERE gimov.movieId = m.id LIMIT 3) AS genres, " +
-                    "(SELECT GROUP_CONCAT(DISTINCT s.name ORDER BY s.name) FROM stars_in_movies AS simov " +
-                    "JOIN stars AS s ON simov.starId = s.id WHERE simov.movieId = m.id LIMIT 3) AS stars " +
+                    "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) ORDER BY three_stars.name) " +
+                    " FROM (SELECT s.id, s.name FROM stars_in_movies AS simov JOIN stars AS s ON simov.starId = s.id  " +
+                    " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
                     "FROM movies AS m " +
                     "JOIN ratings AS r ON m.id = r.movieId " +
                     "GROUP BY m.id, r.rating " +

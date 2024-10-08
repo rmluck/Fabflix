@@ -35,27 +35,26 @@ function handleMovieResult(resultData) {
         // Concatenate the html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>";
-        // rowHTML += "<th>" + '<a href="single-movie.html?id=' + resultData[i]['movie_id'] + '">'
-        //     + resultData[i]["title"] + '</a>' + "</th>"; //creates movie entry and url to single movie page
-        rowHTML += "<th>" + resultData[i]["movie_id"] + "</th>";
+        rowHTML += "<th>" + '<a href="single-movie.html?id=' + resultData[i]['movie_id'] + '">'
+            + resultData[i]["title"] + '</a>' + "</th>"; //creates movie entry and url to single movie page
         rowHTML += "<th>" + resultData[i]["year"] + "</th>";
         rowHTML += "<th>" + resultData[i]["director"] + "</th>";
         rowHTML += "<th>" + resultData[i]["rating"] + "</th>";
         rowHTML += "<th>" + resultData[i]["genres"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["stars"] + "</th>";
 
-        // let starsHTML = "";
-        // for (let j = 0; j < resultData[i]["stars"].length; j++) {
-        //     starsHTML +=
-        //         "<th>" +
-        //         // Add a link to single-star.html with id passed with GET url parameter
-        //         '<a href="single-star.html?id=' + resultData[i]['stars'][j]['star_id'] + '">'
-        //         + resultData[i]['stars'][j]['star_name'] + '</a>';
-        //     if (j < resultData[i]['stars'].length - 1) {
-        //         starsHTML += ', ';
-        //     }
-        // }
-        // rowHTML += "</th>" + starsHTML + "</th>";
+        let starsArray = resultData[i]["stars"].split(',');
+        let starsHTML = "";
+        for (let j = 0; j < starsArray.length; j++) {
+            let [starId, starName] = starsArray[j].split(":");
+            starsHTML +=
+                "<th>" +
+                // Add a link to single-star.html with id passed with GET url parameter
+                '<a href="single-star.html?id=' + starId + '">' + starName + '</a>';
+            if (j < starsArray.length - 1) {
+                starsHTML += ', ';
+            }
+        }
+        rowHTML += "</th>" + starsHTML + "</th>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
