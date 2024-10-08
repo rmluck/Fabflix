@@ -15,6 +15,7 @@
  * @param target String
  * @returns {*}
  */
+
 function getParameterByName(target) {
     // Get request URL
     let url = window.location.href;
