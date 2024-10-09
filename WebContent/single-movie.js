@@ -60,8 +60,8 @@ function handleResult(resultData) {
     let starsHTML = "";
     let starsArray = resultData["stars"] ? resultData["stars"].split(",") : [];
     for (let star of starsArray) {
-        console.log("HERE IS STAR DATA: " + star);
-        starsHTML += "<a href='single-star.html?id=" + star.trim() + "'>" + star.trim() + "</a><br>";
+        let [id, name] = star.split(":");
+        starsHTML += "<a href='single-star.html?id=" + id + "'>" + name + "</a><br>";
 
     }
     rowHTML += "<td>" + starsHTML + "</td>";

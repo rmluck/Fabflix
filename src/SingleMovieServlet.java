@@ -53,12 +53,18 @@ public class SingleMovieServlet extends HttpServlet {
 
             // Construct a query with parameter represented by "?"
             String query = "SELECT m.id AS movieId, m.title, m.year, m.director, " +
-                    "GROUP_CONCAT(s.name ORDER BY s.name) AS stars " +
+                    "GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) AS genres, " +
+                    "GROUP_CONCAT(DISTINCT CONCAT(s.id, ':', s.name) ORDER BY s.name) AS stars, " +
+                    "r.rating AS rating " +
                     "FROM movies AS m " +
                     "LEFT JOIN stars_in_movies AS sim ON m.id = sim.movieId " +
                     "LEFT JOIN stars AS s ON sim.starId = s.id " +
+                    "LEFT JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
+                    "LEFT JOIN genres AS g ON gim.genreId = g.id " +
+                    "LEFT JOIN ratings AS r ON m.id = r.movieId " +
                     "WHERE m.id = ? " +
                     "GROUP BY m.id";
+
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -79,13 +85,17 @@ public class SingleMovieServlet extends HttpServlet {
                 String movieYear = rs.getString("year");
                 String movieDirector = rs.getString("director");
                 String stars = rs.getString("stars");
+                String genres = rs.getString("genres");
+                String rating = rs.getString("rating");
 
                 // Create a JsonObject based on the data we retrieve from rs
                 jsonObject.addProperty("movie_id", movieId);
                 jsonObject.addProperty("movie_title", movieTitle);
                 jsonObject.addProperty("movie_year", movieYear);
                 jsonObject.addProperty("movie_director", movieDirector);
-                jsonObject.addProperty("stars", stars); // List of stars
+                jsonObject.addProperty("stars", stars);
+                jsonObject.addProperty("genres", genres);
+                jsonObject.addProperty("rating", rating);
 
             }
             rs.close();

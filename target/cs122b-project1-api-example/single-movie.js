@@ -4,9 +4,9 @@
  * Before this .js is loaded, the html skeleton is created.
  *
  * This .js performs three steps:
- *      1. Get parameter from request URL so it know which id to look for
- *      2. Use jQuery to talk to backend API to get the json data.
- *      3. Populate the data to correct html elements.
+ *      1. Get parameter from request URL so it knows which id to look for
+ *      2. Use jQuery to talk to backend API to get the json data
+ *      3. Populate the data to correct html elements
  */
 
 
@@ -15,6 +15,7 @@
  * @param target String
  * @returns {*}
  */
+
 function getParameterByName(target) {
     // Get request URL
     let url = window.location.href;
@@ -32,24 +33,22 @@ function getParameterByName(target) {
 }
 
 /**
- * Handles the data returned by the API, read the jsonObject and populate data into html elements
+ * Handles the data returned by the API, reads the jsonObject and populates data into html elements
  * @param resultData jsonObject
  */
 
 function handleResult(resultData) {
-
     console.log("handleResult: populating movie info from resultData");
 
-    //console.log("HERE IS THE RESULT DATA FOR STARS: " + resultData["stars"]);
-    // populate the star info h3
-    // find the empty h3 body by id "movie_info"
+    // Populates the movie info h3
+    // Finds the empty h3 body by id "movie_info"
     let movieInfoElement = jQuery("#movie_info");
     movieInfoElement.append("<p>Movie Title: " + resultData["movie_title"] + "</p>" +
         "<p>Year: " + resultData["movie_year"] + "</p>" +
         "<p>Director: " + resultData["movie_director"] + "</p>"
     );
 
-    console.log("handleResult: populating movie table from resultData");
+    console.log("handleResult: populating star table from resultData");
 
     // Populate the movie details table
     let movieDetailsBodyElement = jQuery("#movie_details_body");
@@ -61,8 +60,8 @@ function handleResult(resultData) {
     let starsHTML = "";
     let starsArray = resultData["stars"] ? resultData["stars"].split(",") : [];
     for (let star of starsArray) {
-        console.log("HERE IS STAR DATA: " + star);
-        starsHTML += "<a href='single-star.html?id=" + star.trim() + "'>" + star.trim() + "</a><br>";
+        let [id, name] = star.split(":");
+        starsHTML += "<a href='single-star.html?id=" + id + "'>" + name + "</a><br>";
 
     }
     rowHTML += "<td>" + starsHTML + "</td>";
@@ -74,7 +73,7 @@ function handleResult(resultData) {
 }
 
 /**
- * Once this .js is loaded, following scripts will be executed by the browser\
+ * Once this .js is loaded, following scripts will be executed by the browser
  */
 
 // Get id from URL
@@ -82,8 +81,8 @@ let movieId = getParameterByName('id');
 
 // Makes the HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
-    dataType: "json",  // Setting return data type
-    method: "GET",// Setting request method
-    url: "api/single-movie?id=" + movieId, // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    dataType: "json", // Setting return data type
+    method: "GET", // Setting request method
+    url: "api/single-movie?id=" + movieId, // Setting request url, which is mapped by MoviesServlet in Movies.java
+    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleMovieServlet
 });
