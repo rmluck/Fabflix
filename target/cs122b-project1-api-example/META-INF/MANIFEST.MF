@@ -1,5 +1,3 @@
 Manifest-Version: 1.0
-Created-By: IntelliJ IDEA
-Built-By: rohanmistry
-Build-Jdk: Oracle OpenJDK 11.0.24
+Class-Path: 
 
