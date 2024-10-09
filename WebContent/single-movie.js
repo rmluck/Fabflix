@@ -15,18 +15,17 @@
  * @param target String
  * @returns {*}
  */
-
 function getParameterByName(target) {
     // Get request URL
     let url = window.location.href;
     // Encode target parameter name to url encoding
     target = target.replace(/[\[\]]/g, "\\$&");
 
-    // Ues regular expression to find matched parameter value
+    // Uses regular expression to find matched parameter value
     let regex = new RegExp("[?&]" + target + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);
     if (!results) return null;
-    if (!results[2]) return '';
+    if (!results[2]) return "";
 
     // Return the decoded parameter value
     return decodeURIComponent(results[2].replace(/\+/g, " "));
@@ -36,15 +35,14 @@ function getParameterByName(target) {
  * Handles the data returned by the API, reads the jsonObject and populates data into html elements
  * @param resultData jsonObject
  */
-
 function handleResult(resultData) {
     let homeElement = jQuery("#home");
     homeElement.append("<a href='index.html'>Home</a>");
 
     console.log("handleResult: populating movie info from resultData");
 
-    // Populates the movie info h3
-    // Finds the empty h3 body by id "movie_info"
+    // Populates movie info h3
+    // Finds empty h3 body by id "movie_info"
     let movieInfoElement = jQuery("#movie_info");
     movieInfoElement.append("<p>Movie Title: " + resultData["movie_title"] + "</p>" +
         "<p>Year: " + resultData["movie_year"] + "</p>" +
@@ -53,13 +51,14 @@ function handleResult(resultData) {
 
     console.log("handleResult: populating star table from resultData");
 
-    // Populate the movie details table
+    // Populates movie details table
+    // Finds empty table body by id "movie_details_body
     let movieDetailsBodyElement = jQuery("#movie_details_body");
     let rowHTML = "";
     rowHTML += "<tr>";
     rowHTML += "<td>" + (resultData["genres"] || "N/A") + "</td>"; // Default to N/A if genres are missing
 
-    // Stars
+    // Adds stars info
     let starsHTML = "";
     let starsArray = resultData["stars"] ? resultData["stars"].split(",") : [];
     for (let star of starsArray) {
@@ -82,7 +81,7 @@ function handleResult(resultData) {
 // Get id from URL
 let movieId = getParameterByName('id');
 
-// Makes the HTTP GET request and registers on success callback function handleResult
+// Makes HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method

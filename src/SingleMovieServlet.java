@@ -32,8 +32,7 @@ public class SingleMovieServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     * response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json"); // Response mime type
@@ -49,9 +48,7 @@ public class SingleMovieServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage
         try (Connection conn = dataSource.getConnection()) {
-            // Get a connection from dataSource
-
-            // Construct a query with parameter represented by "?"
+            // Construct query with parameter represented by "?"
             String query = "SELECT m.id AS movieId, m.title, m.year, m.director, " +
                     "GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) AS genres, " +
                     "GROUP_CONCAT(DISTINCT CONCAT(s.id, ':', s.name) ORDER BY s.name) AS stars, " +
@@ -65,15 +62,14 @@ public class SingleMovieServlet extends HttpServlet {
                     "WHERE m.id = ? " +
                     "GROUP BY m.id";
 
-
-            // Declare our statement
+            // Declare statement
             PreparedStatement statement = conn.prepareStatement(query);
 
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             statement.setString(1, id);
 
-            // Perform the query
+            // Perform query
             ResultSet rs = statement.executeQuery();
 
             JsonObject jsonObject = new JsonObject();
@@ -98,6 +94,7 @@ public class SingleMovieServlet extends HttpServlet {
                 jsonObject.addProperty("rating", rating);
 
             }
+
             rs.close();
             statement.close();
 

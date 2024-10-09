@@ -32,8 +32,7 @@ public class MoviesServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     * response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json"); // Response mime type
@@ -43,9 +42,7 @@ public class MoviesServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage
         try (Connection conn = dataSource.getConnection()) {
-            // Get a connection from dataSource
-
-            // Construct a query
+            // Construct query
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) FROM genres_in_movies AS gimov " +
                     "JOIN genres AS g ON gimov.genreId = g.id WHERE gimov.movieId = m.id LIMIT 3) AS genres, " +
@@ -58,12 +55,13 @@ public class MoviesServlet extends HttpServlet {
                     "ORDER BY r.rating DESC " +
                     "LIMIT 20;";
 
-            // Declare our statement
-            PreparedStatement ps = conn.prepareStatement(query);
+            // Declare statement
+            PreparedStatement statement = conn.prepareStatement(query);
 
-            // Perform the query
-            ResultSet rs = ps.executeQuery();
-            JsonArray array = new JsonArray();
+            // Perform query
+            ResultSet rs = statement.executeQuery();
+
+            JsonArray jsonArray = new JsonArray();
 
             // Iterate through each row of rs
             while (rs.next()) {
@@ -85,23 +83,24 @@ public class MoviesServlet extends HttpServlet {
                 object.addProperty("genres", genres);
                 object.addProperty("stars", stars);
 
-                array.add(object);
+                jsonArray.add(object);
             }
 
             rs.close();
-            ps.close();
+            statement.close();
 
-            request.getServletContext().log("getting " + array.size() + " results");
+            // Log to localhost log
+            request.getServletContext().log("getting " + jsonArray.size() + " results");
 
             // Write JSON string to object
-            out.write(array.toString());
+            out.write(jsonArray.toString());
             // Set response status to 200 (OK)
             response.setStatus(200);
         } catch (Exception e) {
             // Write error message JSON object to output
-            JsonObject object = new JsonObject();
-            object.addProperty("errorMessage", e.getMessage());
-            out.write(object.toString());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("errorMessage", e.getMessage());
+            out.write(jsonObject.toString());
 
             // Set response status to 500 (Internal Server Error)
             response.setStatus(500);

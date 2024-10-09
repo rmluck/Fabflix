@@ -32,8 +32,7 @@ public class SingleStarServlet extends HttpServlet {
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-     * response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json"); // Response mime type
@@ -49,20 +48,18 @@ public class SingleStarServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage
         try (Connection conn = dataSource.getConnection()) {
-            // Get a connection from dataSource
-
-            // Construct a query with parameter represented by "?"
+            // Construct query with parameter represented by "?"
             String query = "SELECT * from stars as s, stars_in_movies as sim, movies as m " +
                     "where m.id = sim.movieId and sim.starId = s.id and s.id = ?";
 
-            // Declare our statement
+            // Declare statement
             PreparedStatement statement = conn.prepareStatement(query);
 
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             statement.setString(1, id);
 
-            // Perform the query
+            // Perform query
             ResultSet rs = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
@@ -89,6 +86,7 @@ public class SingleStarServlet extends HttpServlet {
 
                 jsonArray.add(jsonObject);
             }
+
             rs.close();
             statement.close();
 
@@ -109,9 +107,5 @@ public class SingleStarServlet extends HttpServlet {
         } finally {
             out.close();
         }
-
-        // Always remember to close db connection after usage. Here it's done by try-with-resources
-
     }
-
 }
