@@ -37,6 +37,8 @@ function getParameterByName(target) {
  */
 
 function handleResult(resultData) {
+    let homeElement = jQuery("#home");
+    homeElement.append("<a href='index.html'>Home</a>");
 
     console.log("handleResult: populating star info from resultData");
 
