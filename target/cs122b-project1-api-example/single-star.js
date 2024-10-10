@@ -21,11 +21,11 @@ function getParameterByName(target) {
     // Encode target parameter name to url encoding
     target = target.replace(/[\[\]]/g, "\\$&");
 
-    // Ues regular expression to find matched parameter value
+    // Uses regular expression to find matched parameter value
     let regex = new RegExp("[?&]" + target + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);
     if (!results) return null;
-    if (!results[2]) return '';
+    if (!results[2]) return "";
 
     // Return the decoded parameter value
     return decodeURIComponent(results[2].replace(/\+/g, " "));
@@ -35,17 +35,15 @@ function getParameterByName(target) {
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param resultData jsonObject
  */
-
 function handleResult(resultData) {
     let homeElement = jQuery("#home");
     homeElement.append("<a href='index.html'>Home</a>");
 
     console.log("handleResult: populating star info from resultData");
 
-    // populate the star info h3
-    // find the empty h3 body by id "star_info"
+    // Populates the star info h3
+    // Finds empty h3 body by id "star_info"
     let starInfoElement = jQuery("#star_info");
-
     let starDOB = resultData[0]["star_dob"] ? resultData[0]["star_dob"] : "N/A";
     // append two html <p> created to the h3 body, which will refresh the page
     starInfoElement.append("<p>Star Name: " + resultData[0]["star_name"] + "</p>" +
@@ -53,8 +51,8 @@ function handleResult(resultData) {
 
     console.log("handleResult: populating movie table from resultData");
 
-    // Populate the star table
-    // Find the empty table body by id "movie_table_body"
+    // Populates star table
+    // Finds empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");
 
     // Concatenate the html tags with resultData jsonObject to create table rows
@@ -79,7 +77,7 @@ function handleResult(resultData) {
 // Get id from URL
 let starId = getParameterByName('id');
 
-// Makes the HTTP GET request and registers on success callback function handleResult
+// Makes HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
     dataType: "json",  // Setting return data type
     method: "GET",// Setting request method

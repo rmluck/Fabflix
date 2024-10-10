@@ -1,0 +1,115 @@
+/* This styles the webpage from index.html */
+
+/* This styles the entire body of the webpage */
+body {
+    background-color: #f26661;
+    font-family: Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* This styles all h1 (heading) elements */
+h1 {
+    font-size: 36px;
+    font-family: "Oswald", sans-serif;
+    line-height: 1.5;
+    background: linear-gradient(to right, #f7504a, #f26661);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    animation: slideIn 1s ease forwards;
+}
+
+h1 a {
+    color: #222222;
+    text-decoration: none;
+}
+
+h1 a:hover {
+    color: seashell;
+    text-decoration: underline;
+    transition: color 0.3s;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* This styles all table elements */
+table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    margin-top: 92px;
+    padding-top: 0;
+}
+
+/* This styles all th (table header) cells */
+th {
+    font-size: 16px;
+    font-family: "Oswald", sans-serif;
+    font-weight: bold;
+    background: linear-gradient(to left, #2e2d2d, #222222);
+    color: darkgray;
+    position: sticky;
+    top: 90px;
+    border-top: 3px solid black;
+    border-bottom: 3px solid black;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    z-index: 900;
+    text-align: center;
+    margin-top: 0;
+    word-wrap: normal;
+}
+
+/* This styles all tr (table row) cells */
+tr {
+    border-bottom: 1px solid #222222;
+}
+
+tr:nth-child(even) td {background: #CCC}
+tr:nth-child(odd) td {background: #FFF}
+
+tr:last-of-type {
+    border-bottom: 2px solid #f26661;
+}
+
+tr:hover td{
+    background-color: #f26661;
+}
+
+/* This styles all td (table data) cells */
+td {
+    font-size: 14px;
+    font-family: "Oswald", sans-serif;
+    background-color: #f0ebeb;
+    color: black;
+    padding: 10px;
+    word-wrap: break-word;
+}
+
+td a {
+    color: black;
+    font-weight: bold;
+}
+
+td a:hover {
+    color: seashell;
+    text-decoration: underline;
+}

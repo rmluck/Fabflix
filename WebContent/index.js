@@ -28,26 +28,25 @@ function handleMovieResult(resultData) {
         // Concatenate html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>";
-        rowHTML += "<th>" + "<a href='single-movie.html?id=" + resultData[i]["movie_id"] + "'>"
-            + resultData[i]["title"] + "</a>" + "</th>"; // Creates movie entry and url to single movie page
-        rowHTML += "<th>" + resultData[i]["year"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["director"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["rating"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["genres"] + "</th>";
+        rowHTML += "<td>" + "<a href='single-movie.html?id=" + resultData[i]["movie_id"] + "'>"
+            + resultData[i]["title"] + "</a>" + "</td>"; // Creates movie entry and url to single movie page
+        rowHTML += "<td>" + resultData[i]["year"] + "</td>";
+        rowHTML += "<td>" + resultData[i]["director"] + "</td>";
+        rowHTML += "<td>" + resultData[i]["genres"] + "</td>";
 
         let starsArray = resultData[i]["stars"].split(",");
-        let starsHTML = "";
+        let starsHTML = "<td colspan='3'>";
         for (let j = 0; j < starsArray.length; j++) {
             let [starId, starName] = starsArray[j].split(":");
-            starsHTML +=
-                "<th>" +
-                // Add link to single-star.html with id passed with GET url parameter
-                "<a href='single-star.html?id=" + starId + "'>" + starName + "</a>";
+            // Add link to single-star.html with id passed with GET url parameter
+            starsHTML += "<a href='single-star.html?id=" + starId + "'>" + starName + "</a>";
             if (j < starsArray.length - 1) {
                 starsHTML += ", ";
             }
         }
-        rowHTML += "</th>" + starsHTML + "</th>";
+        starsHTML += "</td>";
+        rowHTML += starsHTML;
+        rowHTML += "<td>" + resultData[i]["rating"] + "</td>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
