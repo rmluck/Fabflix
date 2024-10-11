@@ -14,12 +14,12 @@
  * @param resultData jsonObject
  */
 function handleMovieResult(resultData) {
-    console.log("handleMovieResult: populating movie table from resultData");
+    console.log("handleMoviesResult: populating movies table from resultData");
     console.log("Number of results: ", resultData.length);
 
     // Populate star table
     // Find empty table body by id "star_table_body"
-    let movieTableBodyElement = jQuery("#movie_table_body");
+    let moviesTableBodyElement = jQuery("#movies_table_body");
 
     // Iterate through resultData, no more than 20 entries, requirement
     for (let i = 0; i < Math.min(20, resultData.length); i++) {
@@ -50,7 +50,7 @@ function handleMovieResult(resultData) {
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+        moviesTableBodyElement.append(rowHTML);
     }
 }
 

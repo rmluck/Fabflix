@@ -10,7 +10,14 @@
 
 #movie_body {
     background-color: seashell;
-    font-family: Helvetica, sans-serif;
+    font-family: "Oswald", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#star_body {
+    background-color: seashell;
+    font-family: "Oswald", sans-serif;
     margin: 0;
     padding: 0;
 }
@@ -68,6 +75,15 @@ h3 {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+#star_info {
+    font-size: 30px;
+    font-family: "Oswald", sans-serif;
+    color: black;
+    font-weight: bold;
+    padding-left: 40px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
 @keyframes slideIn {
     from {
         transform: translateY(-20px);
@@ -80,7 +96,7 @@ h3 {
 }
 
 /* This styles all table elements */
-#movie_table {
+#movies_table {
     table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
@@ -89,7 +105,15 @@ h3 {
     padding-top: 0;
 }
 
-#movie_details_table {
+#movie_table {
+    width: 70%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    padding-top: 0;
+}
+
+#star_table {
     width: 70%;
     margin: 0 auto;
     border-collapse: collapse;
@@ -98,7 +122,7 @@ h3 {
 }
 
 /* This styles all th (table header) cells */
-.movie_table_heading {
+.movies_table_heading {
     font-size: 16px;
     font-family: "Oswald", sans-serif;
     font-weight: bold;
@@ -116,7 +140,22 @@ h3 {
     word-wrap: normal;
 }
 
-.movie_details_table_heading {
+.movie_table_heading {
+    font-size: 16px;
+    font-family: "Oswald", sans-serif;
+    font-weight: bold;
+    background: linear-gradient(to left, #2e2d2d, #222222);
+    color: darkgray;
+    border-top: 3px solid black;
+    border-bottom: 3px solid black;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin-top: 0;
+    word-wrap: normal;
+}
+
+.star_table_heading {
     font-size: 16px;
     font-family: "Oswald", sans-serif;
     font-weight: bold;

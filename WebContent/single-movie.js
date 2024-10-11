@@ -52,7 +52,7 @@ function handleResult(resultData) {
 
     // Populates movie details table
     // Finds empty table body by id "movie_details_body
-    let movieDetailsBodyElement = jQuery("#movie_details_body");
+    let movieBodyElement = jQuery("#movie_table_body");
     let rowHTML = "";
     rowHTML += "<tr>";
     rowHTML += "<td>" + (resultData["genres"] || "N/A") + "</td>"; // Default to N/A if genres are missing
@@ -70,7 +70,7 @@ function handleResult(resultData) {
     rowHTML += "</tr>";
 
     // Append the row created to the table body
-    movieDetailsBodyElement.append(rowHTML);
+    movieBodyElement.append(rowHTML);
 }
 
 /**
