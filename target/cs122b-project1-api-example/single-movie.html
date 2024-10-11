@@ -17,12 +17,16 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
+    <!-- Link to css file -->
+    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
     <title>Single Movie</title>
 </head>
-<body>
+<body id="movie_body">
 
-<h5 id="home"></h5>
-<h1>Single Movie Page</h1>
+<h1><a href="index.html">FABFLIX</a></h1>
 
 <!-- H3 body is left empty here, will be populated with the data retrieved with single-movie.js -->
 <!-- single-movie.js will find this html element by its id "movie_info" -->
@@ -32,10 +36,9 @@
     <thead>
     <tr>
         <!-- Titles of each column -->
-        <th>Genres</th>
-        <th>Stars</th>
-        <th>Rating</th>
-        <th>
+        <th class="movie_details_table_heading">Genres</th>
+        <th class="movie_details_table_heading">Stars</th>
+        <th class="movie_details_table_heading">Rating</th>
     </tr>
     </thead>
 
