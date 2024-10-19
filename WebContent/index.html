@@ -23,20 +23,20 @@
 
     <title>Login</title>
 </head>
-<body id="#login_body">
+<body id="login_body">
 
 <h1>FABFLIX</h1>
 
-<h2>Login</h2>
-
 <form action="form" method="POST">
-    <label for="email">Email:</label>
-    <input id="email" type="email" name="email" required><br>
+    <h2>Login</h2>
 
-    <label for="password">Password:</label>
-    <input id="password" type="password" name="password" required><br>
+    <label id="email_label" for="email">Email</label>
+    <input id="email" type="email" name="email" placeholder="Email" required><br>
 
-    <input type="submit" value="Login">
+    <label id="password_label" for="password">Password</label>
+    <input id="password" type="password" name="password" placeholder="Password" required><br>
+
+    <button>Login</button>
 </form>
 
 <div id="error_message">
@@ -47,12 +47,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-<!-- Load our own JS file -->
-<!-- The path is relative to movies.html, since these two files are in the same directory -->
-<!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
-     otherwise the url is relative to the root path-->
-<script src="index.js"></script>
 
 </body>
 </html>
