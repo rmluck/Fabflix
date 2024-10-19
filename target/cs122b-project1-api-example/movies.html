@@ -1,15 +1,15 @@
 <!-- This example is following frontend and backend separation.
 
     This .html performs two steps:
-    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids
-    2. Load single-movie.js to populate the data into empty elements
-   -->
+    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+    2. Load movies.js to populate the data into empty elements.
+    -->
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -21,30 +21,30 @@
     <link rel="stylesheet" href="fabflix.css">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-
-    <title>Single Movie</title>
+    <title>Movie List</title>
 </head>
-<body id="movie_body">
+<body id="#movies_body">
 
 <h1><a href="movies.html">FABFLIX</a></h1>
 
-<!-- H3 body is left empty here, will be populated with the data retrieved with single-movie.js -->
-<!-- single-movie.js will find this html element by its id "movie_info" -->
-<h3 id="movie_info"></h3>
-<table id="movie_table" class="table table-striped">
+<!-- id "movies_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
+<table id="movies_table" class="table table-striped">
     <!-- Create a table header -->
     <thead>
     <tr>
         <!-- Titles of each column -->
-        <th class="movie_table_heading">Genres</th>
-        <th class="movie_table_heading">Stars</th>
-        <th class="movie_table_heading">Rating</th>
+        <th class="movies_table_heading">Title</th>
+        <th class="movies_table_heading" style="width: 5%;">Year</th>
+        <th class="movies_table_heading">Director</th>
+        <th class="movies_table_heading">Genres</th>
+        <th class="movies_table_heading" colspan="3">Stars</th>
+        <th class="movies_table_heading" style="width: 7%">Rating</th>
     </tr>
     </thead>
 
-    <!-- Table body is left empty here, will be populated with the data retrieved with single-movie.js -->
-    <!-- single-movie.js will find this html element by its id "movie_details_body" -->
-    <tbody id="movie_table_body"></tbody>
+    <!-- Table body is left empty here, will be populated with the data retrieved with movies.js -->
+    <!-- Again, id "movie_table_body" is useful for jQuery to find this html element -->
+    <tbody id="movies_table_body"></tbody>
 </table>
 
 <!-- Load jQuery and Bootstrap JS -->
@@ -53,10 +53,10 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 <!-- Load our own JS file -->
-<!-- The path is relative to single-movie.html, since these two files are in the same directory -->
+<!-- The path is relative to movies.html, since these two files are in the same directory -->
 <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
-     otherwise the url is relative to the root path -->
-<script src="single-movie.js"></script>
+     otherwise the url is relative to the root path-->
+<script src="movies.js"></script>
 
 </body>
 </html>
