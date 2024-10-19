@@ -221,8 +221,37 @@ td a:hover {
     text-decoration: underline;
 }
 
-form {
+#login_background {
+    width: 430px;
     height: 520px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    margin-top: 50px;
+}
+
+#login_background .login_shape {
+    height: 175px;
+    width: 175px;
+    position: absolute;
+    border-radius: 50%;
+}
+
+.login_shape:first-child {
+    background: linear-gradient(#f7504a, #f26661);
+    left: -50px;
+    top: -50px;
+}
+
+.login_shape:last-child {
+    background: linear-gradient(to right, #f7504a, #f26661);
+    right: -50px;
+    bottom: -50px;
+}
+
+form {
+    height: 450px;
     width: 400px;
     background-color: rgba(255, 255, 255, 0.13);
     position: absolute;
@@ -233,7 +262,8 @@ form {
     backdrop-filter: blur(10px);
     border: 2px solid;
     box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-    padding: 50px 35px;
+    padding: 35px 35px;
+    margin-top: 25px;
 }
 
 form *{
@@ -269,7 +299,7 @@ input {
 }
 
 button {
-    margin-top: 50px;
+    margin-top: 10px;
     width: 100%;
     background-color: seashell;
     color: #080710;

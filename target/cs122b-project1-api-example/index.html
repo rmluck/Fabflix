@@ -20,6 +20,7 @@
     <!-- Link to css file -->
     <link rel="stylesheet" href="fabflix.css">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <title>Login</title>
 </head>
@@ -27,11 +28,15 @@
 
 <h1>FABFLIX</h1>
 
+<div id="login_background">
+    <div class="login_shape"></div>
+    <div class="login_shape"></div>
+</div>
 <form action="form" method="POST">
     <h2>Login</h2>
 
     <label id="email_label" for="email">Email</label>
-    <input id="email" type="email" name="email" placeholder="Email" required><br>
+    <input id="email" type="email" name="email" placeholder="Email" required>
 
     <label id="password_label" for="password">Password</label>
     <input id="password" type="password" name="password" placeholder="Password" required><br>
