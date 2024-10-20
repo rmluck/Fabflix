@@ -1,57 +1,26 @@
-<!-- This example is following frontend and backend separation.
-
-    This .html performs two steps:
-    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
-    2. Load index.js to populate the data into empty elements.
-    -->
-
+<!-- This page will be seen if you logged in -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
-    <!-- Link to css file -->
-    <link rel="stylesheet" href="fabflix.css">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
-    <title>Login</title>
+    <title>Fabflix</title>
 </head>
-<body id="login_body">
-
-<h1>FABFLIX</h1>
-
-<div id="login_background">
-    <div class="login_shape"></div>
-    <div class="login_shape"></div>
-</div>
-<form action="form" method="POST">
-    <h2>Login</h2>
-
-    <label id="email_label" for="email">Email</label>
-    <input id="email" type="email" name="email" placeholder="Email" required>
-
-    <label id="password_label" for="password">Password</label>
-    <input id="password" type="password" name="password" placeholder="Password" required><br>
-
-    <button>Login</button>
+<body>
+Welcome to Fabflix!
+<p id="sessionID"></p>
+<p id="lastAccessTime"></p>
+<form ACTION="#" id="cart" METHOD="post">
+    <label>Item Purchased</label>
+    <br>
+    <label>
+        <input name="item" required="required" type="text">
+    </label>
+    <input type="submit" VALUE="add">
 </form>
+<div id="item_list"></div>
 
-<div id="error_message">
-
-</div>
-
-<!-- Load jQuery and Bootstrap JS -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
+<!-- include your own JS file -->
+<script src='https://code.jquery.com/jquery-3.1.0.min.js'></script>
+<script type='text/javascript' src='index.js'></script>
 </body>
 </html>

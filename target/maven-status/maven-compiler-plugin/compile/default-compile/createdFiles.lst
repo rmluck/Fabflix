@@ -1,4 +1,8 @@
 SingleStarServlet.class
+LoginFilter.class
+IndexServlet.class
+User.class
+LoginServlet.class
 SingleMovieServlet.class
 FormServlet.class
 StarsServlet.class
