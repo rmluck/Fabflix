@@ -1,58 +1,62 @@
-import com.google.gson.JsonObject;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.PreparedStatement;
+import com.google.gson.JsonObject;
 
+// Declaring a WebServlet called LoginServlet, which maps to url "/api/login"
 @WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
 public class LoginServlet extends HttpServlet {
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
     private static final long serialVersionUID = 1L;
+
+    // Create a dataSource which registered in web.xml
     private DataSource dataSource;
 
-    public void init(ServletConfig config ) {
-        try{
+    public void init(ServletConfig config) {
+        try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
         } catch (NamingException e) {
             e.printStackTrace();
         }
-
     }
 
+    // Use http POST
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         JsonObject responseJsonObject = new JsonObject();
 
         if (email.equals("test@uci.edu") && password.equals("123456")) {
-            //test login successfull
+            // Test login successful
             request.getSession().setAttribute("user", new User(email));
             responseJsonObject.addProperty("status", "success");
             responseJsonObject.addProperty("message", "Success");
             System.out.println("Test user login success: " + email);
         } else {
             request.getServletContext().log("Test user login fail: " + email);
-            try (Connection con = dataSource.getConnection()) {
+
+            // Create new connection to database
+            try (Connection conn = dataSource.getConnection()) {
                 String query = "SELECT * FROM customers WHERE email = ? AND password = ?";
-                PreparedStatement ps = con.prepareStatement(query);
-                ps.setString(1, email);
-                ps.setString(2, password);
+                PreparedStatement statement = conn.prepareStatement(query);
+                statement.setString(1, email);
+                statement.setString(2, password);
+                ResultSet resultSet = statement.executeQuery();
 
-                ResultSet rs = ps.executeQuery();
+                PrintWriter out = response.getWriter();
+                response.setContentType("text/html");
 
-                if (rs.next()) {
+                // If user is found
+                if (resultSet.next()) {
                     request.getSession().setAttribute("user", new User(email));
                     responseJsonObject.addProperty("status", "success");
                     responseJsonObject.addProperty("message", "success");
@@ -66,7 +70,7 @@ public class LoginServlet extends HttpServlet {
                 responseJsonObject.addProperty("status", "error");
                 responseJsonObject.addProperty("message", "Internal Server Error");
                 System.out.println("Internal Server Error");
-                //System.out.println(e.printStackTrace().toString());
+                // System.out.println(e.printStackTrace().toString());
             }
         }
 
