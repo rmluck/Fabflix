@@ -29,6 +29,11 @@
     padding: 0;
 }
 
+#header_container {
+    position: relative;
+    width: 100%;
+}
+
 /* This styles all h1 (heading) elements */
 h1 {
     font-size: 36px;
@@ -43,7 +48,7 @@ h1 {
     top: 0;
     left: 0;
     width: 100%;
-    z-index: 1000;
+    z-index: 5;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     animation: slideIn 1s ease forwards;
 }
@@ -250,7 +255,7 @@ td a:hover {
     bottom: -50px;
 }
 
-form {
+#login_form {
     height: 450px;
     width: 400px;
     background-color: rgba(255, 255, 255, 0.13);
@@ -266,12 +271,30 @@ form {
     margin-top: 25px;
 }
 
-form *{
+#logout_form {
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+    top: -77px;
+    left: 1346px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    z-index: 10;
+}
+
+#login_form *{
     font-family: "Oswald", sans-serif;
     color: seashell;
     letter-spacing: 0.5px;
     outline: none;
     border: none;
+}
+
+#logout_form *{
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
 }
 
 label {
@@ -298,7 +321,7 @@ input {
     color: #E5E5E5;
 }
 
-button {
+#login_button {
     margin-top: 10px;
     width: 100%;
     background-color: seashell;
@@ -308,4 +331,17 @@ button {
     font-weight: 600;
     border-radius: 5px;
     cursor: pointer;
+}
+
+#logout_button {
+    height: 65px;
+    background-color: rgba(255, 245, 238, 0.30);
+    color: #080710;
+    padding: 10px 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    position: absolute;
+    border: none;
+    border-radius: 5px;
 }
