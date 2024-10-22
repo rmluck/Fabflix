@@ -53,7 +53,7 @@ public class LoginServlet extends HttpServlet {
                 ResultSet resultSet = statement.executeQuery();
 
                 PrintWriter out = response.getWriter();
-                response.setContentType("text/html");
+                response.setContentType("application/json");
 
                 // If user is found
                 if (resultSet.next()) {
