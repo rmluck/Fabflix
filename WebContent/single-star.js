@@ -72,14 +72,40 @@ function handleResult(resultData) {
 /**
  * Once this .js is loaded, following scripts will be executed by the browser\
  */
+$(document).ready(function() {
+    // Handle logout form submission
+    $("#logout_form").on("submit", function(event) {
+        // Prevent default form submission
+        event.preventDefault();
 
-// Get id from URL
-let starId = getParameterByName('id');
+        $.ajax({
+            type: "POST",
+            url: "/api/logout",
+            dataType: "json",
+            success: function(response) {
+                if (response.status === "success") {
+                    // Logout successful, redirect to login page
+                    window.location.href = "login.html";
+                } else {
+                    // Handle error case (no active session)
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                // Handle AJAX error
+                alert("Error logging out. Please try again.");
+            }
+        });
+    });
 
-// Makes HTTP GET request and registers on success callback function handleResult
-jQuery.ajax({
-    dataType: "json",  // Setting return data type
-    method: "GET",// Setting request method
-    url: "api/single-star?id=" + starId, // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    // Get id from URL
+    let starId = getParameterByName("id");
+
+    // Existing AJAX call to fetch single star data
+    jQuery.ajax({
+        dataType: "json",
+        method: "GET",
+        url: "/api/single-star?id=" + starId,
+        success: (resultData) => handleResult(resultData)
+    });
 });

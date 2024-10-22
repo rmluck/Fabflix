@@ -76,14 +76,40 @@ function handleResult(resultData) {
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
+$(document).ready(function() {
+    // Handle logout form submission
+    $("#logout_form").on("submit", function(event) {
+        // Prevent default form submission
+        event.preventDefault();
 
-// Get id from URL
-let movieId = getParameterByName('id');
+        $.ajax({
+            type: "POST",
+            url: "/api/logout",
+            dataType: "json",
+            success: function(response) {
+                if (response.status === "success") {
+                    // Logout successful, redirect to login page
+                    window.location.href = "login.html";
+                } else {
+                    // Handle error case (no active session)
+                    alert(response.message);
+                }
+            },
+            error: function() {
+                // Handle AJAX error
+                alert("Error logging out. Please try again.");
+            }
+        });
+    });
 
-// Makes HTTP GET request and registers on success callback function handleResult
-jQuery.ajax({
-    dataType: "json", // Setting return data type
-    method: "GET", // Setting request method
-    url: "api/single-movie?id=" + movieId, // Setting request url, which is mapped by MoviesServlet in Movies.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleMovieServlet
+    // Get id from URL
+    let movieId = getParameterByName("id");
+
+    // Existing AJAX call to fetch single movie data
+    jQuery.ajax({
+        dataType: "json",
+        method: "GET",
+        url: "/api/single-movie?id=" + movieId,
+        success: (resultData) => handleResult(resultData)
+    });
 });
