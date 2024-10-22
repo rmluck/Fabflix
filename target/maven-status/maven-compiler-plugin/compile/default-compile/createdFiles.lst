@@ -1,11 +1,13 @@
 LogoutServlet.class
 SingleStarServlet.class
+Genre.class
+SessionServlet.class
+LoginServlet.class
+SingleMovieServlet.class
+MoviesServlet.class
 LoginFilter.class
 ItemsServlet.class
 IndexServlet.class
-SessionServlet.class
 User.class
-LoginServlet.class
-SingleMovieServlet.class
+Movie.class
 StarsServlet.class
-MoviesServlet.class

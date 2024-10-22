@@ -9,14 +9,18 @@ function handleSessionData(resultDataString) {
 
     console.log("handle session response");
     console.log(resultDataJson);
-    console.log(resultDataJson["sessionID"]);
+    console.log(resultDataJson["sessionId"]);
 
     // show the session information
-    $("#sessionID").text("Session ID: " + resultDataJson["sessionID"]);
+    $("#sessionID").text("Session ID: " + resultDataJson["sessionId"]);
     $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
 
     // show cart information
     handleCartArray(resultDataJson["previousItems"]);
+
+    // call functions to populate genres and alphabet browsing options
+    loadGenres(resultDataJson["genres"]);
+    loadTitleLetters();
 }
 
 /**
@@ -26,13 +30,17 @@ function handleSessionData(resultDataString) {
 function handleCartArray(resultArray) {
     console.log(resultArray);
     let item_list = $("#item_list");
-    // change it to html list
-    let res = "<ul>";
-    for (let i = 0; i < resultArray.length; i++) {
-        // each item will be in a bullet point
-        res += "<li>" + resultArray[i] + "</li>";
+    if (resultArray.length === 0) {
+        item_list.html("<p>No items in cart.</p>")
+    } else {
+        // change it to html list
+        let res = "<ul>";
+        for (let i = 0; i < resultArray.length; i++) {
+            // each item will be in a bullet point
+            res += "<li>" + resultArray[i] + "</li>";
+        }
+        res += "</ul>";
     }
-    res += "</ul>";
 
     // clear the old array and show the new array in the frontend
     item_list.html("");
@@ -58,11 +66,101 @@ function handleCartInfo(cartEvent) {
         success: resultDataString => {
             let resultDataJson = JSON.parse(resultDataString);
             handleCartArray(resultDataJson["previousItems"]);
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("Error adding item: ", textStatus, errorThrown);
+            alert("Failed to add item. Please try again.");
         }
     });
 
     // clear input form
     cart[0].reset();
+}
+
+/**
+ * Load genres and display as links for browsing movies by genre
+ */
+function loadGenres() {
+    // fetch genres from server if they are not already part of session
+    fetch("IndexServlet?action=getGenres")
+        .then(response => response.json())
+        .then(genres => {
+            const genreContainer = document.getElementById("genres_list");
+            genreContainer.innerHTML = "";
+
+            genres.forEach(genre => {
+                const link = document.createElement("a");
+                link.href = "#";
+                link.textContent = genre.name;
+                link.onclick = function () {
+                    browseMoviesByGenre(genre.id);
+                };
+                genreContainer.appendChild(link);
+                genreContainer.appendChild(document.createTextNode(" | "));
+            });
+        });
+}
+
+/**
+ * Load alphabet letters for browsing movies by title.
+ */
+function loadTitleLetters() {
+    const titleContainer = document.getElementById("alphabet_list");
+    const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*".split("");
+
+    titleContainer.innerHTML = "";
+
+    letters.forEach(letter => {
+        const link = document.createElement("a");
+        link.href = "#";
+        link.textContent = letter;
+        link.onclick = function () {
+            browseMoviesByTitle(letter);
+        };
+        titleContainer.appendChild(link);
+        titleContainer.appendChild(document.createTextNode(" | "));
+    });
+}
+
+/**
+ * Fetch movies by genre from server and display them
+ */
+function browseMoviesByGenre(genreId) {
+    fetch(`IndexServlet?action=getMoviesByGenre&genreId=${genreId}`)
+        .then(response => response.json())
+        .then(movies => {
+            displayMovies(movies);
+        });
+}
+
+/**
+ * Fetch movies by title from server and display them
+ */
+function browseMoviesByTitle(letter) {
+    fetch(`IndexServlet?action=getMoviesByTitle&letter=${letter}`)
+        .then(response => response.json())
+        .then(movies => {
+            displayMovies(movies);
+        });
+}
+
+/**
+ * Display movies in movie container
+ */
+function displayMovies(movies) {
+    const movieContainer = document.getElementById("movie_list");
+    movieContainer.innerHTML = "";
+
+    if (movies.length === 0) {
+        movieContainer.textContent = "No movies found.";
+        return;
+    }
+
+    movies.forEach(movie => {
+        const movieElement = document.createElement("div");
+        movieElement.textContent = `${movie.title} (${movie.year}), directed by ${movie.director}`;
+        movieContainer.appendChild(movieElement);
+    });
 }
 
 $.ajax("api/index", {
