@@ -110,32 +110,32 @@ public class IndexServlet extends HttpServlet {
                     "JOIN stars s ON sim.starId = s.id WHERE 1=1");
 
             if (title != null && !title.isEmpty()) {
-                queryBuilder.append(" AND m.title LIKE ?");
+                queryBuilder.append(" AND LOWER(m.title) LIKE LOWER(?)");
             }
             if (year != null && !year.isEmpty()) {
-                queryBuilder.append(" AND m.year = ?");
+                queryBuilder.append(" AND LOWER(m.year) = LOWER(?)");
             }
             if (director != null && !director.isEmpty()) {
-                queryBuilder.append(" AND m.director LIKE ?");
+                queryBuilder.append(" AND LOWER(m.director) LIKE LOWER(?)");
             }
             if (star != null && !star.isEmpty()) {
-                queryBuilder.append(" AND s.name LIKE ?");
+                queryBuilder.append(" AND LOWER(s.name) LIKE LOWER(?)");
             }
 
             PreparedStatement ps = conn.prepareStatement(queryBuilder.toString());
 
             int index = 1;
             if (title != null && !title.isEmpty()) {
-                ps.setString(index++, title + "%");
+                ps.setString(index++, "%" + title + "%");
             }
             if (year != null && !year.isEmpty()) {
                 ps.setString(index++, year);
             }
             if (director != null && !director.isEmpty()) {
-                ps.setString(index++, director + "%");
+                ps.setString(index++, "%" + director + "%");
             }
             if (star != null && !star.isEmpty()) {
-                ps.setString(index++, star + "%");
+                ps.setString(index++, "%" + star + "%");
             }
 
             ResultSet rs = ps.executeQuery();
