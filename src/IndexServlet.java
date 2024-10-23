@@ -50,6 +50,9 @@ public class IndexServlet extends HttpServlet {
         }
 
         switch (action) {
+            case "searchMovies":
+                searchMovies(request, response);
+                break;
             case "getGenres":
                 getGenres(response);
                 break;
@@ -91,6 +94,65 @@ public class IndexServlet extends HttpServlet {
 
         // Write all data into jsonObject
         response.getWriter().write(responseJsonObject.toString());
+    }
+
+    private void searchMovies(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String title = request.getParameter("title");
+        String year = request.getParameter("year");
+        String director = request.getParameter("director");
+        String star = request.getParameter("star");
+
+        List<Movie> movies = new ArrayList<>();
+        try (Connection conn = dataSource.getConnection()) {
+            StringBuilder queryBuilder = new StringBuilder("SELECT DISTINCT m.id, m.title, m.year, m.director " +
+                    "FROM movies m " +
+                    "JOIN stars_in_movies sim ON m.id = sim.movieId " +
+                    "JOIN stars s ON sim.starId = s.id WHERE 1=1");
+
+            if (title != null && !title.isEmpty()) {
+                queryBuilder.append(" AND m.title LIKE ?");
+            }
+            if (year != null && !year.isEmpty()) {
+                queryBuilder.append(" AND m.year = ?");
+            }
+            if (director != null && !director.isEmpty()) {
+                queryBuilder.append(" AND m.director LIKE ?");
+            }
+            if (star != null && !star.isEmpty()) {
+                queryBuilder.append(" AND s.name LIKE ?");
+            }
+
+            PreparedStatement ps = conn.prepareStatement(queryBuilder.toString());
+
+            int index = 1;
+            if (title != null && !title.isEmpty()) {
+                ps.setString(index++, title + "%");
+            }
+            if (year != null && !year.isEmpty()) {
+                ps.setString(index++, year);
+            }
+            if (director != null && !director.isEmpty()) {
+                ps.setString(index++, director + "%");
+            }
+            if (star != null && !star.isEmpty()) {
+                ps.setString(index++, star + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                movies.add(new Movie(rs.getString("id"), rs.getString("title"),
+                        rs.getInt("year"), rs.getString("director")));
+            }
+
+            rs.close();
+            ps.close();
+
+            response.getWriter().write(new Gson().toJson(movies));
+            response.setStatus(200);
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.getWriter().write("{\"errorMessage\": \"" + e.getMessage() + "\"}");
+        }
     }
 
     private void getGenres(HttpServletResponse response) throws IOException {

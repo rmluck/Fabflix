@@ -30,21 +30,24 @@ function handleSessionData(resultDataString) {
 function handleCartArray(resultArray) {
     console.log(resultArray);
     let item_list = $("#item_list");
+    let res = "<ul>";
+
     if (resultArray.length === 0) {
         item_list.html("<p>No items in cart.</p>")
     } else {
         // change it to html list
-        let res = "<ul>";
+        //let res = "<ul>";
         for (let i = 0; i < resultArray.length; i++) {
             // each item will be in a bullet point
             res += "<li>" + resultArray[i] + "</li>";
         }
-        res += "</ul>";
     }
+    res += "</ul>";
 
     // clear the old array and show the new array in the frontend
     item_list.html("");
     item_list.append(res);
+    //item_list.html(res);
 }
 
 /**
@@ -151,6 +154,22 @@ function displayMovies(movies) {
     const movieContainer = document.getElementById("movie_list");
     movieContainer.innerHTML = "";
 
+    if (typeof movies === "string") {
+        try {
+            movies = JSON.parse(movies);
+        } catch (error) {
+            movieContainer.textContent = "Error parsing";
+            console.error("failed to parse", error);
+            return;
+        }
+    }
+
+
+    if (!Array.isArray(movies)) {
+        movieContainer.textContent = "No movies found.";
+        return;
+    }
+
     if (movies.length === 0) {
         movieContainer.textContent = "No movies found.";
         return;
@@ -162,6 +181,25 @@ function displayMovies(movies) {
         movieContainer.appendChild(movieElement);
     });
 }
+
+$("#searchForm").submit(function (event) {
+    event.preventDefault();
+    let title = $("#title").val();
+    let year = $("#year").val();
+    let director = $("#director").val();
+    let star = $("#star").val();
+
+    $.ajax("api/index?action=searchMovies", {
+        method: "GET",
+        data: {title : title, year : year, director : director, star : star},
+        success: function(movies) {
+            displayMovies(movies);
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            alert("failed to search movies: " + errorThrown);
+        }
+    });
+});
 
 $.ajax("api/index", {
     method: "GET",
