@@ -103,7 +103,7 @@ function loadGenres() {
 
             genres.forEach(genre => {
                 const link = document.createElement("a");
-                link.href = "#";
+                link.href = "movies.html?genreId=";
                 link.textContent = genre.name;
                 link.onclick = function () {
                     browseMoviesByGenre(genre.id);
