@@ -54,13 +54,26 @@ function handleMovieResult(resultData) {
     }
 }
 
+function getQueryParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const queryArray = queryString.split("&");
+
+    for (let i = 0; i < queryArray.length; i++) {
+        const pair = queryArray[i].split("=");
+        if (pair.length === 2) {
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+    }
+    return params;
+}
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
 $(document).ready(function() {
     // Handle logout form submission
-    $("#logout_form").on("submit", function(event) {
+    $("#logout_form").on("submit", function (event) {
         // Prevent default form submission
         event.preventDefault();
 
@@ -68,7 +81,7 @@ $(document).ready(function() {
             type: "POST",
             url: "/api/logout",
             dataType: "json",
-            success: function(response) {
+            success: function (response) {
                 if (response.status === "success") {
                     // Logout successful, redirect to login page
                     window.location.href = "login.html";
@@ -77,18 +90,44 @@ $(document).ready(function() {
                     alert(response.message);
                 }
             },
-            error: function() {
+            error: function () {
                 // Handle AJAX error
                 alert("Error logging out. Please try again.");
             }
         });
     });
 
+    const queryParams = getQueryParams();
+
+    let apiURL = "api/movies"; //default top20 endpoint
+
+    if (queryParams.genreId) {
+        apiURL += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;
+    } else if (queryParams.letter) {
+        apiURL += `?action=getMoviesByTitle&letter=${queryParams.letter}`;
+    } else if (queryParams.title || queryParams.year || queryParams.director || queryParams.star) {
+        apiURL += `?action=searchMovies&${$.param(queryParams)}`;
+    } else {
+        $("#top20_button").on("click", function () {
+            apiURL = "api/movies";
+            fetchMovies(apiURL);
+        });
+        return;
+    }
+
+    fetchMovies(apiURL);
+});
+
+function fetchMovies(apiURL){
     // Existing AJAX call to fetch movie data
     jQuery.ajax({
         dataType: "json",
         method: "GET",
-        url: "api/movies",
-        success: (resultData) => handleMovieResult(resultData)
+        url: apiURL,
+        success: (resultData) => handleMovieResult(resultData),
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("error fetching movies:", errorThrown);
+            alert("failed to fetch movies.")
+        }
     });
-});
+}

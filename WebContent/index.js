@@ -139,22 +139,27 @@ function loadTitleLetters() {
  * Fetch movies by genre from server and display them
  */
 function browseMoviesByGenre(genreId) {
-    fetch(`api/index?action=getMoviesByGenre&genreId=${genreId}`)
-        .then(response => response.json())
-        .then(movies => {
-            displayMovies(movies);
-        });
+    // fetch(`api/index?action=getMoviesByGenre&genreId=${genreId}`)
+    //     .then(response => response.json())
+    //     .then(movies => {
+    //         displayMovies(movies);
+    //     });
+
+    //redirect this to movies.html in order to handle in new window
+    window.location.href = `movies.html?genreId=${genreId}`;
 }
 
 /**
  * Fetch movies by title from server and display them
  */
 function browseMoviesByTitle(letter) {
-    fetch(`api/index?action=getMoviesByTitle&letter=${letter}`)
-        .then(response => response.json())
-        .then(movies => {
-            displayMovies(movies);
-        });
+    // fetch(`api/index?action=getMoviesByTitle&letter=${letter}`)
+    //     .then(response => response.json())
+    //     .then(movies => {
+    //         displayMovies(movies);
+    //     });
+    //redirect this to movies.html in order to handle in new window
+    window.location.href = `movies.html?letter=${letter}`;
 }
 
 /**
@@ -199,16 +204,20 @@ $("#search_form").submit(function (event) {
     let director = $("#search_director").val();
     let star = $("#search_star").val();
 
-    $.ajax("api/index?action=searchMovies", {
-        method: "GET",
-        data: {title : title, year : year, director : director, star : star},
-        success: function(movies) {
-            displayMovies(movies);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            alert("failed to search movies: " + errorThrown);
-        }
-    });
+    // $.ajax("api/index?action=searchMovies", {
+    //     method: "GET",
+    //     data: {title : title, year : year, director : director, star : star},
+    //     success: function(movies) {
+    //         displayMovies(movies);
+    //     },
+    //     error: function (jqXHR, textStatus, errorThrown) {
+    //         alert("failed to search movies: " + errorThrown);
+    //     }
+    // });
+
+    let queryParams = $.param({title:title, year:year, director:director, star:star})
+
+    window.location.href = `movies.html?${queryParams}`;
 });
 
 $.ajax("api/index", {
