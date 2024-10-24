@@ -324,19 +324,77 @@ td a:hover {
     margin-top: 25px;
 }
 
-#item_list {
-    background-color: rgba(255, 255, 255, 0.13);
-    width: 100%;
-}
-
 #browse_genres_list {
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: 0;
     background-color: rgba(255, 255, 255, 0.13);
-    width: 100%;
+    width: 90%;
+    height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 25px;
 }
 
 #browse_alphabet_list {
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
     background-color: rgba(255, 255, 255, 0.13);
-    width: 100%;
+    width: 90%;
+    height: 135px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+#genres_list {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+#alphabet_list {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+#genres_list a{
+    color: seashell;
+    font-size: 24px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#alphabet_list a{
+    color: seashell;
+    font-size: 20px;
+    padding-left: 5px;
+    padding-right: 4px;
+}
+
+#genres_list a:hover {
+    color: #f26661;
+    text-decoration-line: underline;
+    text-decoration-color: #f26661;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 1px;
+}
+
+#alphabet_list a:hover {
+    color: #f26661;
+    text-decoration-line: underline;
+    text-decoration-color: #f26661;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 1px;
 }
 
 #filtered_movies_list {
@@ -367,27 +425,6 @@ td a:hover {
 }
 
 #search_form *{
-    font-family: "Oswald", sans-serif;
-    color: seashell;
-    letter-spacing: 0.5px;
-    outline: none;
-}
-
-#item_list *{
-    font-family: "Oswald", sans-serif;
-    color: seashell;
-    letter-spacing: 0.5px;
-    outline: none;
-}
-
-#browse_genres_list *{
-    font-family: "Oswald", sans-serif;
-    color: seashell;
-    letter-spacing: 0.5px;
-    outline: none;
-}
-
-#browse_alphabet_list *{
     font-family: "Oswald", sans-serif;
     color: seashell;
     letter-spacing: 0.5px;
@@ -436,6 +473,11 @@ button {
     position: absolute;
     border: none;
     border-radius: 5px;
+}
+
+button:hover {
+    background-color: #f26661;
+    color: seashell;
 }
 
 #login_button {

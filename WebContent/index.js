@@ -98,7 +98,7 @@ function loadGenres() {
     fetch("api/index?action=getGenres")
         .then(response => response.json())
         .then(genres => {
-            const genreContainer = document.getElementById("browse_genres_list");
+            const genreContainer = document.getElementById("genres_list");
             genreContainer.innerHTML = "";
 
             genres.forEach(genre => {
@@ -118,7 +118,7 @@ function loadGenres() {
  * Load alphabet letters for browsing movies by title.
  */
 function loadTitleLetters() {
-    const titleContainer = document.getElementById("browse_alphabet_list");
+    const titleContainer = document.getElementById("alphabet_list");
     const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*".split("");
 
     titleContainer.innerHTML = "";
