@@ -1,4 +1,14 @@
-let cart = $("#cart");
+/**
+ * This example is following frontend and backend separation.
+ *
+ * Before this .js is loaded, the html skeleton is created.
+ *
+ * This .js performs two steps:
+ *      1. Use jQuery to talk to backend API to get the json data.
+ *      2. Populate the data to correct html elements.
+ */
+
+let cart = $("#cart_form");
 
 /**
  * Handle the data returned by IndexServlet
@@ -12,7 +22,7 @@ function handleSessionData(resultDataString) {
     console.log(resultDataJson["sessionId"]);
 
     // show the session information
-    $("#sessionID").text("Session ID: " + resultDataJson["sessionId"]);
+    $("#sessionId").text("Session ID: " + resultDataJson["sessionId"]);
     $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
 
     // show cart information
@@ -88,7 +98,7 @@ function loadGenres() {
     fetch("IndexServlet?action=getGenres")
         .then(response => response.json())
         .then(genres => {
-            const genreContainer = document.getElementById("genres_list");
+            const genreContainer = document.getElementById("browse_genres_list");
             genreContainer.innerHTML = "";
 
             genres.forEach(genre => {
@@ -108,7 +118,7 @@ function loadGenres() {
  * Load alphabet letters for browsing movies by title.
  */
 function loadTitleLetters() {
-    const titleContainer = document.getElementById("alphabet_list");
+    const titleContainer = document.getElementById("browse_alphabet_list");
     const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ*".split("");
 
     titleContainer.innerHTML = "";
@@ -151,7 +161,7 @@ function browseMoviesByTitle(letter) {
  * Display movies in movie container
  */
 function displayMovies(movies) {
-    const movieContainer = document.getElementById("movie_list");
+    const movieContainer = document.getElementById("filtered_movies_list");
     movieContainer.innerHTML = "";
 
     if (typeof movies === "string") {
@@ -182,12 +192,12 @@ function displayMovies(movies) {
     });
 }
 
-$("#searchForm").submit(function (event) {
+$("#search_form").submit(function (event) {
     event.preventDefault();
-    let title = $("#title").val();
-    let year = $("#year").val();
-    let director = $("#director").val();
-    let star = $("#star").val();
+    let title = $("#search_title").val();
+    let year = $("#search_year").val();
+    let director = $("#search_director").val();
+    let star = $("#search_star").val();
 
     $.ajax("api/index?action=searchMovies", {
         method: "GET",
