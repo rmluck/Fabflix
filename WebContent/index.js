@@ -95,7 +95,7 @@ function handleCartInfo(cartEvent) {
  */
 function loadGenres() {
     // fetch genres from server if they are not already part of session
-    fetch("IndexServlet?action=getGenres")
+    fetch("api/index?action=getGenres")
         .then(response => response.json())
         .then(genres => {
             const genreContainer = document.getElementById("browse_genres_list");
@@ -139,7 +139,7 @@ function loadTitleLetters() {
  * Fetch movies by genre from server and display them
  */
 function browseMoviesByGenre(genreId) {
-    fetch(`IndexServlet?action=getMoviesByGenre&genreId=${genreId}`)
+    fetch(`api/index?action=getMoviesByGenre&genreId=${genreId}`)
         .then(response => response.json())
         .then(movies => {
             displayMovies(movies);
@@ -150,7 +150,7 @@ function browseMoviesByGenre(genreId) {
  * Fetch movies by title from server and display them
  */
 function browseMoviesByTitle(letter) {
-    fetch(`IndexServlet?action=getMoviesByTitle&letter=${letter}`)
+    fetch(`api/index?action=getMoviesByTitle&letter=${letter}`)
         .then(response => response.json())
         .then(movies => {
             displayMovies(movies);
