@@ -59,7 +59,6 @@ public class MoviesServlet extends HttpServlet {
                         break;
                     case "getMoviesByTitle":
                         String letter = request.getParameter("letter");
-                        System.out.println("GET MOVIES BY TITLE: " + letter);
                         getMoviesByTitle(letter, response);
                         break;
                     default:
@@ -296,10 +295,11 @@ public class MoviesServlet extends HttpServlet {
                     " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
                     " FROM movies as m " +
                     " JOIN ratings as r on m.id = r.movieId " +
-                    " WHERE m.title '^[^a-zA-Z0-9]' " +
+                    " WHERE m.title REGEXP '^[^a-zA-Z0-9]' " +
                     " ORDER BY m.title" +
                     " LIMIT 20;";
                 statement = conn.prepareStatement(query);
+                System.out.println("QUERY HAS BEEN PREPARED");
             } else {
                 query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
@@ -320,7 +320,11 @@ public class MoviesServlet extends HttpServlet {
                 statement.setString(1, letter + "%");
             }
 
+            System.out.println("EXECUTING QUERY");
+            System.out.println(statement);
             ResultSet rs = statement.executeQuery();
+            System.out.println("QUERY EXECUTED");
+            System.out.println(rs);
 
             List<Movie> movies = new ArrayList<>();
             while (rs.next()) {
