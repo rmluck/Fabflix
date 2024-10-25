@@ -24,6 +24,7 @@ function handleMovieResult(resultData) {
     // Iterate through resultData, no more than 20 entries, requirement
     for (let i = 0; i < Math.min(20, resultData.length); i++) {
         console.log("Processing movie ID: ", resultData[i]["id"]);
+        console.log(resultData[i]);
 
         // Concatenate html tags with resultData jsonObject
         let rowHTML = "";
@@ -32,7 +33,21 @@ function handleMovieResult(resultData) {
             + resultData[i]["title"] + "</a>" + "</td>"; // Creates movie entry and url to single movie page
         rowHTML += "<td>" + resultData[i]["year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["director"] + "</td>";
-        rowHTML += "<td>" + resultData[i]["genres"] + "</td>";
+        // rowHTML += "<td>" + resultData[i]["genres"] + "</td>";
+
+        let genresArray = resultData[i]["genres"].split(",");
+        let genresHTML = "<td colspan='3'>";
+        for (let g = 0; g < genresArray.length; g++) {
+            let [genreId, genreName] = genresArray[g].split(":");
+            genreId = genreId.trim();
+            console.log("genreId: ", genreId, " genreName: ", genreName);
+            genresHTML += "<a href='movies.html?genreId=" + genreId + "'>" + genreName + "</a>";
+            if (g < genresArray.length - 1) {
+                genresHTML += ", ";
+            }
+        }
+        genresHTML += "</td>"
+        rowHTML += genresHTML;
 
         let starsArray = resultData[i]["stars"].split(",");
         let starsHTML = "<td colspan='3'>";

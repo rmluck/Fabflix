@@ -222,25 +222,34 @@ public class MoviesServlet extends HttpServlet {
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
+        //                    "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
+        //                    " FROM genres_in_movies AS gimov " +
+        //                    " JOIN genres as g on gimov.genreId = g.id " +
+        //                    " WHERE gimov.movieId = m.id " +
+        //                    " ORDER BY g.name LIMIT 3) AS genres, " +
+
         // Fetch movies by genre from database
         try (Connection conn = dataSource.getConnection()) {
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
-                    "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
+                    "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ',') " +
+                    " FROM (SELECT g.id, g.name " +
                     " FROM genres_in_movies AS gimov " +
-                    " JOIN genres as g on gimov.genreId = g.id " +
-                    " WHERE gimov.movieId = m.id LIMIT 3) AS genres, " +
+                    " JOIN genres AS g ON gimov.genreId = g.id " +
+                    " WHERE gimov.movieId = m.id " +
+                    " ORDER BY g.name LIMIT 3) AS three_genres) AS genres, " +
                     "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ',') " +
                     " FROM (SELECT s.id, s.name " +
                     " FROM stars_in_movies AS simov " +
                     " JOIN stars AS s ON simov.starId = s.id " +
                     " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
                     " FROM movies AS m " +
-                    " JOIN ratings as r on m.id = r.movieId " +
+                    " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE gim.genreId = ? " +
                     " GROUP BY m.id, r.rating " +
                     " ORDER BY r.rating DESC " +
                     " LIMIT 20;";
+            System.out.println(query);
             PreparedStatement statement = conn.prepareStatement(query);
             statement.setString(1, genreId);
             ResultSet rs = statement.executeQuery();
@@ -284,34 +293,40 @@ public class MoviesServlet extends HttpServlet {
             // Handle "*" character for non-alphanumeric titles
             if (letter.equals("*")) {
                 query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
-                    "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
+                    "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ', ') " +
+                    " FROM (SELECT g.id, g.name " +
                     " FROM genres_in_movies AS gimov " +
-                    " JOIN genres as g on gimov.genreId = g.id " +
-                    " WHERE gimov.movieId = m.id LIMIT 3) AS genres, " +
+                    " JOIN genres AS g ON gimov.genreId = g.id " +
+                    " WHERE gimov.movieId = m.id" +
+                    " ORDER BY g.name LIMIT 3) AS three_genres) AS genres, " +
                     "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ', ') " +
                     " FROM (SELECT s.id, s.name " +
                     " FROM stars_in_movies AS simov " +
                     " JOIN stars AS s ON simov.starId = s.id " +
                     " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
-                    " FROM movies as m " +
-                    " JOIN ratings as r on m.id = r.movieId " +
+                    " FROM movies AS m " +
+                    " JOIN ratings AS r ON m.id = r.movieId " +
+                    " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title REGEXP '^[^a-zA-Z0-9]' " +
                     " ORDER BY m.title" +
                     " LIMIT 20;";
                 statement = conn.prepareStatement(query);
             } else {
                 query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
-                    "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
+                    "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ', ') " +
+                    " FROM (SELECT g.id, g.name " +
                     " FROM genres_in_movies AS gimov " +
-                    " JOIN genres as g on gimov.genreId = g.id " +
-                    " WHERE gimov.movieId = m.id LIMIT 3) AS genres, " +
+                    " JOIN genres AS g ON gimov.genreId = g.id " +
+                    " WHERE gimov.movieId = m.id" +
+                    " ORDER BY g.name LIMIT 3) AS three_genres) AS genres, " +
                     "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ', ') " +
                     " FROM (SELECT s.id, s.name " +
                     " FROM stars_in_movies AS simov " +
                     " JOIN stars AS s ON simov.starId = s.id " +
                     " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
-                    " FROM movies as m " +
-                    " JOIN ratings as r on m.id = r.movieId " +
+                    " FROM movies AS m " +
+                    " JOIN ratings AS r ON m.id = r.movieId " +
+                    " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title LIKE ? " +
                     " ORDER BY m.title" +
                     " LIMIT 20;";
