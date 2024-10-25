@@ -153,10 +153,19 @@ public class MoviesServlet extends HttpServlet {
 
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = dataSource.getConnection()) {
-            StringBuilder queryBuilder = new StringBuilder("SELECT DISTINCT m.id, m.title, m.year, m.director " +
-                    "FROM movies m " +
-                    "JOIN stars_in_movies sim ON m.id = sim.movieId " +
-                    "JOIN stars s ON sim.starId = s.id WHERE 1=1");
+            StringBuilder queryBuilder = new StringBuilder(
+                    "SELECT DISTINCT m.id, m.title, m.year, m.director, " +
+                            "GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres, " +
+                            "GROUP_CONCAT(DISTINCT s.name SEPARATOR ', ') AS stars, " +
+                            "r.rating " +
+                            "FROM movies m " +
+                            "JOIN stars_in_movies sim ON m.id = sim.movieId " +
+                            "JOIN stars s ON sim.starId = s.id " +
+                            "JOIN genres_in_movies gim ON m.id = gim.movieId " +
+                            "JOIN genres g ON gim.genreId = g.id " +
+                            "LEFT JOIN ratings r ON m.id = r.movieId " +
+                            "WHERE 1=1"
+            );
 
             if (title != null && !title.isEmpty()) {
                 queryBuilder.append(" AND LOWER(m.title) LIKE LOWER(?)");
@@ -170,6 +179,8 @@ public class MoviesServlet extends HttpServlet {
             if (star != null && !star.isEmpty()) {
                 queryBuilder.append(" AND LOWER(s.name) LIKE LOWER(?)");
             }
+
+            queryBuilder.append(" GROUP BY m.id, m.title, m.year, m.director");
 
             PreparedStatement ps = conn.prepareStatement(queryBuilder.toString());
 
@@ -190,7 +201,9 @@ public class MoviesServlet extends HttpServlet {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 movies.add(new Movie(rs.getString("id"), rs.getString("title"),
-                        rs.getInt("year"), rs.getString("director"), rs.getString("genres"), rs.getString("stars"), rs.getFloat("rating")));
+                        rs.getInt("year"), rs.getString("director"),
+                        rs.getString("genres"), rs.getString("stars"),
+                        rs.getFloat("rating")));
             }
 
             rs.close();
@@ -200,7 +213,7 @@ public class MoviesServlet extends HttpServlet {
             response.setStatus(200);
         } catch (Exception e) {
             response.setStatus(500);
-            response.getWriter().write("{\"errorMessage\": \"" + e.getMessage() + "\"}");
+            response.getWriter().write("{\"errorMessageSEARCHmethod\": \"" + e.getMessage() + "\"}");
         }
     }
 
