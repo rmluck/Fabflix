@@ -529,3 +529,12 @@ button:hover {
     margin-top: 25px;
     left: 1100px;
 }
+
+#login_error_message {
+    color: #f26661;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    text-transform: uppercase;
+}
