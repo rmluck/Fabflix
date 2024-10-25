@@ -45,7 +45,7 @@ public class MoviesServlet extends HttpServlet {
         String star = request.getParameter("star");
 
         if (title != null && year != null && director != null && star != null) {
-            searchMovies(request, response);
+            searchMovies(title, year, director, star, response);
         } else {
             String action = request.getParameter("action");
 
@@ -144,29 +144,30 @@ public class MoviesServlet extends HttpServlet {
         }
     }
 
-    private void searchMovies(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String title = request.getParameter("title");
-        String year = request.getParameter("year");
-        String director = request.getParameter("director");
-        String star = request.getParameter("star");
+    private void searchMovies(String title, String year, String director, String star, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json"); // Response mime type
 
-        List<Movie> movies = new ArrayList<>();
+        // Output stream to STDOUT
+        PrintWriter out = response.getWriter();
+
         try (Connection conn = dataSource.getConnection()) {
             StringBuilder queryBuilder = new StringBuilder(
                     "SELECT m.id, m.title, m.year, m.director, r.rating, " +
-                            "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) " +
+                            "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ',') " +
+                            " FROM (SELECT g.id, g.name " +
                             " FROM genres_in_movies AS gimov " +
                             " JOIN genres AS g ON gimov.genreId = g.id " +
                             " WHERE gimov.movieId = m.id " +
-                            " LIMIT 3) AS genres, " +
-                            "(SELECT GROUP_CONCAT(DISTINCT three_stars.id, ':', three_stars.name ORDER BY three_stars.name) " +
-                            " FROM (SELECT s.id, s.name FROM stars_in_movies AS simov " +
+                            " ORDER BY g.name LIMIT 3) AS three_genres) AS genres, " +
+                            "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ',') " +
+                            " FROM (SELECT s.id, s.name " +
+                            " FROM stars_in_movies AS simov " +
                             " JOIN stars AS s ON simov.starId = s.id " +
                             " WHERE simov.movieId = m.id " +
                             " ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
-                            "FROM movies AS m " +
-                            "LEFT JOIN ratings AS r ON m.id = r.movieId " +
-                            "WHERE 1=1 "
+                            " FROM movies AS m " +
+                            " LEFT JOIN ratings AS r ON m.id = r.movieId " +
+                            " WHERE 1=1 "
             );
 
             if (title != null && !title.isEmpty()) {
@@ -182,25 +183,29 @@ public class MoviesServlet extends HttpServlet {
                 queryBuilder.append(" AND LOWER(s.name) LIKE LOWER(?)");
             }
 
-            queryBuilder.append(" GROUP BY m.id, m.title, m.year, m.director");
+            queryBuilder.append(" GROUP BY m.id, r.rating " +
+                    " ORDER BY r.rating DESC " +
+                    " LIMIT 20;");
 
-            PreparedStatement ps = conn.prepareStatement(queryBuilder.toString());
+            PreparedStatement statement = conn.prepareStatement(queryBuilder.toString());
 
             int index = 1;
             if (title != null && !title.isEmpty()) {
-                ps.setString(index++, "%" + title + "%");
+                statement.setString(index++, "%" + title + "%");
             }
             if (year != null && !year.isEmpty()) {
-                ps.setString(index++, year);
+                statement.setString(index++, year);
             }
             if (director != null && !director.isEmpty()) {
-                ps.setString(index++, "%" + director + "%");
+                statement.setString(index++, "%" + director + "%");
             }
             if (star != null && !star.isEmpty()) {
-                ps.setString(index++, "%" + star + "%");
+                statement.setString(index++, "%" + star + "%");
             }
 
-            ResultSet rs = ps.executeQuery();
+            ResultSet rs = statement.executeQuery();
+
+            List<Movie> movies = new ArrayList<>();
             while (rs.next()) {
                 movies.add(new Movie(rs.getString("id"), rs.getString("title"),
                         rs.getInt("year"), rs.getString("director"),
@@ -209,13 +214,22 @@ public class MoviesServlet extends HttpServlet {
             }
 
             rs.close();
-            ps.close();
+            statement.close();
 
-            response.getWriter().write(new Gson().toJson(movies));
+            // Send genres as JSON response
+            out.write(new Gson().toJson(movies));
+            // Set response status to 200 (OK)
             response.setStatus(200);
         } catch (Exception e) {
+            // Write error message JSON object to output
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("errorMessage", e.getMessage());
+            out.write(jsonObject.toString());
+
+            // Set response status to 500 (Internal Server Error)
             response.setStatus(500);
-            response.getWriter().write("{\"errorMessageSEARCHmethod\": \"" + e.getMessage() + "\"}");
+        } finally {
+            out.close();
         }
     }
 
@@ -252,7 +266,6 @@ public class MoviesServlet extends HttpServlet {
                     " GROUP BY m.id, r.rating " +
                     " ORDER BY r.rating DESC " +
                     " LIMIT 20;";
-            System.out.println(query);
             PreparedStatement statement = conn.prepareStatement(query);
             statement.setString(1, genreId);
             ResultSet rs = statement.executeQuery();
