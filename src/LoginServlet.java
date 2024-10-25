@@ -35,6 +35,9 @@ public class LoginServlet extends HttpServlet {
         String password = request.getParameter("password");
         JsonObject responseJsonObject = new JsonObject();
 
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
             request.getSession().setAttribute("user", new User(email));
@@ -52,9 +55,6 @@ public class LoginServlet extends HttpServlet {
                 statement.setString(2, password);
                 ResultSet resultSet = statement.executeQuery();
 
-                PrintWriter out = response.getWriter();
-                response.setContentType("application/json");
-
                 // If user is found
                 if (resultSet.next()) {
                     request.getSession().setAttribute("user", new User(email));
@@ -70,11 +70,12 @@ public class LoginServlet extends HttpServlet {
                 responseJsonObject.addProperty("status", "error");
                 responseJsonObject.addProperty("message", "Internal Server Error");
                 System.out.println("Internal Server Error");
-                // System.out.println(e.printStackTrace().toString());
             }
         }
 
-        System.out.println("HERE");
-        response.getWriter().write(responseJsonObject.toString());
+        out.write(responseJsonObject.toString());
+        out.flush();
+        out.close();
+//        response.getWriter().write(responseJsonObject.toString());
     }
 }

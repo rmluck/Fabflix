@@ -14,6 +14,9 @@ import java.sql.PreparedStatement;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpSession;
 
+// LOGOUT CURRENTLY DOES NOT WORK PROPERLY
+// NEED TO ADD JAVASCRIPT CODE FOR LOGOUT BUTTONS LIKE LOGIN BUTTON
+
 // Declaring a WebServlet called LogoutServlet, which maps to url "/api/logout"
 @WebServlet(name = "LogoutServlet", urlPatterns = "/api/logout")
 public class LogoutServlet extends HttpServlet {
