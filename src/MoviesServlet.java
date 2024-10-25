@@ -299,7 +299,6 @@ public class MoviesServlet extends HttpServlet {
                     " ORDER BY m.title" +
                     " LIMIT 20;";
                 statement = conn.prepareStatement(query);
-                System.out.println("QUERY HAS BEEN PREPARED");
             } else {
                 query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
@@ -320,11 +319,7 @@ public class MoviesServlet extends HttpServlet {
                 statement.setString(1, letter + "%");
             }
 
-            System.out.println("EXECUTING QUERY");
-            System.out.println(statement);
             ResultSet rs = statement.executeQuery();
-            System.out.println("QUERY EXECUTED");
-            System.out.println(rs);
 
             List<Movie> movies = new ArrayList<>();
             while (rs.next()) {
