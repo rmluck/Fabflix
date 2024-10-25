@@ -39,26 +39,34 @@ public class MoviesServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
+        System.out.println("CONTENT TYPE");
         String title = request.getParameter("title");
+        System.out.println("TITLE: " + title);
         String year = request.getParameter("year");
+        System.out.println("YEAR: " + year);
         String director = request.getParameter("director");
+        System.out.println("DIRECTOR: " + director);
         String star = request.getParameter("star");
+        System.out.println("STAR: " + star);
 
         if (title != null && year != null && director != null && star != null) {
             searchMovies(request, response);
         } else {
             String action = request.getParameter("action");
-            String param = request.getParameter("param");
+            System.out.println("Action: " + action);
 
             if (action == null) {
                 handleTop20Movies(request, response);
             } else {
                 switch (action) {
                     case "getMoviesByGenre":
-                        getMoviesByGenre(param, response);
+                        String genreId = request.getParameter("genreId");
+                        System.out.println("genreId: " + genreId);
+                        getMoviesByGenre(genreId, response);
                         break;
                     case "getMoviesByTitle":
-                        getMoviesByTitle(param, response);
+                        String movieId = request.getParameter("movieId");
+                        getMoviesByTitle(movieId, response);
                         break;
                     default:
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
@@ -188,7 +196,7 @@ public class MoviesServlet extends HttpServlet {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 movies.add(new Movie(rs.getString("id"), rs.getString("title"),
-                        rs.getInt("year"), rs.getString("director")));
+                        rs.getInt("year"), rs.getString("director"), rs.getString("genres"), rs.getString("stars"), rs.getFloat("rating")));
             }
 
             rs.close();
@@ -203,6 +211,7 @@ public class MoviesServlet extends HttpServlet {
     }
 
     private void getMoviesByGenre(String genreId, HttpServletResponse response) throws IOException {
+        System.out.println("AT GET MOVIES BY GENRE");
         response.setContentType("application/json"); // Response mime type
 
         // Output stream to STDOUT
@@ -210,16 +219,38 @@ public class MoviesServlet extends HttpServlet {
 
         // Fetch movies by genre from database
         try (Connection conn = dataSource.getConnection()) {
-            String query = "SELECT m.id, m.title, m.year, m.director FROM movies m " +
-                    "JOIN genres_in_movies gim ON m.id = gim.movieId " +
-                    "WHERE gim.genreId = ?";
+            System.out.println("MADE CONNECTION WITH DATABASE");
+//            String query = "SELECT m.id, m.title, m.year, m.director FROM movies m " +
+//                    "JOIN genres_in_movies gim ON m.id = gim.movieId " +
+//                    "WHERE gim.genreId = ?";
+            String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
+                    "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
+                    " FROM genres_in_movies AS gimov " +
+                    " JOIN genres as g on gimov.genreId = g.id " +
+                    " WHERE gimov.movieId = m.id LIMIT 3) AS genres, " +
+                    "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ', ') " +
+                    " FROM (SELECT s.id, s.name " +
+                    " FROM stars_in_movies AS simov " +
+                    " JOIN stars AS s ON simov.starId = s.id " +
+                    " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
+                    " FROM movies AS m " +
+                    " JOIN ratings as r on m.id = r.movieId " +
+                    " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
+                    " WHERE gim.genreId = ? " +
+                    " GROUP BY m.id, r.rating " +
+                    " ORDER BY r.rating DESC " +
+                    " LIMIT 20;";
+            System.out.println("MADE QUERY");
             PreparedStatement statement = conn.prepareStatement(query);
+            System.out.println("PREPARED QUERY");
             statement.setString(1, genreId);
+            System.out.println("SET QUERY");
             ResultSet rs = statement.executeQuery();
+            System.out.println("EXECUTED QUERY");
 
             List<Movie> movies = new ArrayList<>();
             while (rs.next()) {
-                movies.add(new Movie(rs.getString("id"), rs.getString("title"), rs.getInt("year"), rs.getString("director")));
+                movies.add(new Movie(rs.getString("id"), rs.getString("title"), rs.getInt("year"), rs.getString("director"), rs.getString("genres"), rs.getString("stars"), rs.getFloat("rating")));
             }
 
             rs.close();
@@ -267,7 +298,7 @@ public class MoviesServlet extends HttpServlet {
             ResultSet rs = statement.executeQuery();
             List<Movie> movies = new ArrayList<>();
             while (rs.next()) {
-                movies.add(new Movie(rs.getString("id"), rs.getString("title"), rs.getInt("year"), rs.getString("director")));
+                movies.add(new Movie(rs.getString("id"), rs.getString("title"), rs.getInt("year"), rs.getString("director"), rs.getString("genres"), rs.getString("stars"), rs.getFloat("rating")));
             }
 
             rs.close();

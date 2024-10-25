@@ -103,11 +103,11 @@ function loadGenres() {
 
             genres.forEach(genre => {
                 const link = document.createElement("a");
-                link.href = "movies.html?genreId=";
+                link.href = "movies.html?genreId=" + genre.id;
                 link.textContent = genre.name;
-                link.onclick = function () {
-                    browseMoviesByGenre(genre.id);
-                };
+                // link.onclick = function () {
+                //     browseMoviesByGenre(genre.id);
+                // };
                 genreContainer.appendChild(link);
                 genreContainer.appendChild(document.createTextNode(" | "));
             });
@@ -135,19 +135,19 @@ function loadTitleLetters() {
     });
 }
 
-/**
- * Fetch movies by genre from server and display them
- */
-function browseMoviesByGenre(genreId) {
-    // fetch(`api/index?action=getMoviesByGenre&genreId=${genreId}`)
-    //     .then(response => response.json())
-    //     .then(movies => {
-    //         displayMovies(movies);
-    //     });
-
-    //redirect this to movies.html in order to handle in new window
-    window.location.href = `movies.html?genreId=${genreId}`;
-}
+// /**
+//  * Fetch movies by genre from server and display them
+//  */
+// function browseMoviesByGenre(genreId) {
+//     // fetch(`api/index?action=getMoviesByGenre&genreId=${genreId}`)
+//     //     .then(response => response.json())
+//     //     .then(movies => {
+//     //         displayMovies(movies);
+//     //     });
+//
+//     //redirect this to movies.html in order to handle in new window
+//     window.location.href = `movies.html?genreId=${genreId}`;
+// }
 
 /**
  * Fetch movies by title from server and display them

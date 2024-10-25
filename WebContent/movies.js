@@ -99,7 +99,7 @@ $(document).ready(function() {
 
     const queryParams = getQueryParams();
 
-    let apiURL = "api/movies"; //default top20 endpoint
+    let apiURL = "api/movies"; // default top20 endpoint
 
     if (queryParams.genreId) {
         apiURL += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;
@@ -109,7 +109,6 @@ $(document).ready(function() {
         apiURL += `?action=searchMovies&${$.param(queryParams)}`;
     } else {
         $("#top20_button").on("click", function () {
-            apiURL = "api/movies";
             fetchMovies(apiURL);
         });
         return;
