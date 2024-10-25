@@ -48,6 +48,7 @@ public class SingleMovieServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage
         try (Connection conn = dataSource.getConnection()) {
+            System.out.println("AT QUERY");
             // Construct query with parameter represented by "?"
             String query = "SELECT m.id AS movieId, m.title, m.year, m.director, " +
                     "GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) AS genres, " +

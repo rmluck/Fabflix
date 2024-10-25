@@ -36,9 +36,6 @@ function getParameterByName(target) {
  * @param resultData jsonObject
  */
 function handleResult(resultData) {
-    let homeElement = jQuery("#home");
-    homeElement.append("<a href='movies.html'>Home</a>");
-
     console.log("handleResult: populating star info from resultData");
 
     // Populates the star info h3
@@ -67,6 +64,20 @@ function handleResult(resultData) {
         // Append the row created to the table body, which will refresh the page
         starBodyElement.append(rowHTML);
     }
+}
+
+function getQueryParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const queryArray = queryString.split("&");
+
+    for (let i = 0; i < queryArray.length; i++) {
+        const pair = queryArray[i].split("=");
+        if (pair.length === 2) {
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+    }
+    return params;
 }
 
 /**
@@ -98,14 +109,19 @@ $(document).ready(function() {
         });
     });
 
-    // Get id from URL
-    let starId = getParameterByName("id");
+    const queryParams = getQueryParams();
+
+    let apiURL = `api/single-star?id=${queryParams.id}`;
 
     // Existing AJAX call to fetch single star data
     jQuery.ajax({
         dataType: "json",
         method: "GET",
-        url: "/api/single-star?id=" + starId,
-        success: (resultData) => handleResult(resultData)
+        url: apiURL,
+        success: (resultData) => handleResult(resultData),
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("error fetching star:", errorThrown);
+            alert("failed to fetch star.");
+        }
     });
 });

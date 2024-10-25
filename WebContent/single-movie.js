@@ -36,9 +36,6 @@ function getParameterByName(target) {
  * @param resultData jsonObject
  */
 function handleResult(resultData) {
-    let homeElement = jQuery("#home");
-    homeElement.append("<a href='movies.html'>Home</a>");
-
     console.log("handleResult: populating movie info from resultData");
 
     // Populates movie info h3
@@ -73,6 +70,20 @@ function handleResult(resultData) {
     movieBodyElement.append(rowHTML);
 }
 
+function getQueryParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const queryArray = queryString.split("&");
+
+    for (let i = 0; i < queryArray.length; i++) {
+        const pair = queryArray[i].split("=");
+        if (pair.length === 2) {
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+    }
+    return params;
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
@@ -102,14 +113,19 @@ $(document).ready(function() {
         });
     });
 
-    // Get id from URL
-    let movieId = getParameterByName("id");
+    const queryParams = getQueryParams();
+
+    let apiURL = `api/single-movie?id=${queryParams.id}`;
 
     // Existing AJAX call to fetch single movie data
     jQuery.ajax({
         dataType: "json",
         method: "GET",
-        url: "/api/single-movie?id=" + movieId,
-        success: (resultData) => handleResult(resultData)
+        url: apiURL,
+        success: (resultData) => handleResult(resultData),
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("error fetching movie:", errorThrown);
+            alert("failed to fetch movie.")
+        }
     });
 });

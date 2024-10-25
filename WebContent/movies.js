@@ -23,12 +23,12 @@ function handleMovieResult(resultData) {
 
     // Iterate through resultData, no more than 20 entries, requirement
     for (let i = 0; i < Math.min(20, resultData.length); i++) {
-        console.log("Processing movie ID: ", resultData[i]["movie_id"]);
+        console.log("Processing movie ID: ", resultData[i]["id"]);
 
         // Concatenate html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>";
-        rowHTML += "<td>" + "<a href='single-movie.html?id=" + resultData[i]["movie_id"] + "'>"
+        rowHTML += "<td>" + "<a href='single-movie.html?id=" + resultData[i]["id"] + "'>"
             + resultData[i]["title"] + "</a>" + "</td>"; // Creates movie entry and url to single movie page
         rowHTML += "<td>" + resultData[i]["year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["director"] + "</td>";
@@ -38,7 +38,9 @@ function handleMovieResult(resultData) {
         let starsHTML = "<td colspan='3'>";
         for (let j = 0; j < starsArray.length; j++) {
             let [starId, starName] = starsArray[j].split(":");
+            starId = starId.trim();
             // Add link to single-star.html with id passed with GET url parameter
+            console.log("starId: ", starId, " starName: ", starName);
             starsHTML += "<a href='single-star.html?id=" + starId + "'>" + starName + "</a>";
             if (j < starsArray.length - 1) {
                 starsHTML += ", ";
@@ -99,7 +101,7 @@ $(document).ready(function() {
 
     const queryParams = getQueryParams();
 
-    let apiURL = "api/movies"; // default top20 endpoint
+    let apiURL = "api/movies";
 
     if (queryParams.genreId) {
         apiURL += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;

@@ -105,9 +105,6 @@ function loadGenres() {
                 const link = document.createElement("a");
                 link.href = "movies.html?genreId=" + genre.id;
                 link.textContent = genre.name;
-                // link.onclick = function () {
-                //     browseMoviesByGenre(genre.id);
-                // };
                 genreContainer.appendChild(link);
                 genreContainer.appendChild(document.createTextNode(" | "));
             });
@@ -125,75 +122,10 @@ function loadTitleLetters() {
 
     letters.forEach(letter => {
         const link = document.createElement("a");
-        link.href = "#";
+        link.href = "movies.html?letter=" + letter;
         link.textContent = letter;
-        link.onclick = function () {
-            browseMoviesByTitle(letter);
-        };
         titleContainer.appendChild(link);
         titleContainer.appendChild(document.createTextNode(" | "));
-    });
-}
-
-// /**
-//  * Fetch movies by genre from server and display them
-//  */
-// function browseMoviesByGenre(genreId) {
-//     // fetch(`api/index?action=getMoviesByGenre&genreId=${genreId}`)
-//     //     .then(response => response.json())
-//     //     .then(movies => {
-//     //         displayMovies(movies);
-//     //     });
-//
-//     //redirect this to movies.html in order to handle in new window
-//     window.location.href = `movies.html?genreId=${genreId}`;
-// }
-
-/**
- * Fetch movies by title from server and display them
- */
-function browseMoviesByTitle(letter) {
-    // fetch(`api/index?action=getMoviesByTitle&letter=${letter}`)
-    //     .then(response => response.json())
-    //     .then(movies => {
-    //         displayMovies(movies);
-    //     });
-    //redirect this to movies.html in order to handle in new window
-    window.location.href = `movies.html?letter=${letter}`;
-}
-
-/**
- * Display movies in movie container
- */
-function displayMovies(movies) {
-    const movieContainer = document.getElementById("filtered_movies_list");
-    movieContainer.innerHTML = "";
-
-    if (typeof movies === "string") {
-        try {
-            movies = JSON.parse(movies);
-        } catch (error) {
-            movieContainer.textContent = "Error parsing";
-            console.error("failed to parse", error);
-            return;
-        }
-    }
-
-
-    if (!Array.isArray(movies)) {
-        movieContainer.textContent = "No movies found.";
-        return;
-    }
-
-    if (movies.length === 0) {
-        movieContainer.textContent = "No movies found.";
-        return;
-    }
-
-    movies.forEach(movie => {
-        const movieElement = document.createElement("div");
-        movieElement.textContent = `${movie.title} (${movie.year}), directed by ${movie.director}`;
-        movieContainer.appendChild(movieElement);
     });
 }
 
