@@ -153,17 +153,20 @@ public class MoviesServlet extends HttpServlet {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = dataSource.getConnection()) {
             StringBuilder queryBuilder = new StringBuilder(
-                    "SELECT DISTINCT m.id, m.title, m.year, m.director, " +
-                            "GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres, " +
-                            "GROUP_CONCAT(DISTINCT s.name SEPARATOR ', ') AS stars, " +
-                            "r.rating " +
-                            "FROM movies m " +
-                            "JOIN stars_in_movies sim ON m.id = sim.movieId " +
-                            "JOIN stars s ON sim.starId = s.id " +
-                            "JOIN genres_in_movies gim ON m.id = gim.movieId " +
-                            "JOIN genres g ON gim.genreId = g.id " +
-                            "LEFT JOIN ratings r ON m.id = r.movieId " +
-                            "WHERE 1=1"
+                    "SELECT m.id, m.title, m.year, m.director, r.rating, " +
+                            "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) " +
+                            " FROM genres_in_movies AS gimov " +
+                            " JOIN genres AS g ON gimov.genreId = g.id " +
+                            " WHERE gimov.movieId = m.id " +
+                            " LIMIT 3) AS genres, " +
+                            "(SELECT GROUP_CONCAT(DISTINCT three_stars.id, ':', three_stars.name ORDER BY three_stars.name) " +
+                            " FROM (SELECT s.id, s.name FROM stars_in_movies AS simov " +
+                            " JOIN stars AS s ON simov.starId = s.id " +
+                            " WHERE simov.movieId = m.id " +
+                            " ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
+                            "FROM movies AS m " +
+                            "LEFT JOIN ratings AS r ON m.id = r.movieId " +
+                            "WHERE 1=1 "
             );
 
             if (title != null && !title.isEmpty()) {
