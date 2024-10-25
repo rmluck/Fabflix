@@ -74,6 +74,7 @@ public class LoginServlet extends HttpServlet {
             }
         }
 
+        System.out.println("HERE");
         response.getWriter().write(responseJsonObject.toString());
     }
 }
