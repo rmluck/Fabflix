@@ -548,10 +548,10 @@ button:hover {
     top: 16px;
 }
 
-.logout_button a:hover {
-    background-color: #222222;
-    color: seashell;
-}
+/*.logout_button:hover {*/
+/*    background-color: #222222;*/
+/*    color: seashell;*/
+/*}*/
 
 #index_logout_button {
     top: 0;

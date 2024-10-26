@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
             // Test login successful
             request.getSession().setAttribute("user", new User(email));
             responseJsonObject.addProperty("status", "success");
-            responseJsonObject.addProperty("message", "Success");
+            responseJsonObject.addProperty("message", "Successfully logged in");
             System.out.println("Test user login success: " + email);
         } else {
             request.getServletContext().log("Test user login fail: " + email);

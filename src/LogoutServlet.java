@@ -14,17 +14,27 @@ import java.sql.PreparedStatement;
 import com.google.gson.JsonObject;
 import jakarta.servlet.http.HttpSession;
 
-// LOGOUT CURRENTLY DOES NOT WORK PROPERLY
-// NEED TO ADD JAVASCRIPT CODE FOR LOGOUT BUTTONS LIKE LOGIN BUTTON
-
 // Declaring a WebServlet called LogoutServlet, which maps to url "/api/logout"
 @WebServlet(name = "LogoutServlet", urlPatterns = "/api/logout")
 public class LogoutServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
+    private DataSource dataSource;
+
+    public void init(ServletConfig config) {
+        try {
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+    }
+
     // Use http POST
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         JsonObject responseJsonObject = new JsonObject();
+
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
 
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -38,7 +48,8 @@ public class LogoutServlet extends HttpServlet {
             System.out.println("No active session to log out.");
         }
 
-        response.setContentType("application/json");
-        response.getWriter().write(responseJsonObject.toString());
+        out.write(responseJsonObject.toString());
+        out.flush();
+        out.close();
     }
 }

@@ -152,10 +152,43 @@ $("#search_form").submit(function (event) {
     window.location.href = `movies.html?${queryParams}`;
 });
 
-$.ajax("api/index", {
-    method: "GET",
-    success: handleSessionData
-});
+$.ajax(
+    "api/index", {
+        method: "GET",
+        success: handleSessionData
+    }
+);
 
 // Bind the submit action of the form to a event handler function
 cart.submit(handleCartInfo);
+
+let logout_form = $("#logout_form");
+
+function handleLogoutResult(resultDataJson) {
+    console.log("handle logout response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["status"]);
+
+    if (resultDataJson["status"] === "success") {
+        window.location.replace("logout.html");
+    } else {
+        console.log("show error message");
+        console.log(resultDataJson["message"]);
+    }
+}
+
+function submitLogoutForm(formSubmitEvent) {
+    console.log("submit logout form");
+
+    formSubmitEvent.preventDefault();
+
+    $.ajax(
+        "api/logout", {
+            method: "POST",
+            success: handleLogoutResult,
+            error: handleLogoutResult
+        }
+    );
+}
+
+logout_form.submit(submitLogoutForm)

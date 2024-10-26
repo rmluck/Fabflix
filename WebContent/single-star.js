@@ -85,29 +85,29 @@ function getQueryParams() {
  */
 $(document).ready(function() {
     // Handle logout form submission
-    $("#logout_form").on("submit", function(event) {
-        // Prevent default form submission
-        event.preventDefault();
-
-        $.ajax({
-            type: "POST",
-            url: "/api/logout",
-            dataType: "json",
-            success: function(response) {
-                if (response.status === "success") {
-                    // Logout successful, redirect to login page
-                    window.location.href = "login.html";
-                } else {
-                    // Handle error case (no active session)
-                    alert(response.message);
-                }
-            },
-            error: function() {
-                // Handle AJAX error
-                alert("Error logging out. Please try again.");
-            }
-        });
-    });
+    // $("#logout_form").on("submit", function(event) {
+    //     // Prevent default form submission
+    //     event.preventDefault();
+    //
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/api/logout",
+    //         dataType: "json",
+    //         success: function(response) {
+    //             if (response.status === "success") {
+    //                 // Logout successful, redirect to login page
+    //                 window.location.href = "login.html";
+    //             } else {
+    //                 // Handle error case (no active session)
+    //                 alert(response.message);
+    //             }
+    //         },
+    //         error: function() {
+    //             // Handle AJAX error
+    //             alert("Error logging out. Please try again.");
+    //         }
+    //     });
+    // });
 
     const queryParams = getQueryParams();
 
@@ -125,3 +125,34 @@ $(document).ready(function() {
         }
     });
 });
+
+let logout_form = $("#logout_form");
+
+function handleLogoutResult(resultDataJson) {
+    console.log("handle logout response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["status"]);
+
+    if (resultDataJson["status"] === "success") {
+        window.location.replace("logout.html");
+    } else {
+        console.log("show error message");
+        console.log(resultDataJson["message"]);
+    }
+}
+
+function submitLogoutForm(formSubmitEvent) {
+    console.log("submit logout form");
+
+    formSubmitEvent.preventDefault();
+
+    $.ajax(
+        "api/logout", {
+            method: "POST",
+            success: handleLogoutResult,
+            error: handleLogoutResult
+        }
+    );
+}
+
+logout_form.submit(submitLogoutForm)

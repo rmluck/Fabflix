@@ -66,7 +66,6 @@ public class MoviesServlet extends HttpServlet {
                 }
             }
         }
-
     }
 
     private void handleTop20Movies(HttpServletRequest request, HttpServletResponse response) throws IOException { //old doGet for top20 proj1
