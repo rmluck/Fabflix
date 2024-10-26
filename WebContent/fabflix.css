@@ -175,6 +175,7 @@ h3 {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     padding-top: 0;
     margin-bottom: 50px;
+    margin-top: 92px;
 }
 
 #filters label, #page_size label {
@@ -208,12 +209,12 @@ h3 {
     background: linear-gradient(to left, #2e2d2d, #222222);
     color: darkgray;
     position: sticky;
-    top: 136px;
+    top: 92px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
     z-index: 10;
     text-align: center;
-    margin-top: 0;
+    margin-top: 92px;
     word-wrap: normal;
 }
 
@@ -548,13 +549,13 @@ button:hover {
     top: 16px;
 }
 
-/*.logout_button:hover {*/
-/*    background-color: #222222;*/
-/*    color: seashell;*/
-/*}*/
-
 #index_logout_button {
     top: 0;
+}
+
+#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #login_button:hover {
+    background-color: #222222;
+    color: seashell;
 }
 
 #cart_item {

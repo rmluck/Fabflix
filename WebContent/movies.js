@@ -85,6 +85,94 @@ function getQueryParams() {
     return params;
 }
 
+function sortMoviesByTitle() {
+    var table, rows, switching, i,x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("movies_table");
+    switching = true;
+
+    dir = "asc";
+
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("td")[0].querySelector("a").textContent;
+            y = rows[i + 1].getElementsByTagName("td")[0].querySelector("a").textContent;
+
+            console.log(x, " & ", y);
+
+            if (dir == "asc") {
+                if (x.toLowerCase() > y.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x.toLowerCase() < y.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+
+function sortMoviesByRating() {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("movies_table");
+    switching = true;
+
+    dir = "asc";
+
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("td")[5];
+            y = rows[i + 1].getElementsByTagName("td")[5];
+
+            console.log(x.innerHTML.toLowerCase(), " & ", y.innerHTML.toLowerCase());
+
+            if (dir == "asc") {
+                if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (Number(x.innerHTML) < Number(y.innerHTML)) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */

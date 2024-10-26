@@ -33,37 +33,37 @@
     </form>
 </div>
 
-<div id="controls">
-    <div id="filters">
-        <label id="primary_sort_label" for="primary_sort">Primary Sort</label>
-        <select id="primary_sort" name="primary_sort">
-            <option value="title">Title</option>
-            <option value="rating">Rating</option>
-        </select>
+<!--<div id="controls">-->
+<!--    <div id="filters">-->
+<!--        <label id="primary_sort_label" for="primary_sort">Primary Sort</label>-->
+<!--        <select id="primary_sort" name="primary_sort">-->
+<!--            <option value="title">Title</option>-->
+<!--            <option value="rating">Rating</option>-->
+<!--        </select>-->
 
-        <label id="secondary_sort_label" for="secondary_sort">Secondary Sort</label>
-        <select id="secondary_sort" name="secondary_sort">
-            <option value="title">Title</option>
-            <option value="rating">Rating</option>
-        </select>
+<!--        <label id="secondary_sort_label" for="secondary_sort">Secondary Sort</label>-->
+<!--        <select id="secondary_sort" name="secondary_sort">-->
+<!--            <option value="title">Title</option>-->
+<!--            <option value="rating">Rating</option>-->
+<!--        </select>-->
 
-        <label id="sort_order_label" for="sort_order">Order</label>
-        <select id="sort_order" name="sort_order">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-        </select>
-    </div>
+<!--        <label id="sort_order_label" for="sort_order">Order</label>-->
+<!--        <select id="sort_order" name="sort_order">-->
+<!--            <option value="asc">Ascending</option>-->
+<!--            <option value="desc">Descending</option>-->
+<!--        </select>-->
+<!--    </div>-->
 
-    <div id="page_size">
-        <label id="display_count_label" for="display_count">Movies Per Page</label>
-        <select id="display_count" name="display_count">
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-        </select>
-    </div>
-</div>
+<!--    <div id="page_size">-->
+<!--        <label id="display_count_label" for="display_count">Movies Per Page</label>-->
+<!--        <select id="display_count" name="display_count">-->
+<!--            <option value="10">10</option>-->
+<!--            <option value="25">25</option>-->
+<!--            <option value="50">50</option>-->
+<!--            <option value="100">100</option>-->
+<!--        </select>-->
+<!--    </div>-->
+<!--</div>-->
 
 <!-- id "movies_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
 <table id="movies_table" class="table table-striped">
@@ -71,12 +71,12 @@
     <thead>
     <tr>
         <!-- Titles of each column -->
-        <th class="movies_table_heading">Title</th>
+        <th class="movies_table_heading" onclick="sortMoviesByTitle()">Title</th>
         <th class="movies_table_heading" style="width: 5%;">Year</th>
         <th class="movies_table_heading">Director</th>
         <th class="movies_table_heading" colspan="3">Genres</th>
         <th class="movies_table_heading" colspan="3">Stars</th>
-        <th class="movies_table_heading" style="width: 7%">Rating</th>
+        <th class="movies_table_heading" onclick="sortMoviesByRating()" style="width: 7%">Rating</th>
     </tr>
     </thead>
 
