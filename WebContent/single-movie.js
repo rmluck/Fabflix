@@ -9,6 +9,8 @@
  *      3. Populate the data to correct html elements
  */
 
+let movieId = "";
+
 
 /**
  * Retrieve parameter from request URL, matching by parameter name
@@ -77,6 +79,7 @@ function handleResult(resultData) {
     starsHTML += "</td>";
     rowHTML += starsHTML;
     rowHTML += "<td>" + resultData["rating"] + "</td>";
+    rowHTML += `<td id="movie_add_to_cart"><button id="movie_add_to_cart_button" onclick="addToCart('${movieId}', '${resultData["title"]}', '${resultData["year"]}')">Add to Cart</button></td>`;
     rowHTML += "</tr>";
 
     // Append the row created to the table body
@@ -129,7 +132,9 @@ $(document).ready(function() {
 
     const queryParams = getQueryParams();
 
-    let apiURL = `api/single-movie?id=${queryParams.id}`;
+    movieId = queryParams.id;
+
+    let apiURL = `api/single-movie?id=${movieId}`;
 
     // Existing AJAX call to fetch single movie data
     jQuery.ajax({

@@ -59,6 +59,7 @@ function handleResult(resultData) {
         rowHTML += "<td><a href='single-movie.html?id=" + resultData[i]["movie_id"] + "'>" + resultData[i]["movie_title"] + "</a></td>";
         rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
+        rowHTML += `<td id="single_star_add_to_cart"><button id="single_star_add_to_cart_button" onclick="addToCart('${resultData[i]["movie_id"]}', '${resultData[i]["movie_title"]}', '${resultData[i]["movie_year"]}')">Add to Cart</button></td>`;
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page

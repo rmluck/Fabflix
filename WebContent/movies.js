@@ -99,7 +99,7 @@ function displayCurrentMoviesPage() {
         rowHTML += starsHTML;
 
         rowHTML += "<td>" + data[i]["rating"] + "</td>";
-        rowHTML += `<td><button onclick="addToCart('${data[i]["id"]}', '${data[i]["title"]}', '${data[i]["year"]}')">Add to Cart</button></td>`;
+        rowHTML += `<td id="movies_add_to_cart"><button id="movies_add_to_cart_button" onclick="addToCart('${data[i]["id"]}', '${data[i]["title"]}', '${data[i]["year"]}')">Add to Cart</button></td>`;
         rowHTML += "</tr>";
 
         moviesTableBodyElement.append(rowHTML);
