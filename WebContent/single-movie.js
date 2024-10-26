@@ -89,6 +89,7 @@ function getQueryParams() {
  */
 $(document).ready(function() {
     // Handle logout form submission
+
     // $("#logout_form").on("submit", function(event) {
     //     // Prevent default form submission
     //     event.preventDefault();
