@@ -9,6 +9,7 @@ public class Movie {
     private String stars;
     private float rating;
     private int quantity;
+    private int price;
 
     public Movie(String id, String title, int year, String director, String genres, String stars, float rating) {
         this.id = id;
@@ -19,6 +20,7 @@ public class Movie {
         this.stars = stars;
         this.rating = rating;
         this.quantity = 1;
+        this.price = 20;
     }
 
     public String getId() {
@@ -82,6 +84,8 @@ public class Movie {
     public void increaseQuantity() {this.quantity++;}
 
     public void setQuantity(int quantity) {this.quantity = quantity;}
+
+    public int getPrice() {return price;}
 
 
     public boolean equals(Object obj) {

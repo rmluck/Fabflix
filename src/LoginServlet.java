@@ -41,6 +41,7 @@ public class LoginServlet extends HttpServlet {
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
             request.getSession().setAttribute("user", new User(email));
+            request.getSession().setAttribute("customerId", 1);
             responseJsonObject.addProperty("status", "success");
             responseJsonObject.addProperty("message", "Successfully logged in");
             System.out.println("Test user login success: " + email);
@@ -57,6 +58,8 @@ public class LoginServlet extends HttpServlet {
 
                 // If user is found
                 if (resultSet.next()) {
+                    int customerId = resultSet.getInt("customer_id");
+                    request.getSession().setAttribute("customerId", customerId);
                     request.getSession().setAttribute("user", new User(email));
                     responseJsonObject.addProperty("status", "success");
                     responseJsonObject.addProperty("message", "success");
