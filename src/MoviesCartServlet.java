@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-@WebServlet("/cart")
+@WebServlet("/api/cart")
 public class MoviesCartServlet extends HttpServlet {
 
     @Override
@@ -33,7 +33,6 @@ public class MoviesCartServlet extends HttpServlet {
         out.flush();
     }
 
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
         ArrayList<Movie> cartItems = (ArrayList<Movie>) session.getAttribute("cartItems");
@@ -44,18 +43,31 @@ public class MoviesCartServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         String movieId = request.getParameter("movieId");
+        String title = request.getParameter("title");
+        int year = Integer.parseInt(request.getParameter("year"));
 
         switch (action) {
+            case "add":
+                Movie existingMovieInCart = cartItems.stream()
+                        .filter(movie -> movie.getId().equals(movieId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (existingMovieInCart != null) {
+                    existingMovieInCart.increaseQuantity();
+                } else {
+                    Movie newMovie = new Movie(movieId, title, year, "", "", "", 0.0f); //default vals, not sure if all needed.
+                    cartItems.add(newMovie);
+                }
+                break;
+
             case "remove":
-                // Logic for removing a movie from the cart
                 cartItems.removeIf(movie -> movie.getId().equals(movieId));
                 break;
         }
 
-        // Update session attribute
         session.setAttribute("cartItems", cartItems);
 
-        // Respond with a success message or redirect
-        response.setStatus(HttpServletResponse.SC_OK); // Set the response status to OK
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 }

@@ -16,7 +16,7 @@ public class Movie {
         this.genres = genres;
         this.stars = stars;
         this.rating = rating;
-        this.quantity = 0;
+        this.quantity = 1;
     }
 
     public String getId() {
@@ -77,7 +77,10 @@ public class Movie {
 
     public int getQuantity() {return quantity;}
 
-    public void incrementQuantity() {this.quantity++;}
+    public void increaseQuantity() {this.quantity++;}
+
+    public void setQuantity(int quantity) {this.quantity = quantity;}
+
 
     public boolean equals(Object obj) {
         if (this == obj) return true;
