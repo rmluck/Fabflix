@@ -44,7 +44,7 @@ public class MoviesCartServlet extends HttpServlet {
         String action = request.getParameter("action");
         String movieId = request.getParameter("movieId");
         String title = request.getParameter("title");
-        //int year = Integer.parseInt(request.getParameter("year"));
+
 
         switch (action) {
             case "add":
@@ -62,22 +62,42 @@ public class MoviesCartServlet extends HttpServlet {
                 break;
 
             case "remove":
-                System.out.println("Attempting to remove movie with ID: " + movieId); // Log the movie ID being removed
+                System.out.println("Attempting to remove movie with ID: " + movieId);
                 boolean removed = cartItems.removeIf(movie -> movie.getId().equals(movieId));
 
                 if (removed) {
-                    System.out.println("Successfully removed movie with ID: " + movieId); // Log success
+                    System.out.println("Successfully removed movie with ID: " + movieId);
                 } else {
-                    System.out.println("Movie with ID: " + movieId + " not found in cart."); // Log if not found
+                    System.out.println("Movie with ID: " + movieId + " not found in cart.");
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Movie not found in cart");
                     return;
                 }
                 break;
-//                cartItems.stream()
-//                        .filter(movie -> movie.getId().equals(movieId))
-//                        .findFirst()
-//                        .ifPresent(movie -> movie.setQuantity(0)); // Assuming you have a setQuantity method
-//                break;
+
+            case "update":
+                String quantityString = request.getParameter("quantity");
+                int quantity = Integer.parseInt(quantityString);
+
+                Movie movieToUpdate = cartItems.stream()
+                        .filter(movie -> movie.getId().equals(movieId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (movieToUpdate != null) {
+                    if (quantity >= 0) {
+                        movieToUpdate.setQuantity(quantity);
+                        System.out.println("Updated quantity of movie ID: " + movieId + " to " + quantity);
+                    } else {
+                        System.out.println("Invalid quantity for movie ID: " + movieId);
+                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid quantity.");
+                        return;
+                    }
+                } else {
+                    System.out.println("Movie with ID: " + movieId + " not found in cart.");
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Movie not found in cart");
+                    return;
+                }
+                break;
         }
 
         session.setAttribute("cartItems", cartItems);

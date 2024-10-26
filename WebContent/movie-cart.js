@@ -8,7 +8,6 @@ $(document).ready(function() {
             success: function(cartItems) {
                 $('#cart-body').empty();
 
-                const filteredCartItems = cartItems.filter(movie => movie.quantity >= 1);
                 if (cartItems.length === 0) {
                     $('#cart-body').append('<tr><td colspan="4">No movies in cart</td></tr>');
                 } else {
@@ -17,7 +16,7 @@ $(document).ready(function() {
                         $('#cart-body').append(`
                             <tr>
                                 <td><a href='single-movie.html?id=${movie.id}'>${movie.title}</a></td>
-                                <td>${movie.quantity}</td>
+                                <td><input type="number" class="quantity-input" data-movie-id="${movie.id}" value="${movie.quantity}" min="0" /></td>
                                 <td>$${totalPrice}</td>
                                 <td><button class='remove' data-movie-id='${movie.id}'>Remove</button></td>
                             </tr>
@@ -32,6 +31,29 @@ $(document).ready(function() {
         });
     }
 
+
+    $(document).on('change', '.quantity-input', function() {
+        const movieId = $(this).data('movie-id');
+        const newQuantity = $(this).val();
+
+        $.ajax({
+            url: '/fabflix_com_war/api/cart',
+            method: 'POST',
+            data: {
+                action: 'update',
+                movieId: movieId,
+                quantity: newQuantity
+            },
+            success: function() {
+                loadCartItems();
+                $('#success-message').text('Quantity updated successfully!').show().delay(3000).fadeOut();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Error updating quantity:", textStatus, errorThrown);
+                alert('Error updating quantity.');
+            }
+        });
+    });
 
     $(document).on('click', '.remove', function() {
         const movieId = $(this).data('movie-id');
