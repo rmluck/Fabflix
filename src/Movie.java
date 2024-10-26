@@ -6,6 +6,7 @@ public class Movie {
     private String genres;
     private String stars;
     private float rating;
+    private int quantity;
 
     public Movie(String id, String title, int year, String director, String genres, String stars, float rating) {
         this.id = id;
@@ -15,6 +16,7 @@ public class Movie {
         this.genres = genres;
         this.stars = stars;
         this.rating = rating;
+        this.quantity = 0;
     }
 
     public String getId() {
@@ -71,5 +73,23 @@ public class Movie {
 
     public void setRating(float rating) {
         this.rating = rating;
+    }
+
+    public int getQuantity() {return quantity;}
+
+    public void incrementQuantity() {this.quantity++;}
+
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        Movie movie = (Movie) obj;
+
+        return id != null ? id.equals(movie.id) : movie.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

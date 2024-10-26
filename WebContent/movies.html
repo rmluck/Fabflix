@@ -33,36 +33,43 @@
     </form>
 </div>
 
-<!--<div id="controls">-->
-<!--    <div id="filters">-->
-<!--        <label id="primary_sort_label" for="primary_sort">Primary Sort</label>-->
-<!--        <select id="primary_sort" name="primary_sort">-->
-<!--            <option value="title">Title</option>-->
-<!--            <option value="rating">Rating</option>-->
-<!--        </select>-->
+<div id="controls">
+    <div id="filters">
+        <label id="primary_sort_label" for="primary_sort">Primary Sort</label>
+        <select id="primary_sort" name="primary_sort">
+            <option value="title">Title</option>
+            <option value="rating">Rating</option>
+        </select>
 
-<!--        <label id="secondary_sort_label" for="secondary_sort">Secondary Sort</label>-->
-<!--        <select id="secondary_sort" name="secondary_sort">-->
-<!--            <option value="title">Title</option>-->
-<!--            <option value="rating">Rating</option>-->
-<!--        </select>-->
+        <label id="secondary_sort_label" for="secondary_sort">Secondary Sort</label>
+        <select id="secondary_sort" name="secondary_sort">
+            <option value="title">Title</option>
+            <option value="rating">Rating</option>
+        </select>
 
-<!--        <label id="sort_order_label" for="sort_order">Order</label>-->
-<!--        <select id="sort_order" name="sort_order">-->
-<!--            <option value="asc">Ascending</option>-->
-<!--            <option value="desc">Descending</option>-->
-<!--        </select>-->
-<!--    </div>-->
+        <label id="sort_order_label" for="sort_order">Order</label>
+        <select id="sort_order" name="sort_order">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+    </div>
 
-<!--    <div id="page_size">-->
-<!--        <label id="display_count_label" for="display_count">Movies Per Page</label>-->
-<!--        <select id="display_count" name="display_count">-->
-<!--            <option value="10">10</option>-->
-<!--            <option value="25">25</option>-->
-<!--            <option value="50">50</option>-->
-<!--            <option value="100">100</option>-->
-<!--        </select>-->
-<!--    </div>-->
+    <div id="page_size">
+        <label id="display_count_label" for="display_count">Movies Per Page</label>
+        <select id="display_count" name="display_count">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+    </div>
+</div>
+
+<button id="view_cart_button" class="btn btn-primary">View Cart</button>
+
+<!--<div id="cart_container" style="display:none;">-->
+<!--    <h2>Your Cart</h2>-->
+<!--    <ul id="cart_items"></ul>-->
 <!--</div>-->
 
 <!-- id "movies_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
@@ -71,12 +78,13 @@
     <thead>
     <tr>
         <!-- Titles of each column -->
-        <th class="movies_table_heading" onclick="sortMoviesByTitle()">Title</th>
+        <th class="movies_table_heading">Title</th>
         <th class="movies_table_heading" style="width: 5%;">Year</th>
         <th class="movies_table_heading">Director</th>
         <th class="movies_table_heading" colspan="3">Genres</th>
         <th class="movies_table_heading" colspan="3">Stars</th>
-        <th class="movies_table_heading" onclick="sortMoviesByRating()" style="width: 7%">Rating</th>
+        <th class="movies_table_heading" style="width: 7%">Rating</th>
+        <th class="movies_table_heading" style="width: 10%">Action</th>
     </tr>
     </thead>
 
@@ -86,17 +94,9 @@
 </table>
 
 <div id="pagination">
-    <label id="movies_per_page_label" for="movies_per_page">Movies Per Page</label>
-    <select id="movies_per_page" name="movies_per_page" onchange="updateMoviesPerPage()">
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-    </select>
-
-    <button id="prev_button" onclick="prevPage()">Prev</button>
-    <span id="page_number"></span>
-    <button id="next_button" onclick="nextPage()">Next</button>
+    <button id="prev_button" disabled>Prev</button>
+    <span id="page_number">Page 1</span>
+    <button id="next_button">Next</button>
 </div>
 
 <!-- Load jQuery and Bootstrap JS -->
