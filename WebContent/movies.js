@@ -46,7 +46,7 @@ function handleMovieResult(resultData) {
                 genresHTML += ", ";
             }
         }
-        genresHTML += "</td>"
+        genresHTML += "</td>";
         rowHTML += genresHTML;
 
         let starsArray = resultData[i]["stars"].split(",");

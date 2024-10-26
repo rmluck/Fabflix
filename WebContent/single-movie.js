@@ -37,12 +37,15 @@ function getParameterByName(target) {
  */
 function handleResult(resultData) {
     console.log("handleResult: populating movie info from resultData");
+    console.log(resultData);
+    resultData = resultData[0];
+    console.log(resultData);
 
     // Populates movie info h3
     // Finds empty h3 body by id "movie_info"
     let movieInfoElement = jQuery("#movie_info");
-    movieInfoElement.append("<p id='movie_information'>" + resultData["movie_title"] + " (" + resultData["movie_year"] + ")" + "</p>" +
-        "<p id='movie_director'>Director: " + resultData["movie_director"] + "</p>"
+    movieInfoElement.append("<p id='movie_information'>" + resultData["title"] + " (" + resultData["year"] + ")" + "</p>" +
+        "<p id='movie_director'>Director: " + resultData["director"] + "</p>"
     );
 
     console.log("handleResult: populating star table from resultData");
@@ -52,18 +55,28 @@ function handleResult(resultData) {
     let movieBodyElement = jQuery("#movie_table_body");
     let rowHTML = "";
     rowHTML += "<tr>";
-    rowHTML += "<td>" + (resultData["genres"] || "N/A") + "</td>"; // Default to N/A if genres are missing
+    // rowHTML += "<td>" + (resultData["genres"] || "N/A") + "</td>"; // Default to N/A if genres are missing
 
-    // Adds stars info
-    let starsHTML = "";
-    let starsArray = resultData["stars"] ? resultData["stars"].split(",") : [];
-    for (let star of starsArray) {
-        let [id, name] = star.split(":");
-        starsHTML += "<a href='single-star.html?id=" + id + "'>" + name + "</a><br>";
-
+    let genresArray = resultData["genres"].split(",");
+    let genresHTML = "<td>";
+    for (let g = 0; g < genresArray.length; g++) {
+        let [genreId, genreName] = genresArray[g].split(":");
+        genreId = genreId.trim();
+        genresHTML += "<a href='movies.html?genreId=" + genreId + "'>" + genreName + "</a><br>";
     }
-    rowHTML += "<td>" + starsHTML + "</td>";
-    rowHTML += "<td>" + (resultData["rating"] || "N/A") + "</td>"; // Default to N/A if rating is missing
+    genresHTML += "</td>";
+    rowHTML += genresHTML;
+
+    let starsArray = resultData["stars"].split(",");
+    let starsHTML = "<td>";
+    for (let j = 0; j < starsArray.length; j++) {
+        let [starId, starName] = starsArray[j].split(":");
+        starId = starId.trim();
+        starsHTML += "<a href='single-star.html?id=" + starId + "'>" + starName + "</a><br>";
+    }
+    starsHTML += "</td>";
+    rowHTML += starsHTML;
+    rowHTML += "<td>" + resultData["rating"] + "</td>";
     rowHTML += "</tr>";
 
     // Append the row created to the table body
