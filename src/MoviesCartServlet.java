@@ -85,8 +85,13 @@ public class MoviesCartServlet extends HttpServlet {
 
                 if (movieToUpdate != null) {
                     if (quantity >= 0) {
-                        movieToUpdate.setQuantity(quantity);
-                        System.out.println("Updated quantity of movie ID: " + movieId + " to " + quantity);
+                        if (quantity == 0) {
+                            cartItems.remove(movieToUpdate);
+                            System.out.println("Removed movie ID: " + movieId + " from cart.");
+                        } else {
+                            movieToUpdate.setQuantity(quantity); // Update quantity
+                            System.out.println("Updated quantity of movie ID: " + movieId + " to " + quantity);
+                        }
                     } else {
                         System.out.println("Invalid quantity for movie ID: " + movieId);
                         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid quantity.");
