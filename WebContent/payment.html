@@ -12,13 +12,17 @@
 <p>Total Price: <span id="total-price">$0.00</span></p>
 <form id="payment-form">
   <label for="first-name">First Name:</label>
-  <input type="text" id="first-name" required>
+  <input type="text" id="first-name" name="firstName" required>
+
   <label for="last-name">Last Name:</label>
-  <input type="text" id="last-name" required>
+  <input type="text" id="last-name" name="lastName" required>
+
   <label for="credit-card-number">Credit Card Number:</label>
-  <input type="text" id="credit-card-number" required>
+  <input type="text" id="credit-card-number" name="creditCardNumber" required>
+
   <label for="expiration-date">Expiration Date:</label>
-  <input type="text" id="expiration-date" placeholder="YYYY/MM/DD" required>
+  <input type="text" id="expiration-date" name="expirationDate" placeholder="YYYY/MM/DD" required>
+
   <button type="submit">Place Order</button>
 </form>
 <div id="payment-error" style="display:none; color:red;"></div>
