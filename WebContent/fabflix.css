@@ -553,7 +553,7 @@ button:hover {
     top: 0;
 }
 
-#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #login_button:hover {
+#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #movies_view_cart_button:hover, #login_button:hover {
     background-color: #222222;
     color: seashell;
 }
@@ -657,3 +657,17 @@ button:hover {
 #pagination button:hover {
     background-color: #444444;
 }
+
+.view_cart_button {
+    font-family: "Oswald", sans-serif;
+    color: #222222;
+    letter-spacing: 0.5px;
+    outline: none;
+    height: 65px;
+    top: -78px;
+    left: 1230px;
+    position: absolute;
+    border-radius: 5px;
+    z-index: 10;
+}
+
