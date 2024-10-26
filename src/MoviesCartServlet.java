@@ -15,7 +15,7 @@ public class MoviesCartServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         ArrayList<Movie> cartItems = (ArrayList<Movie>) session.getAttribute("cartItems");
 
         response.setContentType("application/json");
@@ -34,7 +34,7 @@ public class MoviesCartServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         ArrayList<Movie> cartItems = (ArrayList<Movie>) session.getAttribute("cartItems");
 
         if (cartItems == null) {
@@ -44,7 +44,7 @@ public class MoviesCartServlet extends HttpServlet {
         String action = request.getParameter("action");
         String movieId = request.getParameter("movieId");
         String title = request.getParameter("title");
-        int year = Integer.parseInt(request.getParameter("year"));
+        //int year = Integer.parseInt(request.getParameter("year"));
 
         switch (action) {
             case "add":
@@ -56,14 +56,28 @@ public class MoviesCartServlet extends HttpServlet {
                 if (existingMovieInCart != null) {
                     existingMovieInCart.increaseQuantity();
                 } else {
-                    Movie newMovie = new Movie(movieId, title, year, "", "", "", 0.0f); //default vals, not sure if all needed.
+                    Movie newMovie = new Movie(movieId, title, 0, "", "", "", 0.0f); //default vals, not sure if all needed.
                     cartItems.add(newMovie);
                 }
                 break;
 
             case "remove":
-                cartItems.removeIf(movie -> movie.getId().equals(movieId));
+                System.out.println("Attempting to remove movie with ID: " + movieId); // Log the movie ID being removed
+                boolean removed = cartItems.removeIf(movie -> movie.getId().equals(movieId));
+
+                if (removed) {
+                    System.out.println("Successfully removed movie with ID: " + movieId); // Log success
+                } else {
+                    System.out.println("Movie with ID: " + movieId + " not found in cart."); // Log if not found
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Movie not found in cart");
+                    return;
+                }
                 break;
+//                cartItems.stream()
+//                        .filter(movie -> movie.getId().equals(movieId))
+//                        .findFirst()
+//                        .ifPresent(movie -> movie.setQuantity(0)); // Assuming you have a setQuantity method
+//                break;
         }
 
         session.setAttribute("cartItems", cartItems);

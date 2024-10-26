@@ -8,6 +8,7 @@ $(document).ready(function() {
             success: function(cartItems) {
                 $('#cart-body').empty();
 
+                const filteredCartItems = cartItems.filter(movie => movie.quantity >= 1);
                 if (cartItems.length === 0) {
                     $('#cart-body').append('<tr><td colspan="4">No movies in cart</td></tr>');
                 } else {
@@ -35,21 +36,24 @@ $(document).ready(function() {
     $(document).on('click', '.remove', function() {
         const movieId = $(this).data('movie-id');
 
-
-        $.ajax({
-            url: '/fabflix_com_war/api/cart',
-            method: 'POST',
-            data: {
-                action: 'remove',
-                movieId: movieId
-            },
-            success: function() {
-                loadCartItems();
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error("Error removing movie from cart:", textStatus, errorThrown);
-                alert('Error removing movie from cart.');
-            }
-        });
+        if (confirm('Are you sure you want to remove this movie from your cart?')) {
+            $.ajax({
+                url: '/fabflix_com_war/api/cart',
+                method: 'POST',
+                data: {
+                    action: 'remove',
+                    movieId: movieId
+                },
+                success: function() {
+                    loadCartItems();
+                    $('#success-message').text('Movie removed successfully!').show().delay(3000).fadeOut();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    const errorMessage = jqXHR.responseText || "Error removing movie from cart.";
+                    console.error("Error removing movie from cart:", textStatus, errorThrown);
+                    alert(`Error removing movie from cart: ${errorMessage}`);
+                }
+            });
+        }
     });
 });

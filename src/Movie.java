@@ -1,3 +1,5 @@
+import java.util.Objects;
+
 public class Movie {
     private String id;
     private String title;
@@ -88,7 +90,7 @@ public class Movie {
 
         Movie movie = (Movie) obj;
 
-        return id != null ? id.equals(movie.id) : movie.id == null;
+        return Objects.equals(id, movie.id);
     }
 
     @Override
