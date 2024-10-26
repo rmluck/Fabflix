@@ -162,8 +162,11 @@ public class MoviesServlet extends HttpServlet {
                             " FROM (SELECT s.id, s.name " +
                             " FROM stars_in_movies AS simov " +
                             " JOIN stars AS s ON simov.starId = s.id " +
+                            " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
+                            " FROM stars_in_movies " +
+                            " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
                             " WHERE simov.movieId = m.id " +
-                            " ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
+                            " ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
                             " FROM movies AS m " +
                             " LEFT JOIN ratings AS r ON m.id = r.movieId " +
                             " WHERE 1=1 "
@@ -256,7 +259,10 @@ public class MoviesServlet extends HttpServlet {
                     " FROM (SELECT s.id, s.name " +
                     " FROM stars_in_movies AS simov " +
                     " JOIN stars AS s ON simov.starId = s.id " +
-                    " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
+                    " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
+                    " FROM stars_in_movies " +
+                    " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
+                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
@@ -315,8 +321,11 @@ public class MoviesServlet extends HttpServlet {
                     "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ', ') " +
                     " FROM (SELECT s.id, s.name " +
                     " FROM stars_in_movies AS simov " +
-                    " JOIN stars AS s ON simov.starId = s.id " +
-                    " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
+                    " JOIN stars AS s on simov.starId = s.id " +
+                    " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
+                    " FROM stars_in_movies " +
+                    " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
+                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
@@ -335,7 +344,10 @@ public class MoviesServlet extends HttpServlet {
                     " FROM (SELECT s.id, s.name " +
                     " FROM stars_in_movies AS simov " +
                     " JOIN stars AS s ON simov.starId = s.id " +
-                    " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
+                    " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
+                    " FROM stars_in_movies " +
+                    " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
+                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +

@@ -38,7 +38,7 @@ function prevPage() {
 }
 
 function updatePaginationControls() {
-    document.getElementById("page_number").innerText = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById("page_number").innerText = `Page ${currentPage} of  ${totalPages}`;
     document.getElementById("prev_button").disabled = currentPage === 1;
     document.getElementById("next_button").disabled = currentPage === totalPages;
 }
@@ -52,7 +52,7 @@ function handleMovieResult(resultData) {
     console.log("Number of results: ", resultData.length);
 
     data = resultData;
-    totalPages = Math.ceil(resultData.length / moviesPerPage);
+    totalPages = Math.ceil(data.length / moviesPerPage);
     currentPage = 1;
     displayCurrentMoviesPage();
 }
@@ -76,7 +76,6 @@ function displayCurrentMoviesPage() {
             let [genreId, genreName] = genre.split(":");
             console.log("genreId: ", genreId, " genreName: ", genreName);
             genresHTML += `<a href='movies.html?genreId=${genreId.trim()}'>${genreName}</a>`;
-
             if (index < genresArray.length - 1) {
                 genresHTML += ", ";
             }
@@ -87,13 +86,12 @@ function displayCurrentMoviesPage() {
         let starsArray = data[i]["stars"].split(",");
         let starsHTML = "<td colspan='3'>";
         starsArray.forEach((star, index) => {
-           let [starId, starName] = star.split(":");
-           console.log("starId: ", starId, " starName: ", starName);
-           starsHTML += `<a href='single-star.html?id=${starId.trim()}'>${starName}</a>`;
-
-           if (index < starsArray.length - 1) {
-               starsHTML += ", ";
-           }
+            let [starId, starName] = star.split(":");
+            console.log("starId: ", starId, " starName: ", starName);
+            starsHTML += `<a href='single-star.html?id=${starId.trim()}'>${starName}</a>`;
+            if (index < starsArray.length - 1) {
+                starsHTML += ", ";
+            }
         });
         starsHTML += "</td>";
         rowHTML += starsHTML;
@@ -128,7 +126,7 @@ function sortMoviesByTitle() {
         if (titleSortDirection === "asc") {
             return titleA > titleB ? 1 : -1;
         } else {
-            return titleA < titleB ? 1 : -1;
+            return titleA < titleB ? 1: -1;
         }
     });
 
@@ -144,16 +142,16 @@ function sortMoviesByRating() {
         let ratingB = parseFloat(b.rating);
 
         if (ratingSortDirection === "asc") {
-            return ratingA > ratingB ? 1: -1;
+            return ratingA > ratingB ? 1 : -1;
         } else {
             return ratingA < ratingB ? 1 : -1;
         }
     });
 
-    ratingSortDirection == ratingSortDirection === "asc" ? "desc" : "asc";
+    ratingSortDirection = ratingSortDirection === "asc" ? "desc" : "asc";
 
     currentPage = 1;
-    displayCurrentMoviesPage();
+    displayCurrentMoviesPage()
 }
 
 /**
