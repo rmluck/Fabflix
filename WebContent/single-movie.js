@@ -45,7 +45,7 @@ function handleResult(resultData) {
     // Finds empty h3 body by id "movie_info"
     let movieInfoElement = jQuery("#movie_info");
     movieInfoElement.append("<p id='movie_information'>" + resultData["title"] + " (" + resultData["year"] + ")" + "</p>" +
-        "<p id='movie_director'>Director: " + resultData["director"] + "</p>"
+        "<p id='movie_director' style='line-height: 0;'>Director: " + resultData["director"] + "</p>"
     );
 
     console.log("handleResult: populating star table from resultData");

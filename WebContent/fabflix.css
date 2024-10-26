@@ -16,7 +16,7 @@
 }
 
 #movies_body {
-    background-color: #080710;
+    background-color: #222222;
     font-family: "Oswald", sans-serif;
     margin: 0;
     padding: 0;
@@ -551,6 +551,10 @@ button:hover {
 
 #index_logout_button {
     top: 0;
+}
+
+#single_movie_logout_button, #single_star_logout_button {
+    top: 10px;
 }
 
 #index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #movies_view_cart_button:hover, #login_button:hover {

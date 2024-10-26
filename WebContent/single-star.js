@@ -43,8 +43,8 @@ function handleResult(resultData) {
     let starInfoElement = jQuery("#star_info");
     let starDOB = resultData[0]["star_dob"] ? resultData[0]["star_dob"] : "N/A";
     // append two html <p> created to the h3 body, which will refresh the page
-    starInfoElement.append("<p>" + resultData[0]["star_name"] + "</p>" +
-        "<p>Date Of Birth: " + starDOB + "</p>");
+    starInfoElement.append("<p id='star_name'>" + resultData[0]["star_name"] + "</p>" +
+        "<p id='star_dob' style='line-height: 0;'>Date Of Birth: " + starDOB + "</p>");
 
     console.log("handleResult: populating star table from resultData");
 
