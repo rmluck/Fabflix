@@ -1,5 +1,8 @@
 $(document).ready(function() {
     loadCartItems();
+    $('#proceed-to-payment').on('click', function() {
+        window.location.href = 'payment.html'; // Redirect to the payment page
+    });
     function loadCartItems() {
         $.ajax({
             url: '/fabflix_com_war/api/cart',
