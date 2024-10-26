@@ -12,7 +12,7 @@ $(document).ready(function() {
                     $('#cart-body').append('<tr><td colspan="4">No movies in cart</td></tr>');
                 } else {
                     cartItems.forEach(movie => {
-                        const totalPrice = (1 * movie.quantity).toFixed(2);
+                        const totalPrice = (20 * movie.quantity).toFixed(2);
                         $('#cart-body').append(`
                             <tr>
                                 <td><a href='single-movie.html?id=${movie.id}'>${movie.title}</a></td>
