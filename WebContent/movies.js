@@ -8,6 +8,8 @@
  *      2. Populate the data to correct html elements.
  */
 
+// NEED TO MAKE SURE PAGINATION RESULTS ARE FETCHED FROM DATABASE, NOT CACHED
+
 let currentPage = 1;
 let moviesPerPage = 10;
 let totalPages = 1;

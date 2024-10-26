@@ -63,7 +63,10 @@ public class SingleMovieServlet extends HttpServlet {
                     " FROM (SELECT s.id, s.name " +
                     " FROM stars_in_movies AS simov " +
                     " JOIN stars AS s ON simov.starId = s.id " +
-                    " WHERE simov.movieId = m.id ORDER BY s.name) AS all_stars) AS stars " +
+                    " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
+                    " FROM stars_in_movies " +
+                    " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
+                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC) AS all_stars) AS stars " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
