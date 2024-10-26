@@ -33,14 +33,12 @@ public class TotalPriceServlet extends HttpServlet {
         ArrayList<Movie> cartItems = (ArrayList<Movie>) session.getAttribute("cartItems");
         double totalPrice = 0.0;
 
-        // Calculate total price based on cart items
         if (cartItems != null) {
             for (Movie movie : cartItems) {
                 totalPrice += movie.getPrice() * movie.getQuantity();
             }
         }
 
-        // Create a JSON response
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         out.write("{\"totalPrice\": " + totalPrice + "}");

@@ -76,7 +76,6 @@ public class PaymentServlet extends HttpServlet {
 
             session.removeAttribute("cartItems");
 
-            // Redirect to confirmation page
             response.sendRedirect("confirmation.html");
         } else {
             response.sendRedirect("payment.html?error=Invalid payment information");
@@ -87,7 +86,6 @@ public class PaymentServlet extends HttpServlet {
     private boolean validatePayment(String firstName, String lastName, String creditCardNumber, String expirationDate) {
         String query = "SELECT * FROM creditcards WHERE firstName = ? AND lastName = ? AND id = ? AND expiration = ?";
 
-        // Get a connection from dataSource and let resource manager close the connection after usage
         try (Connection conn = dataSource.getConnection();
              PreparedStatement statementmt = conn.prepareStatement(query)) {
 
