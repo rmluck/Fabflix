@@ -129,6 +129,12 @@ function loadTitleLetters() {
     });
 }
 
+$(document).ready(function() {
+    $("#index_view_cart_button").on("click", function() {
+        window.location.href = "movie-cart.html";
+    });
+});
+
 $("#search_form").submit(function (event) {
     event.preventDefault();
     let title = $("#search_title").val();

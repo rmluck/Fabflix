@@ -36,6 +36,13 @@
     padding: 0;
 }
 
+#movie_cart_body {
+    background-color: seashell;
+    font-family: "Oswald", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
 #header_container {
     position: fixed;
     width: 100%;
@@ -201,6 +208,14 @@ h3 {
     padding-top: 0;
 }
 
+#cart_table {
+    width: 80%;
+    margin: 120px auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    padding-top: 0;
+}
+
 /* This styles all th (table header) cells */
 .movies_table_heading {
     font-size: 16px;
@@ -234,6 +249,21 @@ h3 {
 }
 
 .star_table_heading {
+    font-size: 16px;
+    font-family: "Oswald", sans-serif;
+    font-weight: bold;
+    background: linear-gradient(to left, #2e2d2d, #222222);
+    color: darkgray;
+    border-top: 3px solid black;
+    border-bottom: 3px solid black;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin-top: 0;
+    word-wrap: normal;
+}
+
+.cart_table_heading {
     font-size: 16px;
     font-family: "Oswald", sans-serif;
     font-weight: bold;
@@ -510,6 +540,13 @@ input {
     color: #E5E5E5;
 }
 
+#quantity_input {
+    color: #080710;
+    letter-spacing: 0.5px;
+    outline: none;
+    border: none;
+}
+
 #email, #password {
     width: 94%;
     padding-left: 4%;
@@ -557,7 +594,11 @@ button:hover {
     top: 10px;
 }
 
-#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #index_view_cart_button:hover, #movies_view_cart_button:hover, #single_movie_view_cart_button:hover, #single_star_view_cart_button:hover, #login_button:hover {
+#movie_cart_logout_button {
+    top: -10px;
+}
+
+#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #movie_cart_logout_button:hover, #index_view_cart_button:hover, #movies_view_cart_button:hover, #single_movie_view_cart_button:hover, #single_star_view_cart_button:hover, #login_button:hover {
     background-color: #222222;
     color: seashell;
 }
@@ -683,11 +724,11 @@ button:hover {
     top: -84px;
 }
 
-#movies_add_to_cart, #movie_add_to_cart, #single_star_add_to_cart {
+#movies_add_to_cart, #movie_add_to_cart, #single_star_add_to_cart, #remove_from_cart {
     padding: 0;
 }
 
-#movies_add_to_cart_button, #movie_add_to_cart_button, #single_star_add_to_cart_button {
+#movies_add_to_cart_button, #movie_add_to_cart_button, #single_star_add_to_cart_button, #remove_from_cart_button {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0);

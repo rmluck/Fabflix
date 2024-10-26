@@ -236,6 +236,10 @@ $(document).ready(function() {
     // });
     $('#cart_container').hide();
 
+    $("#movies_view_cart_button").on("click", function() {
+        window.location.href = "movie-cart.html";
+    });
+
     const queryParams = getQueryParams();
 
     let apiURL = "api/movies";

@@ -5,7 +5,7 @@
     2. Load movies.js to populate the data into empty elements.
     -->
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
@@ -114,13 +114,5 @@
 <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
      otherwise the url is relative to the root path-->
 <script src="movies.js"></script>
-<script>
-    $(document).ready(function() {
-        $("#movies_view_cart_button").on("click", function() {
-            window.location.href = "movie-cart.html";
-        });
-    });
-</script>
-
 </body>
 </html>

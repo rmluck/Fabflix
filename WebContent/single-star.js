@@ -110,6 +110,10 @@ $(document).ready(function() {
     //     });
     // });
 
+    $("#single_star_view_cart_button").on("click", function() {
+        window.location.href = "movie-cart.html";
+    });
+
     const queryParams = getQueryParams();
 
     let apiURL = `api/single-star?id=${queryParams.id}`;

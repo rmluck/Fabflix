@@ -130,6 +130,10 @@ $(document).ready(function() {
     //     });
     // });
 
+    $("#single_movie_view_cart_button").on("click", function() {
+        window.location.href = "movie-cart.html";
+    });
+
     const queryParams = getQueryParams();
 
     movieId = queryParams.id;
