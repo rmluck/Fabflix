@@ -8,67 +8,100 @@
  *      2. Populate the data to correct html elements.
  */
 
+let currentPage = 1;
+let moviesPerPage = 10;
+let totalPages = 1;
+let resultData = [];
+let titleSortDirection = "asc";
+let ratingSortDirection = "asc";
+
+function updateMoviesPerPage() {
+    moviesPerPage = parseInt(document.getElementById("movies_per_page").value);
+    totalPages = Math.ceil(resultData.length / moviesPerPage);
+    currentPage = 1;
+    updatePaginationControls();
+    displayCurrentMoviesPage();
+}
+
+function nextPage() {
+    if (currentPage < totalPages) {
+        currentPage++;
+        displayCurrentMoviesPage();
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        displayCurrentMoviesPage();
+    }
+}
+
+function updatePaginationControls() {
+    document.getElementById("page_number").innerText = `Page ${currentPage} of  ${totalPages}`;
+    document.getElementById("prev_button").disabled = currentPage === 1;
+    document.getElementById("next_button").disabled = currentPage === totalPages;
+}
 
 /**
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
- * @param resultData jsonObject
+ * @param data jsonObject
  */
-function handleMovieResult(resultData) {
-    console.log("handleMoviesResult: populating movies table from resultData");
-    console.log("Number of results: ", resultData.length);
+function handleMovieResult(data) {
+    console.log("handleMoviesResult: populating movies table from data");
+    console.log("Number of results: ", data.length);
 
-    // Populate star table
-    // Find empty table body by id "star_table_body"
+    resultData = data;
+    totalPages = Math.ceil(resultData.length / moviesPerPage);
+    currentPage = 1;
+    displayCurrentMoviesPage();
+}
+
+function displayCurrentMoviesPage() {
     let moviesTableBodyElement = jQuery("#movies_table_body");
+    moviesTableBodyElement.empty();
 
-    // Iterate through resultData, no more than 20 entries, requirement
-    for (let i = 0; i < Math.min(20, resultData.length); i++) {
-        console.log("Processing movie ID: ", resultData[i]["id"]);
-        console.log(resultData[i]);
+    let startIndex = (currentPage - 1) * moviesPerPage;
+    let endIndex = Math.min(startIndex + moviesPerPage, resultData.length);
 
-        // Concatenate html tags with resultData jsonObject
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML += "<td>" + "<a href='single-movie.html?id=" + resultData[i]["id"] + "'>"
-            + resultData[i]["title"] + "</a>" + "</td>"; // Creates movie entry and url to single movie page
+    for (let i = startIndex; i < endIndex; i++) {
+        let rowHTML = "<tr>";
+        rowHTML += "<td><a href='single-movie.html?id=" + resultData[i]["id"] + "'>" + resultData[i]["title"] + "</a></td>";
         rowHTML += "<td>" + resultData[i]["year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["director"] + "</td>";
-        // rowHTML += "<td>" + resultData[i]["genres"] + "</td>";
 
         let genresArray = resultData[i]["genres"].split(",");
         let genresHTML = "<td colspan='3'>";
-        for (let g = 0; g < genresArray.length; g++) {
-            let [genreId, genreName] = genresArray[g].split(":");
-            genreId = genreId.trim();
+        genresArray.forEach((genre, index) => {
+            let [genreId, genreName] = genre.split(":");
             console.log("genreId: ", genreId, " genreName: ", genreName);
-            genresHTML += "<a href='movies.html?genreId=" + genreId + "'>" + genreName + "</a>";
-            if (g < genresArray.length - 1) {
+            genresHTML += `<a href='movies.html?genreId=${genreId.trim()}'>${genreName}</a>`;
+            if (index < genresArray.length - 1) {
                 genresHTML += ", ";
             }
-        }
+        });
         genresHTML += "</td>";
         rowHTML += genresHTML;
 
         let starsArray = resultData[i]["stars"].split(",");
         let starsHTML = "<td colspan='3'>";
-        for (let j = 0; j < starsArray.length; j++) {
-            let [starId, starName] = starsArray[j].split(":");
-            starId = starId.trim();
-            // Add link to single-star.html with id passed with GET url parameter
+        starsArray.forEach((star, index) => {
+            let [starId, starName] = star.split(":");
             console.log("starId: ", starId, " starName: ", starName);
-            starsHTML += "<a href='single-star.html?id=" + starId + "'>" + starName + "</a>";
-            if (j < starsArray.length - 1) {
+            starsHTML += `<a href='single-star.html?id=${starId.trim()}'>${starName}</a>`;
+            if (index < starsArray.length - 1) {
                 starsHTML += ", ";
             }
-        }
+        });
         starsHTML += "</td>";
         rowHTML += starsHTML;
+
         rowHTML += "<td>" + resultData[i]["rating"] + "</td>";
         rowHTML += "</tr>";
 
-        // Append the row created to the table body, which will refresh the page
         moviesTableBodyElement.append(rowHTML);
     }
+    updatePaginationControls();
 }
 
 function getQueryParams() {
@@ -86,91 +119,39 @@ function getQueryParams() {
 }
 
 function sortMoviesByTitle() {
-    var table, rows, switching, i,x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById("movies_table");
-    switching = true;
+    resultData.sort((a, b) => {
+        let titleA = a.title.toLowerCase();
+        let titleB = b.title.toLowerCase();
 
-    dir = "asc";
-
-    while (switching) {
-        switching = false;
-        rows = table.rows;
-
-        for (i = 1; i < (rows.length - 1); i++) {
-            shouldSwitch = false;
-            x = rows[i].getElementsByTagName("td")[0].querySelector("a").textContent;
-            y = rows[i + 1].getElementsByTagName("td")[0].querySelector("a").textContent;
-
-            console.log(x, " & ", y);
-
-            if (dir == "asc") {
-                if (x.toLowerCase() > y.toLowerCase()) {
-                    shouldSwitch = true;
-                    break;
-                }
-            } else if (dir == "desc") {
-                if (x.toLowerCase() < y.toLowerCase()) {
-                    shouldSwitch = true;
-                    break;
-                }
-            }
-        }
-
-        if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            switching = true;
-            switchcount++;
+        if (titleSortDirection === "asc") {
+            return titleA > titleB ? 1 : -1;
         } else {
-            if (switchcount == 0 && dir == "asc") {
-                dir = "desc";
-                switching = true;
-            }
+            return titleA < titleB ? 1: -1;
         }
-    }
+    });
+
+    titleSortDirection = titleSortDirection === "asc" ? "desc" : "asc";
+
+    currentPage = 1;
+    displayCurrentMoviesPage();
 }
 
 function sortMoviesByRating() {
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-    table = document.getElementById("movies_table");
-    switching = true;
+    resultData.sort((a, b) => {
+        let ratingA = parseFloat(a.rating);
+        let ratingB = parseFloat(b.rating);
 
-    dir = "asc";
-
-    while (switching) {
-        switching = false;
-        rows = table.rows;
-
-        for (i = 1; i < (rows.length - 1); i++) {
-            shouldSwitch = false;
-            x = rows[i].getElementsByTagName("td")[5];
-            y = rows[i + 1].getElementsByTagName("td")[5];
-
-            console.log(x.innerHTML.toLowerCase(), " & ", y.innerHTML.toLowerCase());
-
-            if (dir == "asc") {
-                if (Number(x.innerHTML) > Number(y.innerHTML)) {
-                    shouldSwitch = true;
-                    break;
-                }
-            } else if (dir == "desc") {
-                if (Number(x.innerHTML) < Number(y.innerHTML)) {
-                    shouldSwitch = true;
-                    break;
-                }
-            }
-        }
-
-        if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-            switching = true;
-            switchcount++;
+        if (ratingSortDirection === "asc") {
+            return ratingA > ratingB ? 1 : -1;
         } else {
-            if (switchcount == 0 && dir == "asc") {
-                dir = "desc";
-                switching = true;
-            }
+            return ratingA < ratingB ? 1 : -1;
         }
-    }
+    });
+
+    ratingSortDirection = ratingSortDirection === "asc" ? "desc" : "asc";
+
+    currentPage = 1;
+    displayCurrentMoviesPage()
 }
 
 /**

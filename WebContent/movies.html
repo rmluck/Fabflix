@@ -86,9 +86,17 @@
 </table>
 
 <div id="pagination">
-    <button id="prev_button" disabled>Prev</button>
-    <span id="page_number">Page 1</span>
-    <button id="next_button">Next</button>
+    <label id="movies_per_page_label" for="movies_per_page">Movies Per Page</label>
+    <select id="movies_per_page" name="movies_per_page" onchange="updateMoviesPerPage()">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+
+    <button id="prev_button" onclick="prevPage()">Prev</button>
+    <span id="page_number"></span>
+    <button id="next_button" onclick="nextPage()">Next</button>
 </div>
 
 <!-- Load jQuery and Bootstrap JS -->

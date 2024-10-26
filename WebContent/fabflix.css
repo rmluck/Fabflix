@@ -138,9 +138,9 @@ h3 {
 #pagination {
     position: fixed;
     width: 100%;
-    height: 50px;
+    height: 100px;
     bottom: 0;
-    background-color: #080710;
+    background-color: #222222;
     color: darkgray;
 }
 
@@ -606,4 +606,54 @@ button:hover {
     margin-bottom: 20px;
     width: 100%;
     text-transform: uppercase;
+}
+
+/*#movies_per_page_label {*/
+/*    font-size: 20px;*/
+/*    margin-top: 10px;*/
+/*    padding-left: 10px;*/
+/*}*/
+
+#movies_per_page_label {
+    color: seashell;
+    font-size: 16px;
+    margin-right: 10px;
+    font-family: "Oswald", sans-serif;
+    vertical-align: middle;
+}
+
+#movies_per_page {
+    background-color: #333333;
+    color: seashell;
+    border: 1px solid #555555;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 5px 10px;
+    font-family: "Oswald", sans-serif;
+    outline: none;
+    cursor: pointer;
+}
+
+#movies_per_page option {
+    background-color: #333333;
+    color: seashell;
+}
+
+#movies_per_page:hover {
+    background-color: #444444;
+}
+
+#pagination button {
+    background-color: #333333;
+    border: 1px solid #555555;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#pagination button:hover {
+    background-color: #444444;
 }

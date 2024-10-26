@@ -183,8 +183,7 @@ public class MoviesServlet extends HttpServlet {
             }
 
             queryBuilder.append(" GROUP BY m.id, r.rating " +
-                    " ORDER BY r.rating DESC " +
-                    " LIMIT 20;");
+                    " ORDER BY r.rating DESC;");
 
             PreparedStatement statement = conn.prepareStatement(queryBuilder.toString());
 
@@ -263,8 +262,7 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE gim.genreId = ? " +
                     " GROUP BY m.id, r.rating " +
-                    " ORDER BY r.rating DESC " +
-                    " LIMIT 20;";
+                    " ORDER BY r.rating DESC;";
             PreparedStatement statement = conn.prepareStatement(query);
             statement.setString(1, genreId);
             ResultSet rs = statement.executeQuery();
@@ -323,8 +321,7 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title REGEXP '^[^a-zA-Z0-9]' " +
-                    " ORDER BY m.title" +
-                    " LIMIT 20;";
+                    " ORDER BY m.title;";
                 statement = conn.prepareStatement(query);
             } else {
                 query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
@@ -343,8 +340,7 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title LIKE ? " +
-                    " ORDER BY m.title" +
-                    " LIMIT 20;";
+                    " ORDER BY m.title;";
                 statement = conn.prepareStatement(query);
                 statement.setString(1, letter + "%");
             }
