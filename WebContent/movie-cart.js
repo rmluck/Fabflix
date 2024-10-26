@@ -1,6 +1,6 @@
 $(document).ready(function() {
     loadCartItems();
-    $('#proceed-to-payment').on('click', function() {
+    $('#proceed_to_payment').on('click', function() {
         window.location.href = 'payment.html'; // Redirect to the payment page
     });
     function loadCartItems() {
@@ -9,19 +9,19 @@ $(document).ready(function() {
             method: 'GET',
             dataType: 'json',
             success: function(cartItems) {
-                $('#cart-body').empty();
+                $('#cart_table_body').empty();
 
                 if (cartItems.length === 0) {
-                    $('#cart-body').append('<tr><td colspan="4">No movies in cart</td></tr>');
+                    $('#cart_table_body').append('<tr><td colspan="4">No movies in cart</td></tr>');
                 } else {
                     cartItems.forEach(movie => {
                         const totalPrice = (20 * movie.quantity).toFixed(2);
-                        $('#cart-body').append(`
+                        $('#cart_table_body').append(`
                             <tr>
                                 <td><a href='single-movie.html?id=${movie.id}'>${movie.title}</a></td>
-                                <td><input type="number" class="quantity-input" data-movie-id="${movie.id}" value="${movie.quantity}" min="0" /></td>
+                                <td><input type="number" id="quantity_input" class="quantity-input" data-movie-id="${movie.id}" value="${movie.quantity}" min="0" /></td>
                                 <td>$${totalPrice}</td>
-                                <td><button class='remove' data-movie-id='${movie.id}'>Remove</button></td>
+                                <td id="remove_from_cart"><button id="remove_from_cart_button" class='remove' data-movie-id='${movie.id}'>Remove</button></td>
                             </tr>
                         `);
                     });
@@ -82,3 +82,34 @@ $(document).ready(function() {
         }
     });
 });
+
+let logout_form = $("#logout_form");
+
+function handleLogoutResult(resultDataJson) {
+    console.log("handle logout response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["status"]);
+
+    if (resultDataJson["status"] === "success") {
+        window.location.replace("logout.html");
+    } else {
+        console.log("show error message");
+        console.log(resultDataJson["message"]);
+    }
+}
+
+function submitLogoutForm(formSubmitEvent) {
+    console.log("submit logout form");
+
+    formSubmitEvent.preventDefault();
+
+    $.ajax(
+        "api/logout", {
+            method: "POST",
+            success: handleLogoutResult,
+            error: handleLogoutResult
+        }
+    );
+}
+
+logout_form.submit(submitLogoutForm)
