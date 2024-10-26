@@ -94,7 +94,7 @@ $(document).ready(function() {
         // Prevent default form submission
         event.preventDefault();
 
-        $.ajax({
+        jQuery.ajax({
             type: "POST",
             url: "/api/logout",
             dataType: "json",
