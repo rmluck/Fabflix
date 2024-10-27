@@ -377,17 +377,6 @@ td a:hover {
     box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
     z-index: 10;
 }
-
-#cart_form {
-    background-color: rgba(255, 255, 255, 0.13);
-    height: 235px;
-    border-radius: 10px;
-    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-    padding: 25px;
-    margin-left: 5%;
-    margin-right: 5%;
-}
-
 #search_form {
     background-color: rgba(255, 255, 255, 0.13);
     height: 425px;
@@ -396,7 +385,7 @@ td a:hover {
     padding: 25px;
     margin-left: 5%;
     margin-right: 5%;
-    margin-top: 25px;
+    margin-top: 125px;
 }
 
 #browse_genres_list {
@@ -492,13 +481,6 @@ td a:hover {
     outline: none;
 }
 
-#cart_form *{
-    font-family: "Oswald", sans-serif;
-    color: seashell;
-    letter-spacing: 0.5px;
-    outline: none;
-}
-
 #search_form *{
     font-family: "Oswald", sans-serif;
     color: seashell;
@@ -585,7 +567,7 @@ button:hover {
 }
 
 #index_logout_button {
-    top: 0;
+    top: -10px;
 }
 
 #single_movie_logout_button, #single_star_logout_button {
@@ -601,13 +583,6 @@ button:hover {
     color: seashell;
 }
 
-#cart_item {
-    display: inline-block;
-    width: 85%;
-    margin-right: 20px;
-    border: none;
-}
-
 #search_title_label, #search_year_label, #search_director_label, #search_star_label {
     display: inline-block;
     width: 47.8%;
@@ -621,14 +596,6 @@ button:hover {
     margin-right: 2%;
 }
 
-#cart_item_button {
-    display: inline-block;
-    width: 10%;
-    color: #080710;
-    background-color: seashell;
-    margin-top: 8px;
-}
-
 #search_button {
     width: 15%;
     color: #080710;
@@ -637,7 +604,7 @@ button:hover {
     left: 1095px;
 }
 
-#cart_item_button:hover, #search_button:hover {
+#search_button:hover {
     background-color: #f26661;
     color: seashell;
 }
@@ -715,7 +682,7 @@ button:hover {
 }
 
 #index_view_cart_button {
-    top: -94px;
+    top: -104px;
 }
 
 #single_movie_view_cart_button, #single_star_view_cart_button {
