@@ -9,6 +9,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -16,6 +17,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 // Declaring a WebServlet called MoviesServlet, which maps to url "/api/movies"
@@ -38,112 +40,55 @@ public class MoviesServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession();
+
         response.setContentType("application/json");
         String title = request.getParameter("title");
         String year = request.getParameter("year");
         String director = request.getParameter("director");
         String star = request.getParameter("star");
+        String genreId = request.getParameter("genreId");
+        String letter = request.getParameter("letter");
+        String sortParameters = request.getParameter("sortOptions");
+        String moviesPerPage = request.getParameter("moviesPerPage");
+        String page = request.getParameter("page");
 
-        if (title != null && year != null && director != null && star != null) {
-            searchMovies(title, year, director, star, response);
-        } else {
-            String action = request.getParameter("action");
+        int currentPage = (page != null && !page.isEmpty()) ? Integer.parseInt(page) : 1;
+        int offset = (currentPage - 1) * Integer.parseInt(moviesPerPage);
 
-            if (action == null) {
-                handleTop20Movies(request, response);
-            } else {
-                switch (action) {
-                    case "getMoviesByGenre":
-                        String genreId = request.getParameter("genreId");
-                        getMoviesByGenre(genreId, response);
-                        break;
-                    case "getMoviesByTitle":
-                        String letter = request.getParameter("letter");
-                        getMoviesByTitle(letter, response);
-                        break;
-                    default:
-                        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
-                }
-            }
+        String[] sortOptions = sortParameters.split(",");
+        List<String> allowedSortOptions = Arrays.asList("m.title ASC", "m.title DESC", "r.rating ASC", "r.rating DESC");
+
+//        for (String option : sortOptions) {
+//            if (!allowedSortOptions.contains(option.trim())) {
+//                throw new IllegalArgumentException("Invalid sort option: " + option);
+//            }
+//        }
+
+        session.setAttribute("title", title);
+        session.setAttribute("year", year);
+        session.setAttribute("director", director);
+        session.setAttribute("star", star);
+        session.setAttribute("genreId", genreId);
+        session.setAttribute("letter", letter);
+        session.setAttribute("sortOptions", sortParameters);
+        session.setAttribute("moviesPerPage", moviesPerPage);
+        session.setAttribute("page", page);
+
+        String action = request.getParameter("action");
+        switch (action) {
+            case "searchMovies":
+                searchMovies(title, year, director, star, sortParameters, moviesPerPage, String.valueOf(offset), response);
+                break;
+            case "getMoviesByGenre":
+                getMoviesByGenre(genreId, sortParameters, moviesPerPage, String.valueOf(offset), response);
+                break;
+            case "getMoviesByTitle":
+                getMoviesByTitle(letter, sortParameters, moviesPerPage, String.valueOf(offset), response);
         }
     }
 
-    private void handleTop20Movies(HttpServletRequest request, HttpServletResponse response) throws IOException { //old doGet for top20 proj1
-        response.setContentType("application/json"); // Response mime type
-
-        // Output stream to STDOUT
-        PrintWriter out = response.getWriter();
-
-        // Get a connection from dataSource and let resource manager close the connection after usage
-        try (Connection conn = dataSource.getConnection()) {
-            // Construct query
-            String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
-                    "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name) FROM genres_in_movies AS gimov " +
-                    "JOIN genres AS g ON gimov.genreId = g.id WHERE gimov.movieId = m.id LIMIT 3) AS genres, " +
-                    "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) ORDER BY three_stars.name) " +
-                    " FROM (SELECT s.id, s.name FROM stars_in_movies AS simov JOIN stars AS s ON simov.starId = s.id  " +
-                    " WHERE simov.movieId = m.id ORDER BY s.name LIMIT 3) AS three_stars) AS stars " +
-                    "FROM movies AS m " +
-                    "JOIN ratings AS r ON m.id = r.movieId " +
-                    "GROUP BY m.id, r.rating " +
-                    "ORDER BY r.rating DESC " +
-                    "LIMIT 20;";
-
-            // Declare statement
-            PreparedStatement statement = conn.prepareStatement(query);
-
-            // Perform query
-            ResultSet rs = statement.executeQuery();
-
-            JsonArray jsonArray = new JsonArray();
-
-            // Iterate through each row of rs
-            while (rs.next()) {
-                String movie_id = rs.getString("id");
-                String title = rs.getString("title");
-                String year = rs.getString("year");
-                String director = rs.getString("director");
-                String rating = rs.getString("rating");
-                String genres = rs.getString("genres");
-                String stars = rs.getString("stars");
-
-                // Create a JsonObject based on the data we retrieve from rs
-                JsonObject object = new JsonObject();
-                object.addProperty("movie_id", movie_id);
-                object.addProperty("title", title);
-                object.addProperty("year", year);
-                object.addProperty("director", director);
-                object.addProperty("rating", rating);
-                object.addProperty("genres", genres);
-                object.addProperty("stars", stars);
-
-                jsonArray.add(object);
-            }
-
-            rs.close();
-            statement.close();
-
-            // Log to localhost log
-            request.getServletContext().log("getting " + jsonArray.size() + " results");
-
-            // Write JSON string to object
-            out.write(jsonArray.toString());
-            // Set response status to 200 (OK)
-            response.setStatus(200);
-        } catch (Exception e) {
-            // Write error message JSON object to output
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("errorMessage", e.getMessage());
-            out.write(jsonObject.toString());
-
-            // Set response status to 500 (Internal Server Error)
-            response.setStatus(500);
-        } finally {
-            out.close();
-        }
-    }
-
-    private void searchMovies(String title, String year, String director, String star, HttpServletResponse response) throws IOException {
+    private void searchMovies(String title, String year, String director, String star, String sortParameters, String limit, String offset, HttpServletResponse response) throws IOException {
         response.setContentType("application/json"); // Response mime type
 
         // Output stream to STDOUT
@@ -167,10 +112,31 @@ public class MoviesServlet extends HttpServlet {
                             " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
                             " WHERE simov.movieId = m.id " +
                             " ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
-                            " FROM movies AS m " +
-                            " LEFT JOIN ratings AS r ON m.id = r.movieId " +
+                            " (SELECT COUNT(*) " +
+                            " FROM movies AS m_inner " +
+                            " LEFT JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
                             " WHERE 1=1 "
             );
+
+            if (title != null && !title.isEmpty()) {
+                queryBuilder.append(" AND LOWER(m_inner.title) LIKE LOWER(?)");
+            }
+            if (year != null && !year.isEmpty()) {
+                queryBuilder.append(" AND LOWER(m_inner.year) = LOWER(?)");
+            }
+            if (director != null && !director.isEmpty()) {
+                queryBuilder.append(" AND LOWER(m_inner.director) LIKE LOWER(?)");
+            }
+            if (star != null && !star.isEmpty()) {
+                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
+                        " JOIN stars AS s ON simov.starId = s.id " +
+                        " WHERE simov.movieId = m_inner.id AND LOWER(s.name) LIKE LOWER(?))");
+            }
+
+            queryBuilder.append(") AS total_records " +
+                    " FROM movies AS m " +
+                    " LEFT JOIN ratings AS r ON m.id = r.movieId " +
+                    " WHERE 1=1 ");
 
             if (title != null && !title.isEmpty()) {
                 queryBuilder.append(" AND LOWER(m.title) LIKE LOWER(?)");
@@ -182,11 +148,14 @@ public class MoviesServlet extends HttpServlet {
                 queryBuilder.append(" AND LOWER(m.director) LIKE LOWER(?)");
             }
             if (star != null && !star.isEmpty()) {
-                queryBuilder.append(" AND LOWER(s.name) LIKE LOWER(?)");
+                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
+                        " JOIN stars AS s ON simov.starId = s.id " +
+                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))");
             }
 
             queryBuilder.append(" GROUP BY m.id, r.rating " +
-                    " ORDER BY r.rating DESC;");
+                    " ORDER BY " + sortParameters +
+                    " LIMIT ? OFFSET ?;");
 
             PreparedStatement statement = conn.prepareStatement(queryBuilder.toString());
 
@@ -203,22 +172,41 @@ public class MoviesServlet extends HttpServlet {
             if (star != null && !star.isEmpty()) {
                 statement.setString(index++, "%" + star + "%");
             }
+            if (title != null && !title.isEmpty()) {
+                statement.setString(index++, "%" + title + "%");
+            }
+            if (year != null && !year.isEmpty()) {
+                statement.setString(index++, year);
+            }
+            if (director != null && !director.isEmpty()) {
+                statement.setString(index++, "%" + director + "%");
+            }
+            if (star != null && !star.isEmpty()) {
+                statement.setString(index++, "%" + star + "%");
+            }
+            statement.setInt(index++, Integer.parseInt(limit));
+            statement.setInt(index++, Integer.parseInt(offset));
 
             ResultSet rs = statement.executeQuery();
 
             List<Movie> movies = new ArrayList<>();
+            int totalMovies = 0;
             while (rs.next()) {
                 movies.add(new Movie(rs.getString("id"), rs.getString("title"),
                         rs.getInt("year"), rs.getString("director"),
                         rs.getString("genres"), rs.getString("stars"),
                         rs.getFloat("rating")));
+                totalMovies = rs.getInt("total_records");
             }
+            int totalPages = (int) Math.ceil((double) totalMovies / Integer.parseInt(limit));
 
             rs.close();
             statement.close();
 
+            MoviesResponse moviesResponse = new MoviesResponse(movies, totalMovies, totalPages);
+
             // Send genres as JSON response
-            out.write(new Gson().toJson(movies));
+            out.write(new Gson().toJson(moviesResponse));
             // Set response status to 200 (OK)
             response.setStatus(200);
         } catch (Exception e) {
@@ -234,18 +222,13 @@ public class MoviesServlet extends HttpServlet {
         }
     }
 
-    private void getMoviesByGenre(String genreId, HttpServletResponse response) throws IOException {
+    private void getMoviesByGenre(String genreId, String sortParameters, String limit, String offset, HttpServletResponse response) throws IOException {
         response.setContentType("application/json"); // Response mime type
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
-        //                    "(SELECT GROUP_CONCAT(DISTINCT g.name ORDER BY g.name SEPARATOR ', ') " +
-        //                    " FROM genres_in_movies AS gimov " +
-        //                    " JOIN genres as g on gimov.genreId = g.id " +
-        //                    " WHERE gimov.movieId = m.id " +
-        //                    " ORDER BY g.name LIMIT 3) AS genres, " +
-
+        System.out.println("BEFORE QUERY");
         // Fetch movies by genre from database
         try (Connection conn = dataSource.getConnection()) {
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
@@ -262,27 +245,41 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
                     " FROM stars_in_movies " +
                     " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
-                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
+                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars, " +
+                    "(SELECT COUNT(*) FROM movies AS m_inner " +
+                    " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
+                    " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
+                    " WHERE gim_inner.genreId = ?) AS total_records " +
                     " FROM movies AS m " +
-                    " JOIN ratings AS r ON m.id = r.movieId " +
-                    " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
+                    " JOIN ratings AS r on m.id = r.movieId " +
+                    " JOIN genres_in_movies AS gim on m.id = gim.movieId " +
                     " WHERE gim.genreId = ? " +
                     " GROUP BY m.id, r.rating " +
-                    " ORDER BY r.rating DESC;";
+                    " ORDER BY " + sortParameters +
+                    " LIMIT ? OFFSET ?;";
             PreparedStatement statement = conn.prepareStatement(query);
             statement.setString(1, genreId);
+            statement.setString(2, genreId);
+            statement.setInt(3, Integer.parseInt(limit));
+            statement.setInt(4, Integer.parseInt(offset));
+
             ResultSet rs = statement.executeQuery();
 
             List<Movie> movies = new ArrayList<>();
+            int totalMovies = 0;
             while (rs.next()) {
                 movies.add(new Movie(rs.getString("id"), rs.getString("title"), rs.getInt("year"), rs.getString("director"), rs.getString("genres"), rs.getString("stars"), rs.getFloat("rating")));
+                totalMovies = rs.getInt("total_records");
             }
+            int totalPages = (int) Math.ceil((double) totalMovies / Integer.parseInt(limit));
 
             rs.close();
             statement.close();
 
+            MoviesResponse moviesResponse = new MoviesResponse(movies, totalMovies, totalPages);
+
             // Send genres as JSON response
-            out.write(new Gson().toJson(movies));
+            out.write(new Gson().toJson(moviesResponse));
             // Set response status to 200 (OK)
             response.setStatus(200);
         } catch (Exception e) {
@@ -298,7 +295,7 @@ public class MoviesServlet extends HttpServlet {
         }
     }
 
-    private void getMoviesByTitle(String letter, HttpServletResponse response) throws IOException {
+    private void getMoviesByTitle(String letter, String sortParameters, String limit, String offset, HttpServletResponse response) throws IOException {
         response.setContentType("application/json"); // Response mime type
 
         // Output stream to STDOUT
@@ -325,13 +322,20 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
                     " FROM stars_in_movies " +
                     " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
-                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
+                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars, " +
+                    "(SELECT COUNT(*) FROM movies AS m_inner " +
+                    " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
+                    " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
+                    " WHERE m.title REGEXP '^[^a-zA-Z0-9]') AS total_records " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title REGEXP '^[^a-zA-Z0-9]' " +
-                    " ORDER BY m.title;";
+                    " ORDER BY " + sortParameters +
+                    " LIMIT ? OFFSET ?;";
                 statement = conn.prepareStatement(query);
+                statement.setInt(1, Integer.parseInt(limit));
+                statement.setInt(2, Integer.parseInt(offset));
             } else {
                 query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ', ') " +
@@ -348,27 +352,40 @@ public class MoviesServlet extends HttpServlet {
                     " FROM stars_in_movies " +
                     " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
                     " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
+                    "(SELECT COUNT(*) FROM movies AS m_inner " +
+                    " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
+                    " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
+                    " WHERE m.title LIKE ?) AS total_records " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title LIKE ? " +
-                    " ORDER BY m.title;";
+                    " ORDER BY " + sortParameters +
+                    " LIMIT ? OFFSET ? ";
                 statement = conn.prepareStatement(query);
                 statement.setString(1, letter + "%");
+                statement.setString(2, letter + "%");
+                statement.setInt(3, Integer.parseInt(limit));
+                statement.setInt(4, Integer.parseInt(offset));
             }
 
             ResultSet rs = statement.executeQuery();
 
             List<Movie> movies = new ArrayList<>();
+            int totalMovies = 0;
             while (rs.next()) {
                 movies.add(new Movie(rs.getString("id"), rs.getString("title"), rs.getInt("year"), rs.getString("director"), rs.getString("genres"), rs.getString("stars"), rs.getFloat("rating")));
             }
+            totalMovies = rs.getInt("total_records");
+            int totalPages = (int) Math.ceil((double) totalMovies / Integer.parseInt(limit));
 
             rs.close();
             statement.close();
 
+            MoviesResponse moviesResponse = new MoviesResponse(movies, totalMovies, totalPages);
+
             // Send genres as JSON response
-            out.write(new Gson().toJson(movies));
+            out.write(new Gson().toJson(moviesResponse));
             // Set response status to 200 (OK)
             response.setStatus(200);
         } catch (Exception e) {

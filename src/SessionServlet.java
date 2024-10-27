@@ -74,6 +74,6 @@ public class SessionServlet extends HttpServlet {
             out.println("Hi " + myName + "<br><br>");
         }
 
-        out.println("</body></html");
+        out.println("</body></html>");
     }
 }

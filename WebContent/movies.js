@@ -8,34 +8,59 @@
  *      2. Populate the data to correct html elements.
  */
 
-// NEED TO MAKE SURE PAGINATION RESULTS ARE FETCHED FROM DATABASE, NOT CACHED
-
-let currentPage = 1;
+let totalMovies = 0;
 let moviesPerPage = 10;
+let currentPage = 1;
 let totalPages = 1;
 let data = [];
-let titleSortDirection = "asc";
-let ratingSortDirection = "asc";
+let titleSortDirection = "desc";
+let ratingSortDirection = "desc";
+let sortPriority = "r";
+let apiURL = "api/movies";
 
 function updateMoviesPerPage() {
     moviesPerPage = parseInt(document.getElementById("movies_per_page").value);
-    totalPages = Math.ceil(data.length / moviesPerPage);
     currentPage = 1;
-    updatePaginationControls();
-    displayCurrentMoviesPage();
+    // updatePaginationControls();
+    // displayCurrentMoviesPage();
+    let currentAPIURL = apiURL;
+    if (sortPriority === "r") {
+        currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
+    } else if (sortPriority === "t") {
+        currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
+    }
+    currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
+    currentAPIURL += `&page=${currentPage}`;
+    fetchMovies(currentAPIURL);
 }
 
 function nextPage() {
     if (currentPage < totalPages) {
         currentPage++;
-        displayCurrentMoviesPage();
+        let currentAPIURL = apiURL;
+        if (sortPriority === "r") {
+            currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
+        } else if (sortPriority === "t") {
+            currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
+        }
+        currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
+        currentAPIURL += `&page=${currentPage}`;
+        fetchMovies(currentAPIURL);
     }
 }
 
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
-        displayCurrentMoviesPage();
+        let currentAPIURL = apiURL;
+        if (sortPriority === "r") {
+            currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
+        } else if (sortPriority === "t") {
+            currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
+        }
+        currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
+        currentAPIURL += `&page=${currentPage}`;
+        fetchMovies(currentAPIURL);
     }
 }
 
@@ -50,12 +75,15 @@ function updatePaginationControls() {
  * @param resultData jsonObject
  */
 function handleMovieResult(resultData) {
-    console.log("handleMoviesResult: populating movies table from data");
-    console.log("Number of results: ", resultData.length);
+    console.log("API Response: ", resultData);
 
-    data = resultData;
-    totalPages = Math.ceil(data.length / moviesPerPage);
-    currentPage = 1;
+    data = resultData.movies;
+    totalMovies = resultData.totalMovies;
+    totalPages = resultData.totalPages;
+
+    console.log("handleMoviesResult: populating movies table from data");
+    console.log("Number of results: ", data.length);
+
     displayCurrentMoviesPage();
 }
 
@@ -63,10 +91,10 @@ function displayCurrentMoviesPage() {
     let moviesTableBodyElement = jQuery("#movies_table_body");
     moviesTableBodyElement.empty();
 
-    let startIndex = (currentPage - 1) * moviesPerPage;
-    let endIndex = Math.min(startIndex + moviesPerPage, data.length);
+    // let startIndex = (currentPage - 1) * moviesPerPage;
+    // let endIndex = Math.min(startIndex + moviesPerPage, data.length);
 
-    for (let i = startIndex; i < endIndex; i++) {
+    for (let i = 0; i < moviesPerPage; i++) {
         let rowHTML = "<tr>";
         rowHTML += "<td><a href='single-movie.html?id=" + data[i]["id"] + "'>" + data[i]["title"] + "</a></td>";
         rowHTML += "<td>" + data[i]["year"] + "</td>";
@@ -129,12 +157,12 @@ function addToCart(movieId, movieTitle, movieYear) {
     });
 }
 
-$(document).ready(function() {
-    // Handle the "View Cart" button click
-    $('#movies_view_cart_button').on('click', function() {
-        loadCartItems();
-    });
-});
+// $(document).ready(function() {
+//     // Handle the "View Cart" button click
+//     $('#movies_view_cart_button').on('click', function() {
+//         loadCartItems();
+//     });
+// });
 
 
 function loadCartItems() {
@@ -171,78 +199,39 @@ function getQueryParams() {
 }
 
 function sortMoviesByTitle() {
-    data.sort((a, b) => {
-        let titleA = a.title.toLowerCase();
-        let titleB = b.title.toLowerCase();
-
-        if (titleSortDirection === "asc") {
-            return titleA > titleB ? 1 : -1;
-        } else {
-            return titleA < titleB ? 1: -1;
-        }
-    });
-
     titleSortDirection = titleSortDirection === "asc" ? "desc" : "asc";
-
+    sortPriority = "t";
     currentPage = 1;
-    displayCurrentMoviesPage();
+    let currentAPIURL = apiURL;
+    currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
+    currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
+    currentAPIURL += `&page=${currentPage}`;
+    fetchMovies(currentAPIURL);
 }
 
 function sortMoviesByRating() {
-    data.sort((a, b) => {
-        let ratingA = parseFloat(a.rating);
-        let ratingB = parseFloat(b.rating);
-
-        if (ratingSortDirection === "asc") {
-            return ratingA > ratingB ? 1 : -1;
-        } else {
-            return ratingA < ratingB ? 1 : -1;
-        }
-    });
-
     ratingSortDirection = ratingSortDirection === "asc" ? "desc" : "asc";
-
+    sortPriority = "r";
     currentPage = 1;
-    displayCurrentMoviesPage()
+    let currentAPIURL = apiURL;
+    currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
+    currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
+    currentAPIURL += `&page=${currentPage}`;
+    fetchMovies(currentAPIURL);
 }
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
 $(document).ready(function() {
-    // Handle logout form submission
-    // $("#logout_form").on("submit", function (event) {
-    //     // Prevent default form submission
-    //     event.preventDefault();
-    //
-    //     jQuery.ajax({
-    //         type: "POST",
-    //         url: "/api/logout",
-    //         dataType: "json",
-    //         success: function (response) {
-    //             if (response.status === "success") {
-    //                 // Logout successful, redirect to login page
-    //                 window.location.href = "login.html";
-    //             } else {
-    //                 // Handle error case (no active session)
-    //                 alert(response.message);
-    //             }
-    //         },
-    //         error: function () {
-    //             // Handle AJAX error
-    //             alert("Error logging out. Please try again.");
-    //         }
-    //     });
-    // });
     $('#cart_container').hide();
 
     $("#movies_view_cart_button").on("click", function() {
+        loadCartItems();
         window.location.href = "movie-cart.html";
     });
 
     const queryParams = getQueryParams();
-
-    let apiURL = "api/movies";
 
     if (queryParams.genreId) {
         apiURL += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;
@@ -250,14 +239,18 @@ $(document).ready(function() {
         apiURL += `?action=getMoviesByTitle&letter=${queryParams.letter}`;
     } else if (queryParams.title || queryParams.year || queryParams.director || queryParams.star) {
         apiURL += `?action=searchMovies&${$.param(queryParams)}`;
-    } else {
-        $("#top20_button").on("click", function () {
-            fetchMovies(apiURL);
-        });
-        return;
     }
 
-    fetchMovies(apiURL);
+    let currentAPIURL = apiURL;
+    if (sortPriority === "r") {
+        currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
+    } else if (sortPriority === "t") {
+        currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
+    }
+    currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
+    currentAPIURL += `&page=${currentPage}`;
+
+    fetchMovies(currentAPIURL);
 });
 
 function fetchMovies(apiURL){
