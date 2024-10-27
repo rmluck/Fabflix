@@ -76,7 +76,7 @@ public class PaymentServlet extends HttpServlet {
 
             session.removeAttribute("cartItems");
 
-            response.sendRedirect("confirmation.html");
+            response.sendRedirect("/fabflix_com_war/confirmation.html");
         } else {
             response.sendRedirect("payment.html?error=Invalid payment information");
         }
@@ -84,17 +84,19 @@ public class PaymentServlet extends HttpServlet {
 
 
     private boolean validatePayment(String firstName, String lastName, String creditCardNumber, String expirationDate) {
+        expirationDate = expirationDate.replace("/", "-");
+
         String query = "SELECT * FROM creditcards WHERE firstName = ? AND lastName = ? AND id = ? AND expiration = ?";
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement statementmt = conn.prepareStatement(query)) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            statementmt.setString(1, firstName);
-            statementmt.setString(2, lastName);
-            statementmt.setString(3, creditCardNumber);
-            statementmt.setString(4, expirationDate);
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setString(3, creditCardNumber);
+            stmt.setString(4, expirationDate);
 
-            try (ResultSet resultSet = statementmt.executeQuery()) {
+            try (ResultSet resultSet = stmt.executeQuery()) {
                 return resultSet.next();
             }
         } catch (SQLException e) {
@@ -102,6 +104,7 @@ public class PaymentServlet extends HttpServlet {
             return false;
         }
     }
+
 
     private void recordSale(int customerId, String movieId, int quantity) {
         String query = "INSERT INTO sales (customerId, movieId, quantity, saleDate) VALUES (?, ?, ?, CURDATE())";

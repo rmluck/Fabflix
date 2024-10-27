@@ -4,31 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Confirmation</title>
-  <script>
-    function getQueryParams() {
-      const params = {};
-      window.location.search.substring(1).split('&').forEach(param => {
-        const [key, value] = param.split('=');
-        params[decodeURIComponent(key)] = decodeURIComponent(value);
-      });
-      return params;
-    }
-
-    window.onload = function() {
-      const queryParams = getQueryParams();
-      const message = queryParams.message;
-
-      if (message) {
-        alert(message);
-      } else {
-        alert("No message to display.");
-      }
-    };
-  </script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="confirmation.js"></script>
 </head>
 <body>
-<h1>Order Confirmation</h1>
-<p>Your payment has been processed. Thank you for your order!</p>
-<a href="index.html">Return to Home</a>
+<div class="container mt-5">
+  <div id="order-summary" class="mt-4"></div>
+</div>
 </body>
 </html>

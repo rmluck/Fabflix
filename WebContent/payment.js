@@ -30,7 +30,7 @@ $(document).ready(function() {
                 type: 'POST',
                 data: data,
                 success: function(response) {
-                    window.location.href = "confirmation.html";
+                    window.location.href = "/fabflix_com_war/confirmation.html";
                 },
                 error: function(xhr) {
                     $('#payment-error').text('Payment failed. Please try again.').show();
