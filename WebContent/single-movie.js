@@ -9,6 +9,8 @@
  *      3. Populate the data to correct html elements
  */
 
+let movieId = "";
+
 
 /**
  * Retrieve parameter from request URL, matching by parameter name
@@ -36,16 +38,16 @@ function getParameterByName(target) {
  * @param resultData jsonObject
  */
 function handleResult(resultData) {
-    let homeElement = jQuery("#home");
-    homeElement.append("<a href='index.html'>Home</a>");
-
     console.log("handleResult: populating movie info from resultData");
+    console.log(resultData);
+    resultData = resultData[0];
+    console.log(resultData);
 
     // Populates movie info h3
     // Finds empty h3 body by id "movie_info"
     let movieInfoElement = jQuery("#movie_info");
-    movieInfoElement.append("<p id='movie_information'>" + resultData["movie_title"] + " (" + resultData["movie_year"] + ")" + "</p>" +
-        "<p id='movie_director'>Director: " + resultData["movie_director"] + "</p>"
+    movieInfoElement.append("<p id='movie_information'>" + resultData["title"] + " (" + resultData["year"] + ")" + "</p>" +
+        "<p id='movie_director' style='line-height: 0;'>Director: " + resultData["director"] + "</p>"
     );
 
     console.log("handleResult: populating star table from resultData");
@@ -55,35 +57,180 @@ function handleResult(resultData) {
     let movieBodyElement = jQuery("#movie_table_body");
     let rowHTML = "";
     rowHTML += "<tr>";
-    rowHTML += "<td>" + (resultData["genres"] || "N/A") + "</td>"; // Default to N/A if genres are missing
+    // rowHTML += "<td>" + (resultData["genres"] || "N/A") + "</td>"; // Default to N/A if genres are missing
 
-    // Adds stars info
-    let starsHTML = "";
-    let starsArray = resultData["stars"] ? resultData["stars"].split(",") : [];
-    for (let star of starsArray) {
-        let [id, name] = star.split(":");
-        starsHTML += "<a href='single-star.html?id=" + id + "'>" + name + "</a><br>";
-
+    let genresArray = resultData["genres"].split(",");
+    let genresHTML = "<td>";
+    for (let g = 0; g < genresArray.length; g++) {
+        let [genreId, genreName] = genresArray[g].split(":");
+        genreId = genreId.trim();
+        genresHTML += "<a href='movies.html?genreId=" + genreId + "'>" + genreName + "</a><br>";
     }
-    rowHTML += "<td>" + starsHTML + "</td>";
-    rowHTML += "<td>" + (resultData["rating"] || "N/A") + "</td>"; // Default to N/A if rating is missing
+    genresHTML += "</td>";
+    rowHTML += genresHTML;
+
+    let starsArray = resultData["stars"].split(",");
+    let starsHTML = "<td>";
+    for (let j = 0; j < starsArray.length; j++) {
+        let [starId, starName] = starsArray[j].split(":");
+        starId = starId.trim();
+        starsHTML += "<a href='single-star.html?id=" + starId + "'>" + starName + "</a><br>";
+    }
+    starsHTML += "</td>";
+    rowHTML += starsHTML;
+    rowHTML += "<td>" + resultData["rating"] + "</td>";
+    rowHTML += `<td id="movie_add_to_cart"><button id="movie_add_to_cart_button" onclick="addToCart('${movieId}', '${resultData["title"]}', '${resultData["year"]}')">Add to Cart</button></td>`;
     rowHTML += "</tr>";
 
     // Append the row created to the table body
     movieBodyElement.append(rowHTML);
 }
 
+function getQueryParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const queryArray = queryString.split("&");
+
+    for (let i = 0; i < queryArray.length; i++) {
+        const pair = queryArray[i].split("=");
+        if (pair.length === 2) {
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+    }
+    return params;
+}
+
+function addToCart(movieId, movieTitle, movieYear) {
+    // Send a POST request to add the movie to the cart
+    $.ajax({
+        url: 'api/cart',
+        method: 'POST',
+        data: {
+            action: 'add',
+            movieId: movieId,
+            title: movieTitle,
+            year: movieYear
+        },
+        success: function(response) {
+            alert(movieTitle + " added to cart!");
+        },
+        error: function(error) {
+            console.error("Error adding to cart:", error);
+            alert("Failed to add movie to cart.");
+        }
+    });
+}
+
+// $(document).ready(function() {
+//     // Handle the "View Cart" button click
+//     $('#movies_view_cart_button').on('click', function() {
+//         loadCartItems();
+//     });
+// });
+
+
+function loadCartItems() {
+    $.ajax({
+        url: '/fabflix_com_war/api/cart',
+        method: 'GET',
+        dataType: 'json',
+        success: function(cartItems) {
+            if (cartItems.length === 0) {
+                alert('Your cart is empty.');
+            } else {
+                console.log(cartItems);
+            }
+        },
+        error: function() {
+            alert('Failed to load cart items.');
+        }
+    });
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
+$(document).ready(function() {
+    // Handle logout form submission
 
-// Get id from URL
-let movieId = getParameterByName('id');
+    // $("#logout_form").on("submit", function(event) {
+    //     // Prevent default form submission
+    //     event.preventDefault();
+    //
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/api/logout",
+    //         dataType: "json",
+    //         success: function(response) {
+    //             if (response.status === "success") {
+    //                 // Logout successful, redirect to login page
+    //                 window.location.href = "login.html";
+    //             } else {
+    //                 // Handle error case (no active session)
+    //                 alert(response.message);
+    //             }
+    //         },
+    //         error: function() {
+    //             // Handle AJAX error
+    //             alert("Error logging out. Please try again.");
+    //         }
+    //     });
+    // });
 
-// Makes HTTP GET request and registers on success callback function handleResult
-jQuery.ajax({
-    dataType: "json", // Setting return data type
-    method: "GET", // Setting request method
-    url: "api/single-movie?id=" + movieId, // Setting request url, which is mapped by MoviesServlet in Movies.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleMovieServlet
+    $("#single_movie_view_cart_button").on("click", function() {
+        window.location.href = "movie-cart.html";
+    });
+
+    $("#single_movie_back_button").on("click", function() {
+        window.location.href = "movies.html";
+    });
+
+    const queryParams = getQueryParams();
+
+    movieId = queryParams.id;
+
+    let apiURL = `api/single-movie?id=${movieId}`;
+
+    // Existing AJAX call to fetch single movie data
+    jQuery.ajax({
+        dataType: "json",
+        method: "GET",
+        url: apiURL,
+        success: (resultData) => handleResult(resultData),
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("error fetching movie:", errorThrown);
+            alert("failed to fetch movie.")
+        }
+    });
 });
+
+let logout_form = $("#logout_form");
+
+function handleLogoutResult(resultDataJson) {
+    console.log("handle logout response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["status"]);
+
+    if (resultDataJson["status"] === "success") {
+        window.location.replace("logout.html");
+    } else {
+        console.log("show error message");
+        console.log(resultDataJson["message"]);
+    }
+}
+
+function submitLogoutForm(formSubmitEvent) {
+    console.log("submit logout form");
+
+    formSubmitEvent.preventDefault();
+
+    $.ajax(
+        "api/logout", {
+            method: "POST",
+            success: handleLogoutResult,
+            error: handleLogoutResult
+        }
+    );
+}
+
+logout_form.submit(submitLogoutForm)

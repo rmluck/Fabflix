@@ -1,8 +1,22 @@
-/* This styles the webpage from index.html */
+/* This styles the webpage from movies.html */
 
 /* This styles the entire body of the webpage */
-#home_body {
-    background-color: #f26661;
+#index_body {
+    background-color: #080710;
+    font-family: "Oswald", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#login_body {
+    background-color: #080710;
+    font-family: "Oswald", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#movies_body {
+    background-color: #222222;
     font-family: "Oswald", sans-serif;
     margin: 0;
     padding: 0;
@@ -22,6 +36,19 @@
     padding: 0;
 }
 
+#movie_cart_body {
+    background-color: seashell;
+    font-family: "Oswald", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#header_container {
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+}
+
 /* This styles all h1 (heading) elements */
 h1 {
     font-size: 36px;
@@ -33,10 +60,10 @@ h1 {
     padding: 20px;
     margin-bottom: 0;
     position: fixed;
-    top: 0;
+    top: -25px;
     left: 0;
     width: 100%;
-    z-index: 1000;
+    z-index: 5;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     animation: slideIn 1s ease forwards;
 }
@@ -50,6 +77,13 @@ h1 a:hover {
     color: seashell;
     text-decoration: underline;
     transition: color 0.3s;
+}
+
+h2 {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 42px;
+    text-align: center;
 }
 
 h3 {
@@ -95,14 +129,60 @@ h3 {
     }
 }
 
+#controls {
+    margin-top: 92px;
+    margin-bottom: 0;
+    padding-left: 680px;
+    position: sticky;
+    background: linear-gradient(to left, #2e2d2d, #222222);
+    color: darkgray;
+    display: flex;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    top: 92px;
+}
+
+#pagination {
+    position: fixed;
+    width: 100%;
+    height: 50px;
+    bottom: 0;
+    background-color: #222222;
+    color: darkgray;
+}
+
+#prev_button {
+    right: 175px;
+}
+
+#next_button {
+    right: 9px;
+}
+
+#page_number {
+    width: 100px;
+    text-align: center;
+    margin-top: -10px;
+    position: absolute;
+    right: 70px;
+}
+
 /* This styles all table elements */
 #movies_table {
     table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-    margin-top: 92px;
     padding-top: 0;
+    margin-bottom: 50px;
+    margin-top: 92px;
+}
+
+#filters label, #page_size label {
+    display: inline-block;
+    margin-top: 5px;
+    padding-left: 20px;
+    padding-right: 10px;
 }
 
 #movie_table {
@@ -121,6 +201,14 @@ h3 {
     padding-top: 0;
 }
 
+#cart_table {
+    width: 80%;
+    margin: 120px auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    padding-top: 0;
+}
+
 /* This styles all th (table header) cells */
 .movies_table_heading {
     font-size: 16px;
@@ -129,14 +217,12 @@ h3 {
     background: linear-gradient(to left, #2e2d2d, #222222);
     color: darkgray;
     position: sticky;
-    top: 90px;
-    border-top: 3px solid black;
-    border-bottom: 3px solid black;
+    top: 92px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
-    z-index: 900;
+    z-index: 10;
     text-align: center;
-    margin-top: 0;
+    margin-top: 92px;
     word-wrap: normal;
 }
 
@@ -170,11 +256,20 @@ h3 {
     word-wrap: normal;
 }
 
-/* This styles all tr (table row) cells */
-tr {
-    border-bottom: 1px solid #222222;
+.cart_table_heading {
+    font-size: 16px;
+    font-family: "Oswald", sans-serif;
+    font-weight: bold;
+    background: linear-gradient(to left, #2e2d2d, #222222);
+    color: darkgray;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin-top: 0;
+    word-wrap: normal;
 }
 
+/* This styles all tr (table row) cells */
 tr:nth-child(even) td {
     background: #CCC
 }
@@ -200,9 +295,429 @@ td {
 td a {
     color: black;
     font-weight: bold;
+    text-decoration: none;
 }
 
 td a:hover {
     color: seashell;
     text-decoration: underline;
+}
+
+#login_background {
+    width: 430px;
+    height: 520px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    margin-top: 50px;
+}
+
+#login_background .login_shape {
+    height: 175px;
+    width: 175px;
+    position: absolute;
+    border-radius: 50%;
+}
+
+.login_shape:first-child {
+    background: linear-gradient(#f7504a, #f26661);
+    left: -50px;
+    top: -50px;
+}
+
+.login_shape:last-child {
+    background: linear-gradient(to right, #f7504a, #f26661);
+    right: -50px;
+    bottom: -50px;
+}
+
+#currentSessionInfo {
+    font-size: 16px;
+    font-family: "Oswald", sans-serif;
+    width: 90%;
+    color: seashell;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 25px;
+    margin-top: 110px;
+    margin-left: 5%;
+}
+
+#login_form {
+    height: 385px;
+    width: 325px;
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 2px solid;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 35px 35px;
+    margin-top: 25px;
+}
+
+#logout_form {
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+    top: -95px;
+    left: 1346px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    z-index: 10;
+}
+#search_form {
+    background-color: rgba(255, 255, 255, 0.13);
+    height: 425px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 125px;
+}
+
+#browse_genres_list {
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: 0;
+    background-color: rgba(255, 255, 255, 0.13);
+    height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 25px;
+}
+
+#browse_alphabet_list {
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.13);
+    height: 135px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+#genres_list {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+#alphabet_list {
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+#genres_list a{
+    color: seashell;
+    font-size: 25px;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-decoration: none;
+}
+
+#alphabet_list a{
+    color: seashell;
+    font-size: 21px;
+    padding-left: 5px;
+    padding-right: 4px;
+    text-decoration: none;
+}
+
+#genres_list a:hover {
+    color: #f26661;
+    text-decoration-line: underline;
+    text-decoration-color: #f26661;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 1px;
+}
+
+#alphabet_list a:hover {
+    color: #f26661;
+    text-decoration-line: underline;
+    text-decoration-color: #f26661;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 1px;
+}
+
+/*#filtered_movies_list {*/
+/*    background-color: rgba(255, 255, 255, 0.13);*/
+/*    width: 100%;*/
+/*}*/
+
+#login_form *{
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
+    border: none;
+}
+
+#logout_form *{
+    font-family: "Oswald", sans-serif;
+    color: #222222;
+    letter-spacing: 0.5px;
+    outline: none;
+}
+
+#search_form *{
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
+}
+
+/*#filtered_movies_list *{*/
+/*    font-family: "Oswald", sans-serif;*/
+/*    color: seashell;*/
+/*    letter-spacing: 0.5px;*/
+/*    outline: none;*/
+/*}*/
+
+label {
+    display: block;
+    margin-top: 30px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+input {
+    display: block;
+    height: 50px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    margin-top: 8px;
+    color: seashell;
+    font-size: 14px;
+    font-weight: 300;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+::placeholder {
+    color: #E5E5E5;
+}
+
+#quantity_input {
+    color: #080710;
+    letter-spacing: 0.5px;
+    outline: none;
+    border: none;
+}
+
+#email, #password {
+    width: 94%;
+    padding-left: 4%;
+    padding-right: 2%;
+}
+
+button {
+    background-color: rgba(255, 245, 238, 0.30);
+    color: #080710;
+    height: 50px;
+    padding: 10px 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    position: absolute;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #f26661;
+    color: seashell;
+}
+
+#login_button {
+    display: block;
+    position: static;
+    color: #080710;
+    width: 100%;
+    background-color: seashell;
+    margin-top: 10px;
+    padding: 0 10px;
+}
+
+.logout_button {
+    height: 65px;
+    top: 16px;
+}
+
+#index_logout_button {
+    top: -15px;
+}
+
+#single_movie_logout_button, #single_star_logout_button {
+    top: 10px;
+}
+
+#movie_cart_logout_button {
+    top: -10px;
+}
+
+#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #movie_cart_logout_button:hover, #index_view_cart_button:hover, #movies_view_cart_button:hover, #single_movie_view_cart_button:hover, #single_star_view_cart_button:hover, #login_button:hover {
+    background-color: #222222;
+    color: seashell;
+}
+
+#search_title_label, #search_year_label, #search_director_label, #search_star_label {
+    display: inline-block;
+    width: 47.8%;
+    margin-right: 2%;
+}
+
+#search_title, #search_year, #search_director, #search_star {
+    display: inline-block;
+    width: 46%;
+    border: none;
+    margin-right: 2%;
+}
+
+#search_button {
+    width: 15%;
+    color: #080710;
+    background-color: seashell;
+    margin-top: 35px;
+    left: 1095px;
+}
+
+#search_button:hover {
+    background-color: #f26661;
+    color: seashell;
+}
+
+#login_error_message {
+    color: #f26661;
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    text-transform: uppercase;
+}
+
+/*#movies_per_page_label {*/
+/*    font-size: 20px;*/
+/*    margin-top: 10px;*/
+/*    padding-left: 10px;*/
+/*}*/
+
+#movies_per_page_label {
+    color: seashell;
+    font-size: 16px;
+    margin-right: 10px;
+    font-family: "Oswald", sans-serif;
+    vertical-align: middle;
+    margin-top: 0;
+}
+
+#movies_per_page {
+    background-color: #333333;
+    color: seashell;
+    border: 1px solid #555555;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 5px 10px;
+    font-family: "Oswald", sans-serif;
+    outline: none;
+    cursor: pointer;
+}
+
+#movies_per_page option {
+    background-color: #333333;
+    color: seashell;
+}
+
+#movies_per_page:hover {
+    background-color: #444444;
+}
+
+#pagination button {
+    background-color: #333333;
+    border: 1px solid #555555;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    height: 37px;
+    margin-top: -17px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 6px;
+    color: seashell;
+    font-family: "Oswald", sans-serif;
+}
+
+#pagination button:hover {
+    background-color: #444444;
+}
+
+.view_cart_button {
+    font-family: "Oswald", sans-serif;
+    color: #222222;
+    letter-spacing: 0.5px;
+    outline: none;
+    height: 65px;
+    top: -78px;
+    left: 1230px;
+    position: absolute;
+    border-radius: 5px;
+    z-index: 10;
+}
+
+.back_button {
+    font-family: "Oswald", sans-serif;
+    color: #222222;
+    letter-spacing: 0.5px;
+    outline: none;
+    height: 65px;
+    top: -83px;
+    left: 12px;
+    position: absolute;
+    border-radius: 5px;
+    z-index: 10;
+}
+
+#index_view_cart_button {
+    top: -109px;
+}
+
+#single_movie_view_cart_button, #single_star_view_cart_button {
+    top: -84px;
+}
+
+#movies_add_to_cart, #movie_add_to_cart, #single_star_add_to_cart, #remove_from_cart {
+    padding: 0;
+}
+
+#movies_add_to_cart_button, #movie_add_to_cart_button, #single_star_add_to_cart_button, #remove_from_cart_button {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    font-family: "Oswald", sans-serif;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: static;
+    border-radius: 0;
 }

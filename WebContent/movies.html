@@ -1,0 +1,118 @@
+<!-- This example is following frontend and backend separation.
+
+    This .html performs two steps:
+    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+    2. Load movies.js to populate the data into empty elements.
+    -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+<!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"-->
+<!--          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">-->
+
+    <!-- Link to css file -->
+    <link rel="stylesheet" href="fabflix.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <title>Movie List</title>
+</head>
+<body id="movies_body">
+
+<div id="header_container">
+    <h1><a href="index.html" onclick="clearSession()">FABFLIX</a></h1>
+    <button class="view_cart_button" id="movies_view_cart_button">View Cart</button>
+    <form id="logout_form" method="POST" action="/api/logout">
+      <button class="logout_button" id="movies_logout_button">Logout</button>
+    </form>
+</div>
+
+<!--<div id="controls">-->
+<!--    <div id="filters">-->
+<!--        <label id="primary_sort_label" for="primary_sort">Primary Sort</label>-->
+<!--        <select id="primary_sort" name="primary_sort">-->
+<!--            <option value="title">Title</option>-->
+<!--            <option value="rating">Rating</option>-->
+<!--        </select>-->
+
+<!--        <label id="secondary_sort_label" for="secondary_sort">Secondary Sort</label>-->
+<!--        <select id="secondary_sort" name="secondary_sort">-->
+<!--            <option value="title">Title</option>-->
+<!--            <option value="rating">Rating</option>-->
+<!--        </select>-->
+
+<!--        <label id="sort_order_label" for="sort_order">Order</label>-->
+<!--        <select id="sort_order" name="sort_order">-->
+<!--            <option value="asc">Ascending</option>-->
+<!--            <option value="desc">Descending</option>-->
+<!--        </select>-->
+<!--    </div>-->
+
+<!--    <div id="page_size">-->
+<!--        <label id="display_count_label" for="display_count">Movies Per Page</label>-->
+<!--        <select id="display_count" name="display_count">-->
+<!--            <option value="10">10</option>-->
+<!--            <option value="25">25</option>-->
+<!--            <option value="50">50</option>-->
+<!--            <option value="100">100</option>-->
+<!--        </select>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div id="cart_container" style="display:none;">
+    <h2>Your Cart</h2>
+    <ul id="cart_items"></ul>
+</div>
+
+<!-- id "movies_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
+<table id="movies_table" class="table table-striped">
+    <!-- Create a table header -->
+    <thead>
+    <tr>
+        <!-- Titles of each column -->
+        <th class="movies_table_heading" onclick="sortMoviesByTitle()">Title</th>
+        <th class="movies_table_heading" style="width: 5%;">Year</th>
+        <th class="movies_table_heading">Director</th>
+        <th class="movies_table_heading" colspan="3">Genres</th>
+        <th class="movies_table_heading" colspan="3">Stars</th>
+        <th class="movies_table_heading" onclick="sortMoviesByRating()" style="width: 7%">Rating</th>
+        <th class="movies_table_heading" style="width: 10%">Action</th>
+    </tr>
+    </thead>
+
+    <!-- Table body is left empty here, will be populated with the data retrieved with movies.js -->
+    <!-- Again, id "movies_table_body" is useful for jQuery to find this html element -->
+    <tbody id="movies_table_body"></tbody>
+</table>
+
+<div id="pagination">
+    <label id="movies_per_page_label" for="movies_per_page">Movies Per Page</label>
+    <select id="movies_per_page" name="movies_per_page" onchange="updateMoviesPerPage()">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+    <button id="prev_button" onclick="prevPage()">Prev</button>
+    <span id="page_number"></span>
+    <button id="next_button" onclick="nextPage()">Next</button>
+</div>
+
+<!-- Load jQuery and Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- Load our own JS file -->
+<!-- The path is relative to movies.html, since these two files are in the same directory -->
+<!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
+     otherwise the url is relative to the root path-->
+<script src="movies.js"></script>
+</body>
+</html>

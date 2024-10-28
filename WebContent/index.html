@@ -5,47 +5,61 @@
     2. Load index.js to populate the data into empty elements.
     -->
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Required meta tags -->
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!-- Link to css file -->
     <link rel="stylesheet" href="fabflix.css">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <title>Movie List</title>
+    <title>Fabflix</title>
 </head>
-<body id="#home_body">
+<body id="index_body">
 
-<h1><a href="index.html">FABFLIX</a></h1>
+<div id="header_container">
+    <h1><a href="index.html">FABFLIX</a></h1>
+    <button class="view_cart_button" id="index_view_cart_button">View Cart</button>
+    <form id="logout_form" method="POST" action="/api/logout">
+        <button class="logout_button" id="index_logout_button">Logout</button>
+    </form>
+</div>
 
-<!-- id "movies_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
-<table id="movies_table" class="table table-striped">
-    <!-- Create a table header -->
-    <thead>
-    <tr>
-        <!-- Titles of each column -->
-        <th class="movies_table_heading">Title</th>
-        <th class="movies_table_heading" style="width: 5%;">Year</th>
-        <th class="movies_table_heading">Director</th>
-        <th class="movies_table_heading">Genres</th>
-        <th class="movies_table_heading" colspan="3">Stars</th>
-        <th class="movies_table_heading" style="width: 7%">Rating</th>
-    </tr>
-    </thead>
+<form id="search_form">
+    <h2>Search</h2>
 
-    <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
-    <!-- Again, id "movie_table_body" is useful for jQuery to find this html element -->
-    <tbody id="movies_table_body"></tbody>
-</table>
+    <label id="search_title_label" for="search_title">Title</label>
+    <label id="search_year_label" for="search_year">Year</label><br>
+
+    <input id="search_title" name="search_title" placeholder="Title" type="text">
+    <input id="search_year" name="search_year" placeholder="Year" type="text"><br>
+
+    <label id="search_director_label" for="search_director">Director</label>
+    <label id="search_star_label" for="search_star">Star</label><br>
+
+    <input id="search_director" name="search_director" placeholder="Director" type="text">
+    <input id="search_star" name="search_star" placeholder="Star" type="text"><br>
+
+    <button id="search_button">Search</button>
+</form>
+
+<div id="search_result"></div>
+
+<div id="item_list"></div>
+
+<div id="browse_genres_list">
+    <h2>Browse by Genre</h2>
+    <div id="genres_list"></div>
+</div>
+
+<div id="browse_alphabet_list">
+    <h2>Browse by Title</h2>
+    <div id="alphabet_list"></div>
+</div>
 
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -57,6 +71,5 @@
 <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
      otherwise the url is relative to the root path-->
 <script src="index.js"></script>
-
 </body>
 </html>

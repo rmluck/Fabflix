@@ -1,0 +1,48 @@
+<!-- This page will be redirected from any url if you are not logged in -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Link to css file -->
+  <link rel="stylesheet" href="fabflix.css">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+  <title>Login to Fabflix</title>
+</head>
+<body id="login_body">
+
+<div id="header_container">
+  <h1>FABFLIX</h1>
+</div>
+
+<div id="login_background">
+  <div class="login_shape"></div>
+  <div class="login_shape"></div>
+</div>
+<!-- Set the method to POST to avoid showing the username/password in the URL
+     The default action is disabled to allow your own implementation. -->
+<form id="login_form" method="POST" action="/api/login">
+  <h2>Login</h2>
+
+  <label id="email_label" for="email">Email</label>
+  <input id="email" name="email" placeholder="Email" type="email" required>
+
+  <label id="password_label" for="password">Password</label>
+  <input id="password" name="password" placeholder="Password" type="password" required><br>
+
+  <div id="login_error_message"></div>
+  <button id="login_button">Login</button>
+</form>
+
+<!-- include jQuery-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- include our own JS file -->
+<script src="./login.js"></script>
+
+</body>
+</html>

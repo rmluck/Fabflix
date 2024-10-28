@@ -36,9 +36,6 @@ function getParameterByName(target) {
  * @param resultData jsonObject
  */
 function handleResult(resultData) {
-    let homeElement = jQuery("#home");
-    homeElement.append("<a href='index.html'>Home</a>");
-
     console.log("handleResult: populating star info from resultData");
 
     // Populates the star info h3
@@ -46,8 +43,8 @@ function handleResult(resultData) {
     let starInfoElement = jQuery("#star_info");
     let starDOB = resultData[0]["star_dob"] ? resultData[0]["star_dob"] : "N/A";
     // append two html <p> created to the h3 body, which will refresh the page
-    starInfoElement.append("<p>" + resultData[0]["star_name"] + "</p>" +
-        "<p>Date Of Birth: " + starDOB + "</p>");
+    starInfoElement.append("<p id='star_name'>" + resultData[0]["star_name"] + "</p>" +
+        "<p id='star_dob' style='line-height: 0;'>Date Of Birth: " + starDOB + "</p>");
 
     console.log("handleResult: populating star table from resultData");
 
@@ -62,6 +59,7 @@ function handleResult(resultData) {
         rowHTML += "<td><a href='single-movie.html?id=" + resultData[i]["movie_id"] + "'>" + resultData[i]["movie_title"] + "</a></td>";
         rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
         rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
+        rowHTML += `<td id="single_star_add_to_cart"><button id="single_star_add_to_cart_button" onclick="addToCart('${resultData[i]["movie_id"]}', '${resultData[i]["movie_title"]}', '${resultData[i]["movie_year"]}')">Add to Cart</button></td>`;
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
@@ -69,17 +67,148 @@ function handleResult(resultData) {
     }
 }
 
+function getQueryParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const queryArray = queryString.split("&");
+
+    for (let i = 0; i < queryArray.length; i++) {
+        const pair = queryArray[i].split("=");
+        if (pair.length === 2) {
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1]);
+        }
+    }
+    return params;
+}
+
+function addToCart(movieId, movieTitle, movieYear) {
+    // Send a POST request to add the movie to the cart
+    $.ajax({
+        url: 'api/cart',
+        method: 'POST',
+        data: {
+            action: 'add',
+            movieId: movieId,
+            title: movieTitle,
+            year: movieYear
+        },
+        success: function(response) {
+            alert(movieTitle + " added to cart!");
+        },
+        error: function(error) {
+            console.error("Error adding to cart:", error);
+            alert("Failed to add movie to cart.");
+        }
+    });
+}
+
+// $(document).ready(function() {
+//     // Handle the "View Cart" button click
+//     $('#movies_view_cart_button').on('click', function() {
+//         loadCartItems();
+//     });
+// });
+
+
+function loadCartItems() {
+    $.ajax({
+        url: '/fabflix_com_war/api/cart',
+        method: 'GET',
+        dataType: 'json',
+        success: function(cartItems) {
+            if (cartItems.length === 0) {
+                alert('Your cart is empty.');
+            } else {
+                console.log(cartItems);
+            }
+        },
+        error: function() {
+            alert('Failed to load cart items.');
+        }
+    });
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser\
  */
+$(document).ready(function() {
+    // Handle logout form submission
+    // $("#logout_form").on("submit", function(event) {
+    //     // Prevent default form submission
+    //     event.preventDefault();
+    //
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "/api/logout",
+    //         dataType: "json",
+    //         success: function(response) {
+    //             if (response.status === "success") {
+    //                 // Logout successful, redirect to login page
+    //                 window.location.href = "login.html";
+    //             } else {
+    //                 // Handle error case (no active session)
+    //                 alert(response.message);
+    //             }
+    //         },
+    //         error: function() {
+    //             // Handle AJAX error
+    //             alert("Error logging out. Please try again.");
+    //         }
+    //     });
+    // });
 
-// Get id from URL
-let starId = getParameterByName('id');
+    $("#single_star_view_cart_button").on("click", function() {
+        window.location.href = "movie-cart.html";
+    });
 
-// Makes HTTP GET request and registers on success callback function handleResult
-jQuery.ajax({
-    dataType: "json",  // Setting return data type
-    method: "GET",// Setting request method
-    url: "api/single-star?id=" + starId, // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    $("#single_star_back_button").on("click", function() {
+        window.location.href = "movies.html";
+    });
+
+    const queryParams = getQueryParams();
+
+    let apiURL = `api/single-star?id=${queryParams.id}`;
+
+    // Existing AJAX call to fetch single star data
+    jQuery.ajax({
+        dataType: "json",
+        method: "GET",
+        url: apiURL,
+        success: (resultData) => handleResult(resultData),
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("error fetching star:", errorThrown);
+            alert("failed to fetch star.");
+        }
+    });
 });
+
+let logout_form = $("#logout_form");
+
+function handleLogoutResult(resultDataJson) {
+    console.log("handle logout response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["status"]);
+
+    if (resultDataJson["status"] === "success") {
+        window.location.replace("logout.html");
+    } else {
+        console.log("show error message");
+        console.log(resultDataJson["message"]);
+    }
+}
+
+function submitLogoutForm(formSubmitEvent) {
+    console.log("submit logout form");
+
+    formSubmitEvent.preventDefault();
+
+    $.ajax(
+        "api/logout", {
+            method: "POST",
+            success: handleLogoutResult,
+            error: handleLogoutResult
+        }
+    );
+}
+
+logout_form.submit(submitLogoutForm)

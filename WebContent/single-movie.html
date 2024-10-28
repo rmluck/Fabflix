@@ -13,10 +13,6 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
     <!-- Link to css file -->
     <link rel="stylesheet" href="fabflix.css">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +22,14 @@
 </head>
 <body id="movie_body">
 
-<h1><a href="index.html">FABFLIX</a></h1>
+<div id="header_container">
+    <h1><a href="index.html">FABFLIX</a></h1>
+    <button class="back_button" id="single_movie_back_button">Back</button>
+    <button class="view_cart_button" id="single_movie_view_cart_button">View Cart</button>
+    <form id="logout_form" method="POST" action="/api/logout">
+      <button class="logout_button" id="single_movie_logout_button">Logout</button>
+    </form>
+</div>
 
 <!-- H3 body is left empty here, will be populated with the data retrieved with single-movie.js -->
 <!-- single-movie.js will find this html element by its id "movie_info" -->
@@ -39,6 +42,7 @@
         <th class="movie_table_heading">Genres</th>
         <th class="movie_table_heading">Stars</th>
         <th class="movie_table_heading">Rating</th>
+        <th class="movie_table_heading">Action</th>
     </tr>
     </thead>
 
