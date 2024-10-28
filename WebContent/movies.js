@@ -275,7 +275,7 @@ $(document).ready(function() {
             sq += `?action=searchMovies&${$.param(queryParams)}`;
         }
 
-        if (searchQuery !== sq) {
+        if (searchQuery !== sq && sq !== "") {
             searchQuery = sq;
         }
 
