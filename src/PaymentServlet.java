@@ -16,7 +16,7 @@ import java.sql.SQLException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-@WebServlet("/api/payment")
+@WebServlet(name = "PaymentServlet", urlPatterns = "/api/payment")
 public class PaymentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -76,7 +76,7 @@ public class PaymentServlet extends HttpServlet {
 
             session.removeAttribute("cartItems");
 
-            response.sendRedirect("/fabflix_com_war/confirmation.html");
+            response.sendRedirect("confirmation.html");
         } else {
             response.sendRedirect("payment.html?error=Invalid payment information");
         }

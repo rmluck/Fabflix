@@ -26,11 +26,11 @@ $(document).ready(function() {
             console.log('Sending payment data:', data); // Log data for debugging
 
             $.ajax({
-                url: '/fabflix_com_war/api/payment',
+                url: 'api/payment',
                 type: 'POST',
                 data: data,
                 success: function(response) {
-                    window.location.href = "/fabflix_com_war/confirmation.html";
+                    window.location.href = "confirmation.html";
                 },
                 error: function(xhr) {
                     $('#payment-error').text('Payment failed. Please try again.').show();
@@ -41,7 +41,7 @@ $(document).ready(function() {
 
     function fetchTotalPrice() {
         $.ajax({
-            url: '/fabflix_com_war/api/cart/total',
+            url: 'api/cart/total',
             type: 'GET',
             success: function(response) {
                 if (response && response.totalPrice !== undefined) {

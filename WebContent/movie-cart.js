@@ -5,7 +5,7 @@ $(document).ready(function() {
     });
     function loadCartItems() {
         $.ajax({
-            url: '/fabflix_com_war/api/cart',
+            url: 'api/cart',
             method: 'GET',
             dataType: 'json',
             success: function(cartItems) {
@@ -40,7 +40,7 @@ $(document).ready(function() {
         const newQuantity = $(this).val();
 
         $.ajax({
-            url: '/fabflix_com_war/api/cart',
+            url: 'api/cart',
             method: 'POST',
             data: {
                 action: 'update',
@@ -63,7 +63,7 @@ $(document).ready(function() {
 
         if (confirm('Are you sure you want to remove this movie from your cart?')) {
             $.ajax({
-                url: '/fabflix_com_war/api/cart',
+                url: 'api/cart',
                 method: 'POST',
                 data: {
                     action: 'remove',

@@ -198,7 +198,7 @@ function addToCart(movieId, movieTitle, movieYear) {
 
 function loadCartItems() {
     $.ajax({
-        url: '/fabflix_com_war/api/cart',
+        url: 'api/cart',
         method: 'GET',
         dataType: 'json',
         success: function(cartItems) {
