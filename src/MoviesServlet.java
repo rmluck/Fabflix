@@ -130,9 +130,9 @@ public class MoviesServlet extends HttpServlet {
                 queryBuilder.append(" AND LOWER(m_inner.director) LIKE LOWER(?)");
             }
             if (star != null && !star.isEmpty()) {
-                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS sim_inner " +
-                        " JOIN stars AS s_inner ON sim_inner.starId = s.id " +
-                        " WHERE sim_inner.movieId = m_inner.id AND LOWER(s_inner.name) LIKE LOWER(?))");
+                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
+                        " JOIN stars AS s ON simov.starId = s.id " +
+                        " WHERE simov.movieId = m_inner.id AND LOWER(s.name) LIKE LOWER(?))");
             }
 
             queryBuilder.append(") AS total_records " +
