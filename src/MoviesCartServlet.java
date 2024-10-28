@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-@WebServlet("/api/cart")
+@WebServlet(name = "MoviesCartServlet", urlPatterns = "/api/cart")
 public class MoviesCartServlet extends HttpServlet {
 
     @Override
