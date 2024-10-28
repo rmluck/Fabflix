@@ -145,21 +145,14 @@ h3 {
 #pagination {
     position: fixed;
     width: 100%;
-    height: 100px;
+    height: 50px;
     bottom: 0;
     background-color: #222222;
     color: darkgray;
 }
 
-#pagination button {
-    height: 37px;
-    margin-top: 6.5px;
-    color: seashell;
-    font-family: "Oswald", sans-serif;
-}
-
 #prev_button {
-    right: 145px;
+    right: 175px;
 }
 
 #next_button {
@@ -167,9 +160,9 @@ h3 {
 }
 
 #page_number {
-    width: 75px;
+    width: 100px;
     text-align: center;
-    margin-top: 15px;
+    margin-top: -10px;
     position: absolute;
     right: 70px;
 }
@@ -382,7 +375,9 @@ td a:hover {
     height: 425px;
     border-radius: 10px;
     box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-    padding: 25px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
     margin-left: 5%;
     margin-right: 5%;
     margin-top: 125px;
@@ -567,7 +562,7 @@ button:hover {
 }
 
 #index_logout_button {
-    top: -10px;
+    top: -15px;
 }
 
 #single_movie_logout_button, #single_star_logout_button {
@@ -630,6 +625,7 @@ button:hover {
     margin-right: 10px;
     font-family: "Oswald", sans-serif;
     vertical-align: middle;
+    margin-top: 0;
 }
 
 #movies_per_page {
@@ -658,10 +654,15 @@ button:hover {
     border: 1px solid #555555;
     border-radius: 5px;
     font-size: 16px;
-    padding: 8px 12px;
-    margin: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    height: 37px;
+    margin-top: -17px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 6px;
+    color: seashell;
+    font-family: "Oswald", sans-serif;
 }
 
 #pagination button:hover {
@@ -681,8 +682,21 @@ button:hover {
     z-index: 10;
 }
 
+.back_button {
+    font-family: "Oswald", sans-serif;
+    color: #222222;
+    letter-spacing: 0.5px;
+    outline: none;
+    height: 65px;
+    top: -83px;
+    left: 12px;
+    position: absolute;
+    border-radius: 5px;
+    z-index: 10;
+}
+
 #index_view_cart_button {
-    top: -104px;
+    top: -109px;
 }
 
 #single_movie_view_cart_button, #single_star_view_cart_button {

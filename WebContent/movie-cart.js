@@ -83,6 +83,19 @@ $(document).ready(function() {
     });
 });
 
+function clearSession() {
+    $.ajax({
+        url: "api/session",
+        method: "DELETE",
+        success: () => {
+            console.log("Session parameters reset.");
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("Failed to reset session parameters: ", errorThrown);
+        }
+    });
+}
+
 let logout_form = $("#logout_form");
 
 function handleLogoutResult(resultDataJson) {

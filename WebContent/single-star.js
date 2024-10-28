@@ -114,6 +114,10 @@ $(document).ready(function() {
         window.location.href = "movie-cart.html";
     });
 
+    $("#single_star_back_button").on("click", function() {
+        window.location.href = "movies.html";
+    });
+
     const queryParams = getQueryParams();
 
     let apiURL = `api/single-star?id=${queryParams.id}`;

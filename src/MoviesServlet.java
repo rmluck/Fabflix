@@ -228,7 +228,6 @@ public class MoviesServlet extends HttpServlet {
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
-        System.out.println("BEFORE QUERY");
         // Fetch movies by genre from database
         try (Connection conn = dataSource.getConnection()) {
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +

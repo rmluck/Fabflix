@@ -134,6 +134,10 @@ $(document).ready(function() {
         window.location.href = "movie-cart.html";
     });
 
+    $("#single_movie_back_button").on("click", function() {
+        window.location.href = "movies.html";
+    });
+
     const queryParams = getQueryParams();
 
     movieId = queryParams.id;

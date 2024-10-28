@@ -17,13 +17,42 @@ let titleSortDirection = "desc";
 let ratingSortDirection = "desc";
 let sortPriority = "r";
 let apiURL = "api/movies";
+let searchQuery = "";
+
+function savePageState() {
+    $.post("api/session", {
+        currentPage: currentPage,
+        moviesPerPage: moviesPerPage,
+        searchQuery: searchQuery,
+        titleSortDirection: titleSortDirection,
+        ratingSortDirection: ratingSortDirection,
+        sortPriority: sortPriority
+    });
+}
+
+function loadPageState(callback) {
+    $.get("api/session", function(data) {
+        if (data) {
+            currentPage = data.currentPage;
+            moviesPerPage = data.moviesPerPage;
+            searchQuery = data.searchQuery;
+            titleSortDirection = data.titleSortDirection;
+            ratingSortDirection = data.ratingSortDirection;
+            sortPriority = data.sortPriority;
+        }
+
+        if (typeof callback === "function") {
+            callback();
+        }
+    })
+}
 
 function updateMoviesPerPage() {
     moviesPerPage = parseInt(document.getElementById("movies_per_page").value);
     currentPage = 1;
     // updatePaginationControls();
     // displayCurrentMoviesPage();
-    let currentAPIURL = apiURL;
+    let currentAPIURL = apiURL + searchQuery;
     if (sortPriority === "r") {
         currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
     } else if (sortPriority === "t") {
@@ -31,13 +60,14 @@ function updateMoviesPerPage() {
     }
     currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
     currentAPIURL += `&page=${currentPage}`;
+    savePageState();
     fetchMovies(currentAPIURL);
 }
 
 function nextPage() {
     if (currentPage < totalPages) {
         currentPage++;
-        let currentAPIURL = apiURL;
+        let currentAPIURL = apiURL + searchQuery;
         if (sortPriority === "r") {
             currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
         } else if (sortPriority === "t") {
@@ -45,6 +75,7 @@ function nextPage() {
         }
         currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
         currentAPIURL += `&page=${currentPage}`;
+        savePageState();
         fetchMovies(currentAPIURL);
     }
 }
@@ -52,7 +83,7 @@ function nextPage() {
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
-        let currentAPIURL = apiURL;
+        let currentAPIURL = apiURL + searchQuery;
         if (sortPriority === "r") {
             currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
         } else if (sortPriority === "t") {
@@ -60,6 +91,7 @@ function prevPage() {
         }
         currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
         currentAPIURL += `&page=${currentPage}`;
+        savePageState();
         fetchMovies(currentAPIURL);
     }
 }
@@ -74,25 +106,24 @@ function updatePaginationControls() {
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param resultData jsonObject
  */
-function handleMovieResult(resultData) {
-    console.log("API Response: ", resultData);
+function handleMoviesResult(resultData) {
+    loadPageState(() => {
+        console.log("API Response: ", resultData);
 
-    data = resultData.movies;
-    totalMovies = resultData.totalMovies;
-    totalPages = resultData.totalPages;
+        data = resultData.movies;
+        totalMovies = resultData.totalMovies;
+        totalPages = resultData.totalPages;
 
-    console.log("handleMoviesResult: populating movies table from data");
-    console.log("Number of results: ", data.length);
+        console.log("handleMoviesResult: populating movies table from data");
+        console.log("Number of results: ", data.length);
 
-    displayCurrentMoviesPage();
+        displayCurrentMoviesPage();
+    });
 }
 
 function displayCurrentMoviesPage() {
     let moviesTableBodyElement = jQuery("#movies_table_body");
     moviesTableBodyElement.empty();
-
-    // let startIndex = (currentPage - 1) * moviesPerPage;
-    // let endIndex = Math.min(startIndex + moviesPerPage, data.length);
 
     for (let i = 0; i < moviesPerPage; i++) {
         let rowHTML = "<tr>";
@@ -202,10 +233,11 @@ function sortMoviesByTitle() {
     titleSortDirection = titleSortDirection === "asc" ? "desc" : "asc";
     sortPriority = "t";
     currentPage = 1;
-    let currentAPIURL = apiURL;
+    let currentAPIURL = apiURL + searchQuery;
     currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
     currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
     currentAPIURL += `&page=${currentPage}`;
+    savePageState();
     fetchMovies(currentAPIURL);
 }
 
@@ -213,10 +245,11 @@ function sortMoviesByRating() {
     ratingSortDirection = ratingSortDirection === "asc" ? "desc" : "asc";
     sortPriority = "r";
     currentPage = 1;
-    let currentAPIURL = apiURL;
+    let currentAPIURL = apiURL + searchQuery;
     currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
     currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
     currentAPIURL += `&page=${currentPage}`;
+    savePageState();
     fetchMovies(currentAPIURL);
 }
 
@@ -231,26 +264,31 @@ $(document).ready(function() {
         window.location.href = "movie-cart.html";
     });
 
-    const queryParams = getQueryParams();
+    loadPageState(() => {
+        if (searchQuery === "") {
+            const queryParams = getQueryParams();
 
-    if (queryParams.genreId) {
-        apiURL += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;
-    } else if (queryParams.letter) {
-        apiURL += `?action=getMoviesByTitle&letter=${queryParams.letter}`;
-    } else if (queryParams.title || queryParams.year || queryParams.director || queryParams.star) {
-        apiURL += `?action=searchMovies&${$.param(queryParams)}`;
-    }
+            if (queryParams.genreId) {
+                searchQuery += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;
+            } else if (queryParams.letter) {
+                searchQuery += `?action=getMoviesByTitle&letter=${queryParams.letter}`;
+            } else if (queryParams.title || queryParams.year || queryParams.director || queryParams.star) {
+                searchQuery += `?action=searchMovies&${$.param(queryParams)}`;
+            }
+        }
 
-    let currentAPIURL = apiURL;
-    if (sortPriority === "r") {
-        currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
-    } else if (sortPriority === "t") {
-        currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
-    }
-    currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
-    currentAPIURL += `&page=${currentPage}`;
+        let currentAPIURL = apiURL + searchQuery;
+        if (sortPriority === "r") {
+            currentAPIURL += `&sortOptions=r.rating%20${ratingSortDirection},m.title%20${titleSortDirection}`;
+        } else if (sortPriority === "t") {
+            currentAPIURL += `&sortOptions=m.title%20${titleSortDirection},r.rating%20${ratingSortDirection}`;
+        }
+        currentAPIURL += `&moviesPerPage=${moviesPerPage}`;
+        currentAPIURL += `&page=${currentPage}`;
 
-    fetchMovies(currentAPIURL);
+        savePageState();
+        fetchMovies(currentAPIURL);
+    });
 });
 
 function fetchMovies(apiURL){
@@ -259,10 +297,23 @@ function fetchMovies(apiURL){
         dataType: "json",
         method: "GET",
         url: apiURL,
-        success: (resultData) => handleMovieResult(resultData),
+        success: (resultData) => handleMoviesResult(resultData),
         error: (jqXHR, textStatus, errorThrown) => {
             console.error("error fetching movies:", errorThrown);
             alert("failed to fetch movies.")
+        }
+    });
+}
+
+function clearSession() {
+    $.ajax({
+        url: "api/session",
+        method: "DELETE",
+        success: () => {
+            console.log("Session parameters reset.");
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            console.error("Failed to reset session parameters: ", errorThrown);
         }
     });
 }
