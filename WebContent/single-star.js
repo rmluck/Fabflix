@@ -81,6 +81,53 @@ function getQueryParams() {
     return params;
 }
 
+function addToCart(movieId, movieTitle, movieYear) {
+    // Send a POST request to add the movie to the cart
+    $.ajax({
+        url: 'api/cart',
+        method: 'POST',
+        data: {
+            action: 'add',
+            movieId: movieId,
+            title: movieTitle,
+            year: movieYear
+        },
+        success: function(response) {
+            alert(movieTitle + " added to cart!");
+        },
+        error: function(error) {
+            console.error("Error adding to cart:", error);
+            alert("Failed to add movie to cart.");
+        }
+    });
+}
+
+// $(document).ready(function() {
+//     // Handle the "View Cart" button click
+//     $('#movies_view_cart_button').on('click', function() {
+//         loadCartItems();
+//     });
+// });
+
+
+function loadCartItems() {
+    $.ajax({
+        url: '/fabflix_com_war/api/cart',
+        method: 'GET',
+        dataType: 'json',
+        success: function(cartItems) {
+            if (cartItems.length === 0) {
+                alert('Your cart is empty.');
+            } else {
+                console.log(cartItems);
+            }
+        },
+        error: function() {
+            alert('Failed to load cart items.');
+        }
+    });
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser\
  */
