@@ -111,10 +111,11 @@ public class MoviesServlet extends HttpServlet {
                             " FROM stars_in_movies " +
                             " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
                             " WHERE simov.movieId = m.id " +
-                            " ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
+                            " ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars, " +
                             " (SELECT COUNT(*) " +
                             " FROM movies AS m_inner " +
-                            " LEFT JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
+                            " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
+                            " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
                             " WHERE 1=1 "
             );
 
@@ -135,7 +136,8 @@ public class MoviesServlet extends HttpServlet {
 
             queryBuilder.append(") AS total_records " +
                     " FROM movies AS m " +
-                    " LEFT JOIN ratings AS r ON m.id = r.movieId " +
+                    " JOIN ratings AS r on m.id = r.movieId " +
+                    " JOIN genres_in_movies AS gim on m.id = gim.movieId " +
                     " WHERE 1=1 ");
 
             if (title != null && !title.isEmpty()) {
