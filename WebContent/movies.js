@@ -125,7 +125,7 @@ function displayCurrentMoviesPage() {
     let moviesTableBodyElement = jQuery("#movies_table_body");
     moviesTableBodyElement.empty();
 
-    for (let i = 0; i < moviesPerPage; i++) {
+    for (let i = 0; i < data.length; i++) {
         let rowHTML = "<tr>";
         rowHTML += "<td><a href='single-movie.html?id=" + data[i]["id"] + "'>" + data[i]["title"] + "</a></td>";
         rowHTML += "<td>" + data[i]["year"] + "</td>";
@@ -135,7 +135,7 @@ function displayCurrentMoviesPage() {
         let genresHTML = "<td colspan='3'>";
         genresArray.forEach((genre, index) => {
             let [genreId, genreName] = genre.split(":");
-            console.log("genreId: ", genreId, " genreName: ", genreName);
+            // console.log("genreId: ", genreId, " genreName: ", genreName);
             genresHTML += `<a href='movies.html?genreId=${genreId.trim()}'>${genreName}</a>`;
             if (index < genresArray.length - 1) {
                 genresHTML += ", ";
@@ -148,7 +148,7 @@ function displayCurrentMoviesPage() {
         let starsHTML = "<td colspan='3'>";
         starsArray.forEach((star, index) => {
             let [starId, starName] = star.split(":");
-            console.log("starId: ", starId, " starName: ", starName);
+            // console.log("starId: ", starId, " starName: ", starName);
             starsHTML += `<a href='single-star.html?id=${starId.trim()}'>${starName}</a>`;
             if (index < starsArray.length - 1) {
                 starsHTML += ", ";

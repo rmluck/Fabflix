@@ -130,9 +130,9 @@ public class MoviesServlet extends HttpServlet {
                 queryBuilder.append(" AND LOWER(m_inner.director) LIKE LOWER(?)");
             }
             if (star != null && !star.isEmpty()) {
-                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
-                        " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m_inner.id AND LOWER(s.name) LIKE LOWER(?))");
+                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS sim_inner " +
+                        " JOIN stars AS s_inner ON sim_inner.starId = s.id " +
+                        " WHERE sim_inner.movieId = m_inner.id AND LOWER(s_inner.name) LIKE LOWER(?))");
             }
 
             queryBuilder.append(") AS total_records " +
@@ -328,7 +328,7 @@ public class MoviesServlet extends HttpServlet {
                     "(SELECT COUNT(*) FROM movies AS m_inner " +
                     " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
                     " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
-                    " WHERE m.title REGEXP '^[^a-zA-Z0-9]') AS total_records " +
+                    " WHERE m_inner.title REGEXP '^[^a-zA-Z0-9]') AS total_records " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
@@ -358,7 +358,7 @@ public class MoviesServlet extends HttpServlet {
                     "(SELECT COUNT(*) FROM movies AS m_inner " +
                     " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
                     " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
-                    " WHERE m.title LIKE ?) AS total_records " +
+                    " WHERE m_inner.title LIKE ?) AS total_records " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
