@@ -265,16 +265,18 @@ $(document).ready(function() {
     });
 
     loadPageState(() => {
-        if (searchQuery === "") {
-            const queryParams = getQueryParams();
+        const queryParams = getQueryParams();
+        let sq = "";
+        if (queryParams.genreId) {
+            sq += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;
+        } else if (queryParams.letter) {
+            sq += `?action=getMoviesByTitle&letter=${queryParams.letter}`;
+        } else if (queryParams.title || queryParams.year || queryParams.director || queryParams.star) {
+            sq += `?action=searchMovies&${$.param(queryParams)}`;
+        }
 
-            if (queryParams.genreId) {
-                searchQuery += `?action=getMoviesByGenre&genreId=${queryParams.genreId}`;
-            } else if (queryParams.letter) {
-                searchQuery += `?action=getMoviesByTitle&letter=${queryParams.letter}`;
-            } else if (queryParams.title || queryParams.year || queryParams.director || queryParams.star) {
-                searchQuery += `?action=searchMovies&${$.param(queryParams)}`;
-            }
+        if (searchQuery !== sq) {
+            searchQuery = sq;
         }
 
         let currentAPIURL = apiURL + searchQuery;
