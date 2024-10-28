@@ -58,11 +58,12 @@ public class LoginServlet extends HttpServlet {
 
                 // If user is found
                 if (resultSet.next()) {
-                    int customerId = resultSet.getInt("customer_id");
-                    request.getSession().setAttribute("customerId", customerId);
+                    int customerId = resultSet.getInt("id");
                     request.getSession().setAttribute("user", new User(email));
+                    request.getSession().setAttribute("customerId", customerId);
                     responseJsonObject.addProperty("status", "success");
-                    responseJsonObject.addProperty("message", "success");
+                    responseJsonObject.addProperty("message", "Successfully logged in");
+                    System.out.println("User login success: " + email);
                 } else {
                     // Login fail
                     responseJsonObject.addProperty("status", "fail");
