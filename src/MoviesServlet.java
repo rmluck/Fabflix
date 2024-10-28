@@ -85,6 +85,7 @@ public class MoviesServlet extends HttpServlet {
                 break;
             case "getMoviesByTitle":
                 getMoviesByTitle(letter, sortParameters, moviesPerPage, String.valueOf(offset), response);
+                break;
         }
     }
 
@@ -332,6 +333,7 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title REGEXP '^[^a-zA-Z0-9]' " +
+                    " GROUP BY m.id, r.rating " +
                     " ORDER BY " + sortParameters +
                     " LIMIT ? OFFSET ?;";
                 statement = conn.prepareStatement(query);
@@ -352,7 +354,7 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
                     " FROM stars_in_movies " +
                     " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
-                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars " +
+                    " WHERE simov.movieId = m.id ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars, " +
                     "(SELECT COUNT(*) FROM movies AS m_inner " +
                     " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
                     " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
@@ -361,8 +363,9 @@ public class MoviesServlet extends HttpServlet {
                     " JOIN ratings AS r ON m.id = r.movieId " +
                     " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
                     " WHERE m.title LIKE ? " +
+                    " GROUP BY m.id, r.rating" +
                     " ORDER BY " + sortParameters +
-                    " LIMIT ? OFFSET ? ";
+                    " LIMIT ? OFFSET ?;";
                 statement = conn.prepareStatement(query);
                 statement.setString(1, letter + "%");
                 statement.setString(2, letter + "%");
@@ -376,15 +379,14 @@ public class MoviesServlet extends HttpServlet {
             int totalMovies = 0;
             while (rs.next()) {
                 movies.add(new Movie(rs.getString("id"), rs.getString("title"), rs.getInt("year"), rs.getString("director"), rs.getString("genres"), rs.getString("stars"), rs.getFloat("rating")));
+                totalMovies = rs.getInt("total_records");
             }
-            totalMovies = rs.getInt("total_records");
             int totalPages = (int) Math.ceil((double) totalMovies / Integer.parseInt(limit));
 
             rs.close();
             statement.close();
 
             MoviesResponse moviesResponse = new MoviesResponse(movies, totalMovies, totalPages);
-
             // Send genres as JSON response
             out.write(new Gson().toJson(moviesResponse));
             // Set response status to 200 (OK)
