@@ -345,19 +345,27 @@ td a:hover {
 }
 
 #login_form {
-    height: 385px;
+    height: 450px;
     width: 325px;
     background-color: rgba(255, 255, 255, 0.13);
     position: absolute;
     transform: translate(-50%, -50%);
-    top: 50%;
+    top: 53%;
     left: 50%;
     border-radius: 10px;
     backdrop-filter: blur(10px);
     border: 2px solid;
     box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
-    padding: 35px 35px;
+    padding-top: 20px;
+    padding-bottom: 35px;
+    padding-left: 35px;
+    padding-right: 35px;
     margin-top: 25px;
+}
+
+#login_form h2 {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 #logout_form {
@@ -528,6 +536,10 @@ input {
     padding-right: 2%;
 }
 
+#email_label, #password_label {
+    margin-top: 15px;
+}
+
 button {
     background-color: rgba(255, 245, 238, 0.30);
     color: #080710;
@@ -552,7 +564,6 @@ button:hover {
     color: #080710;
     width: 100%;
     background-color: seashell;
-    margin-top: 10px;
     padding: 0 10px;
 }
 
@@ -608,6 +619,7 @@ button:hover {
     color: #f26661;
     font-size: 16px;
     text-align: center;
+    margin-top: 25px;
     margin-bottom: 20px;
     width: 100%;
     text-transform: uppercase;
@@ -720,4 +732,9 @@ button:hover {
     align-items: center;
     position: static;
     border-radius: 0;
+}
+
+.g-recaptcha {
+    transform: scale(1.07);
+    transform-origin: 0 0;
 }
