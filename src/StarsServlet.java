@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -42,14 +43,12 @@ public class StarsServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage
         try (Connection conn = dataSource.getConnection()) {
-            // Declare statement
-            Statement statement = conn.createStatement();
-
             // Construct query
             String query = "SELECT * from stars";
 
-            // Perform query
-            ResultSet rs = statement.executeQuery(query);
+            PreparedStatement statement = conn.prepareStatement(query);
+
+            ResultSet rs = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
