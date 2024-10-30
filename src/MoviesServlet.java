@@ -96,71 +96,87 @@ public class MoviesServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try (Connection conn = dataSource.getConnection()) {
-            StringBuilder queryBuilder = new StringBuilder(
-                    "SELECT m.id, m.title, m.year, m.director, r.rating, " +
-                            "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ',') " +
-                            " FROM (SELECT g.id, g.name " +
-                            " FROM genres_in_movies AS gimov " +
-                            " JOIN genres AS g ON gimov.genreId = g.id " +
-                            " WHERE gimov.movieId = m.id " +
-                            " ORDER BY g.name LIMIT 3) AS three_genres) AS genres, " +
-                            "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ',') " +
-                            " FROM (SELECT s.id, s.name " +
-                            " FROM stars_in_movies AS simov " +
-                            " JOIN stars AS s ON simov.starId = s.id " +
-                            " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
-                            " FROM stars_in_movies " +
-                            " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
-                            " WHERE simov.movieId = m.id " +
-                            " ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars, " +
-                            " (SELECT COUNT(*) " +
-                            " FROM movies AS m_inner " +
-                            " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId " +
-                            " JOIN genres_in_movies AS gim_inner ON m_inner.id = gim_inner.movieId " +
-                            " WHERE 1=1 "
-            );
+            String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
+                    "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ',') " +
+                    " FROM (SELECT g.id, g.name " +
+                    " FROM genres_in_movies AS gimov " +
+                    " JOIN genres AS g ON gimov.genreId = g.id " +
+                    " WHERE gimov.movieId = m.id " +
+                    " ORDER BY g.name LIMIT 3) AS three_genres) AS genres, " +
+                    "(SELECT GROUP_CONCAT(CONCAT(three_stars.id, ':', three_stars.name) SEPARATOR ',') " +
+                    " FROM (SELECT s.id, s.name " +
+                    " FROM stars_in_movies AS simov " +
+                    " JOIN stars AS s ON simov.starId = s.id " +
+                    " JOIN (SELECT starId, COUNT(movieId) AS movie_count " +
+                    " FROM stars_in_movies " +
+                    " GROUP BY starId) AS star_counts ON s.id = star_counts.starId " +
+                    " WHERE simov.movieId = m.id " +
+                    " ORDER BY star_counts.movie_count DESC, s.name ASC LIMIT 3) AS three_stars) AS stars, " +
+                    " (SELECT COUNT(*) " +
+                    " FROM (SELECT DISTINCT m_inner.id " +
+                    " FROM movies AS m_inner " +
+                    " JOIN ratings AS r_inner ON m_inner.id = r_inner.movieId ";
 
+            int subcount = 0;
             if (title != null && !title.isEmpty()) {
-                queryBuilder.append(" AND LOWER(m_inner.title) LIKE LOWER(?)");
+                query += " WHERE LOWER(m_inner.title) LIKE LOWER(?) ";
+                subcount = 1;
             }
             if (year != null && !year.isEmpty()) {
-                queryBuilder.append(" AND LOWER(m_inner.year) = LOWER(?)");
+                if (subcount == 1) {
+                    query += " WHERE LOWER(m_inner.year) = LOWER(?) ";
+                    subcount = 1;
+                } else {
+                    query += " AND LOWER(m_inner.year) = LOWER(?) ";
+                }
             }
             if (director != null && !director.isEmpty()) {
-                queryBuilder.append(" AND LOWER(m_inner.director) LIKE LOWER(?)");
+                if (subcount == 1) {
+                    query += " WHERE LOWER(m_inner.director) = LOWER(?) ";
+                    subcount = 1;
+                } else{
+                    query += " AND LOWER(m_inner.director) LIKE LOWER(?) ";
+                }
             }
             if (star != null && !star.isEmpty()) {
-                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
+                if (subcount == 1) {
+                    query += " WHERE EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m_inner.id AND LOWER(s.name) LIKE LOWER(?))");
+                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
+                    subcount = 1;
+                } else {
+                    query += " AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
+                        " JOIN stars AS s ON simov.starId = s.id " +
+                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
+                }
             }
-
-            queryBuilder.append(") AS total_records " +
+            query += ") AS filtered_movies " +
+                    ") AS total_records " +
                     " FROM movies AS m " +
                     " JOIN ratings AS r on m.id = r.movieId " +
-                    " JOIN genres_in_movies AS gim on m.id = gim.movieId " +
-                    " WHERE 1=1 ");
+                    " JOIN genres_in_movies AS gim ON m.id = gim.movieId " +
+                    " WHERE 1=1 ";
 
             if (title != null && !title.isEmpty()) {
-                queryBuilder.append(" AND LOWER(m.title) LIKE LOWER(?)");
+                query += " AND LOWER(m.title) LIKE LOWER(?) ";
             }
             if (year != null && !year.isEmpty()) {
-                queryBuilder.append(" AND LOWER(m.year) = LOWER(?)");
+                query += " AND LOWER(m.year) = LOWER(?) ";
             }
             if (director != null && !director.isEmpty()) {
-                queryBuilder.append(" AND LOWER(m.director) LIKE LOWER(?)");
+                query += " AND LOWER(m.director) LIKE LOWER(?) ";
             }
             if (star != null && !star.isEmpty()) {
-                queryBuilder.append(" AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
+                query += " AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))");
+                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
             }
+            query += " GROUP BY m.id, r.rating " +
+                    " ORDER BY ";
+            query += sortParameters;
+            query += " LIMIT ? OFFSET ?;";
 
-            queryBuilder.append(" GROUP BY m.id, r.rating " +
-                    " ORDER BY " + sortParameters +
-                    " LIMIT ? OFFSET ?;");
-
-            PreparedStatement statement = conn.prepareStatement(queryBuilder.toString());
+            PreparedStatement statement = conn.prepareStatement(query);
 
             int index = 1;
             if (title != null && !title.isEmpty()) {
@@ -189,6 +205,8 @@ public class MoviesServlet extends HttpServlet {
             }
             statement.setInt(index++, Integer.parseInt(limit));
             statement.setInt(index++, Integer.parseInt(offset));
+
+            System.out.println(statement);
 
             ResultSet rs = statement.executeQuery();
 
