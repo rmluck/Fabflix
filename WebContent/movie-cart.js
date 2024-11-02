@@ -1,6 +1,6 @@
 $(document).ready(function() {
     loadCartItems();
-    $('#proceed_to_payment').on('click', function() {
+    $('#proceed_to_payment_button').on('click', function() {
         window.location.href = 'payment.html'; // Redirect to the payment page
     });
     function loadCartItems() {
@@ -49,7 +49,7 @@ $(document).ready(function() {
             },
             success: function() {
                 loadCartItems();
-                $('#success-message').text('Quantity updated successfully!').show().delay(3000).fadeOut();
+                $('#cart_success_message').text('Quantity updated successfully!').show().delay(3000).fadeOut();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error("Error updating quantity:", textStatus, errorThrown);
@@ -71,7 +71,7 @@ $(document).ready(function() {
                 },
                 success: function() {
                     loadCartItems();
-                    $('#success-message').text('Movie removed successfully!').show().delay(3000).fadeOut();
+                    $('#cart_success_message').text('Movie removed successfully!').show().delay(3000).fadeOut();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     const errorMessage = jqXHR.responseText || "Error removing movie from cart.";

@@ -43,6 +43,13 @@
     padding: 0;
 }
 
+#payment_cart_body {
+    background-color: seashell;
+    font-family: "Oswald", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
 #header_container {
     position: fixed;
     width: 100%;
@@ -90,26 +97,26 @@ h3 {
     margin-top: 100px;
 }
 
-#movie_information {
-    font-size: 30px;
-    font-family: "Oswald", sans-serif;
-    color: black;
-    font-weight: bold;
-    padding-left: 40px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-    display: inline;
-}
+/*#movie_information {*/
+/*    font-size: 30px;*/
+/*    font-family: "Oswald", sans-serif;*/
+/*    color: black;*/
+/*    font-weight: bold;*/
+/*    padding-left: 40px;*/
+/*    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);*/
+/*    display: inline;*/
+/*}*/
 
-#movie_director {
-    font-size: 30px;
-    font-family: "Oswald", sans-serif;
-    color: black;
-    font-weight: bold;
-    padding-left: 40px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
+/*#movie_director {*/
+/*    font-size: 30px;*/
+/*    font-family: "Oswald", sans-serif;*/
+/*    color: black;*/
+/*    font-weight: bold;*/
+/*    padding-left: 40px;*/
+/*    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);*/
+/*}*/
 
-#star_info {
+#movie_info, #star_info, #payment_info {
     font-size: 30px;
     font-family: "Oswald", sans-serif;
     color: black;
@@ -203,7 +210,9 @@ h3 {
 
 #cart_table {
     width: 80%;
-    margin: 120px auto;
+    margin-top: 120px;
+    margin-left: auto;
+    margin-right: auto;
     border-collapse: collapse;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     padding-top: 0;
@@ -363,6 +372,22 @@ td a:hover {
     margin-top: 25px;
 }
 
+#payment_form {
+    height: 560px;
+    width: 350px;
+    background-color: #222222;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 54%;
+    left: 50%;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding-bottom: 35px;
+    padding-left: 20px;
+    padding-right: 50px;
+    margin-top: 25px;
+}
+
 #login_form h2 {
     margin-top: 10px;
     margin-bottom: 10px;
@@ -378,6 +403,7 @@ td a:hover {
     box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
     z-index: 10;
 }
+
 #search_form {
     background-color: rgba(255, 255, 255, 0.13);
     height: 425px;
@@ -491,6 +517,13 @@ td a:hover {
     outline: none;
 }
 
+#payment_form *{
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
+}
+
 /*#filtered_movies_list *{*/
 /*    font-family: "Oswald", sans-serif;*/
 /*    color: seashell;*/
@@ -584,7 +617,11 @@ button:hover {
     top: -10px;
 }
 
-#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #movie_cart_logout_button:hover, #index_view_cart_button:hover, #movies_view_cart_button:hover, #single_movie_view_cart_button:hover, #single_star_view_cart_button:hover, #login_button:hover {
+#payment_logout_button {
+    top: 10px;
+}
+
+#index_logout_button:hover, #movies_logout_button:hover, #single_movie_logout_button:hover, #single_star_logout_button:hover, #movie_cart_logout_button:hover, #payment_logout_button:hover, #index_view_cart_button:hover, #movies_view_cart_button:hover, #single_movie_view_cart_button:hover, #single_star_view_cart_button:hover, #login_button:hover {
     background-color: #222222;
     color: seashell;
 }
@@ -595,6 +632,10 @@ button:hover {
     margin-right: 2%;
 }
 
+#payment_first_name_label, #payment_last_name_label, #payment_credit_card_label, #payment_expiration_label {
+    font-size: 18px;
+}
+
 #search_title, #search_year, #search_director, #search_star {
     display: inline-block;
     width: 46%;
@@ -602,7 +643,11 @@ button:hover {
     margin-right: 2%;
 }
 
-#search_button {
+#payment_first_name, #payment_last_name, #payment_credit_card_number, #payment_expiration_date {
+    border: none;
+}
+
+#search_button, #payment_button {
     width: 15%;
     color: #080710;
     background-color: seashell;
@@ -610,9 +655,21 @@ button:hover {
     left: 1095px;
 }
 
-#search_button:hover {
+#search_button:hover, #payment_button:hover {
     background-color: #f26661;
     color: seashell;
+}
+
+#proceed_to_payment_button {
+    color: seashell;
+    background-color: #f26661;
+    left: 1090px;
+    bottom: 100px;
+    margin-top: 15px;
+}
+
+#proceed_to_payment_button:hover {
+    background-color: #080710;
 }
 
 #login_error_message {
@@ -623,6 +680,11 @@ button:hover {
     margin-bottom: 20px;
     width: 100%;
     text-transform: uppercase;
+}
+
+#payment_error, #cart_loading_message, #cart_success_message {
+    display: none;
+    color: red;
 }
 
 /*#movies_per_page_label {*/
