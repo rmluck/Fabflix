@@ -12,6 +12,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import com.google.gson.JsonObject;
+import org.jasypt.util.password.PasswordEncryptor;
+import org.jasypt.util.password.StrongPasswordEncryptor;
 
 // Declaring a WebServlet called LoginServlet, which maps to url "/api/login"
 @WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
@@ -50,6 +52,8 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
+        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
             request.getSession().setAttribute("user", new User(email));
@@ -62,20 +66,29 @@ public class LoginServlet extends HttpServlet {
 
             // Create new connection to database
             try (Connection conn = dataSource.getConnection()) {
-                String query = "SELECT * FROM customers WHERE email = ? AND password = ?";
+                String query = "SELECT * FROM customers WHERE email = ?"; // AND password = ?";
                 PreparedStatement statement = conn.prepareStatement(query);
                 statement.setString(1, email);
-                statement.setString(2, password);
+                //statement.setString(2, password);
                 ResultSet resultSet = statement.executeQuery();
 
                 // If user is found
                 if (resultSet.next()) {
-                    int customerId = resultSet.getInt("id");
-                    request.getSession().setAttribute("user", new User(email));
-                    request.getSession().setAttribute("customerId", customerId);
-                    responseJsonObject.addProperty("status", "success");
-                    responseJsonObject.addProperty("message", "Successfully logged in");
-                    System.out.println("User login success: " + email);
+                    String encryptedPassword = resultSet.getString("password");
+
+                    if(passwordEncryptor.checkPassword(password, encryptedPassword)) {
+                        int customerId = resultSet.getInt("id");
+                        request.getSession().setAttribute("user", new User(email));
+                        request.getSession().setAttribute("customerId", customerId);
+                        responseJsonObject.addProperty("status", "success");
+                        responseJsonObject.addProperty("message", "Successfully logged in");
+                        System.out.println("User login success: " + email);
+                    } else {
+                        // Login fail
+                        responseJsonObject.addProperty("status", "fail");
+                        responseJsonObject.addProperty("message", "Invalid email or password");
+                        System.out.println("Login Failed: " + email);
+                    }
                 } else {
                     // Login fail
                     responseJsonObject.addProperty("status", "fail");
