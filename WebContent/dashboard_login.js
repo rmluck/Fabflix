@@ -1,5 +1,5 @@
 let login_form = $("#login_form");
-console.log("at login page");
+console.log("at dashboard login page");
 
 /**
  * Handle the data returned by LoginServlet
@@ -12,7 +12,7 @@ function handleLoginResult(resultDataJson) {
 
     // If login succeeds, it will redirect the user to index.html
     if (resultDataJson["status"] === "success") {
-        window.location.replace("index.html");
+        window.location.replace("dashboard.html");
     } else {
         // If login fails, the web page will display
         // error messages on <div> with id "login_error_message"
@@ -35,15 +35,15 @@ function submitLoginForm(formSubmitEvent) {
      */
     formSubmitEvent.preventDefault();
 
-    let recaptchaResponse = grecaptcha.getResponse();
-
-    if (recaptchaResponse.length === 0) {
-        $("#login_error_message").text("Please complete the reCAPTCHA.");
-        return;
-    }
+    // let recaptchaResponse = grecaptcha.getResponse();
+    //
+    // if (recaptchaResponse.length === 0) {
+    //     $("#login_error_message").text("Please complete the reCAPTCHA.");
+    //     return;
+    // }
 
     $.ajax(
-        "api/login", {
+        "api/dashboard_login", {
             method: "POST",
             // Serialize the login form to the data sent by POST request
             data: login_form.serialize(),

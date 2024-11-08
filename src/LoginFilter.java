@@ -41,7 +41,7 @@ public class LoginFilter implements Filter {
         /*
          Setup your own rules here to allow accessing some resources without logging in
          Always allow your own login related requests(html, js, servlet, etc..)
-         You might also want to allow some CSS files, etc..
+         You might also want to allow some CSS files, etc.
          */
         return allowedURIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
     }
@@ -52,6 +52,12 @@ public class LoginFilter implements Filter {
         allowedURIs.add("api/login");
         allowedURIs.add("api/logout");
         allowedURIs.add(".css");
+        allowedURIs.add("dashboard_login.html");
+        allowedURIs.add("dashboard.html");
+        allowedURIs.add("dashboard_login.js");
+        allowedURIs.add("dashboard.js");
+        allowedURIs.add("api/dashboard_login");
+        allowedURIs.add("api/dashboard");
     }
 
     public void destroy() {
