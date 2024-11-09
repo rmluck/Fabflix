@@ -399,7 +399,7 @@ td a:hover {
 }
 
 #payment_form {
-    height: 560px;
+    height: 530px;
     width: 350px;
     background-color: #222222;
     position: absolute;
@@ -750,9 +750,10 @@ button:hover {
 
 #payment_first_name, #payment_last_name, #payment_credit_card_number, #payment_expiration_date {
     border: none;
+    width: 360px;
 }
 
-#search_button, #payment_button, #insert_star_button, #insert_movie_button {
+#search_button, #insert_star_button, #insert_movie_button {
     width: 15%;
     color: #080710;
     background-color: seashell;
@@ -764,21 +765,26 @@ button:hover {
     display: inline-block;
 }
 
-#search_button:hover, #payment_button:hover, #insert_star_button:hover, #insert_movie_button:hover {
+#search_button:hover, #payment_button:hover, #proceed_to_payment_button:hover, #insert_star_button:hover, #insert_movie_button:hover {
     background-color: #f26661;
     color: seashell;
 }
 
 #proceed_to_payment_button {
     color: seashell;
-    background-color: #f26661;
+    background-color: #222222;
     left: 1090px;
-    bottom: 100px;
     margin-top: 15px;
 }
 
-#proceed_to_payment_button:hover {
-    background-color: #080710;
+#payment_button {
+    width: 25%;
+    background-color: #222222;
+    left: 450px;
+    color: seashell;
+    bottom: 5px;
+    height: 12%;
+
 }
 
 #login_error_message, #dashboard_login_error_message, #insert_star_message p, #insert_movie_message p {
@@ -920,4 +926,10 @@ button:hover {
 .g-recaptcha {
     transform: scale(1.07);
     transform-origin: 0 0;
+}
+
+#total_price td {
+    background-color: #222222;
+    color: seashell;
+    font-size: 16px;
 }
