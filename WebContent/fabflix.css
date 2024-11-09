@@ -467,7 +467,7 @@ td a:hover {
 
 #insert_movie_form {
     background-color: rgba(255, 255, 255, 0.13);
-    height: 555px;
+    height: 540px;
     border-radius: 10px;
     box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
     padding-top: 25px;
@@ -760,6 +760,10 @@ button:hover {
     left: 1095px;
 }
 
+#insert_star_button, #insert_movie_button {
+    display: inline-block;
+}
+
 #search_button:hover, #payment_button:hover, #insert_star_button:hover, #insert_movie_button:hover {
     background-color: #f26661;
     color: seashell;
@@ -785,6 +789,18 @@ button:hover {
     margin-bottom: 20px;
     width: 100%;
     text-transform: uppercase;
+}
+
+#insert_star_message, #insert_movie_message {
+    display: inline-block;
+    width: 400px;
+    margin-top: 25px;
+    margin-left: 585px;
+    padding-right: 15px;
+}
+
+#insert_star_message p, #insert_movie_message p {
+    text-align: right;
 }
 
 #payment_error, #cart_loading_message, #cart_success_message {
