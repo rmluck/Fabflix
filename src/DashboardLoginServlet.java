@@ -15,8 +15,8 @@ import com.google.gson.JsonObject;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-// Declaring a WebServlet called LoginServlet, which maps to url "/api/login"
-@WebServlet(name = "DashboardLoginServlet", urlPatterns = "/api/dashboard_login")
+// Declaring a WebServlet called LoginServlet, which maps to url "/api/_dashboard_login"
+@WebServlet(name = "DashboardLoginServlet", urlPatterns = "/api/_dashboard_login")
 public class DashboardLoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

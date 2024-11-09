@@ -175,7 +175,7 @@ function handleInsertMovie(resultDataJson) {
 
 $("#insert_star_form").submit(function (event) {
     event.preventDefault();
-    let apiURL = "api/dashboard";
+    let apiURL = "api/_dashboard";
     let name = $("#insert_star_name").val();
     let year = $("#insert_star_year").val();
     let searchQuery = "";
@@ -224,7 +224,7 @@ $("#insert_star_form").submit(function (event) {
 
 $("#insert_movie_form").submit(function (event) {
     event.preventDefault();
-    let apiURL = "api/dashboard";
+    let apiURL = "api/_dashboard";
     let title = $("#insert_movie_title").val();
     let year = $("#insert_movie_year").val();
     let director = $("#insert_movie_director").val();
@@ -257,7 +257,7 @@ $("#insert_movie_form").submit(function (event) {
 });
 
 $.ajax(
-    "api/dashboard", {
+    "api/_dashboard", {
         method: "GET",
         success: handleMetadata
     }

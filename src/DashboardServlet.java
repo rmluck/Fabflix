@@ -22,7 +22,7 @@ import java.util.*;
  * This IndexServlet is declared in the web annotation below,
  * which is mapped to the URL pattern /api/index.
  */
-@WebServlet(name = "DashboardServlet", urlPatterns = "/api/dashboard")
+@WebServlet(name = "DashboardServlet", urlPatterns = "/api/_dashboard")
 public class DashboardServlet extends HttpServlet {
     // Create a dataSource which registered in web.xml
     private DataSource dataSource;
