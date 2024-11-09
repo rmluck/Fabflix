@@ -26,7 +26,7 @@
 </div>
 <!-- Set the method to POST to avoid showing the username/password in the URL
      The default action is disabled to allow your own implementation. -->
-<form id="login_form" method="POST" action="/api/dashboard_login">
+<form id="dashboard_login_form" method="POST" action="/api/dashboard_login">
   <h2>Admin Login</h2>
 
   <label id="email_label" for="email">Email</label>
@@ -35,7 +35,7 @@
   <label id="password_label" for="password">Password</label>
   <input id="password" name="password" placeholder="Password" type="password" required><br>
 <!--  <div class="g-recaptcha" data-sitekey="6LcJsG8qAAAAACAmKGHRVZSUNQOh8pdzZ4z7gyxk"></div>-->
-  <div id="login_error_message"></div>
+  <div id="dashboard_login_error_message"></div>
   <button id="login_button">Login</button>
 </form>
 

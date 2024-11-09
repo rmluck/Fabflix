@@ -8,6 +8,13 @@
     padding: 0;
 }
 
+#dashboard_body {
+    background-color: #080710;
+    font-family: "Oswald", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
 #login_body {
     background-color: #080710;
     font-family: "Oswald", sans-serif;
@@ -372,6 +379,25 @@ td a:hover {
     margin-top: 25px;
 }
 
+#dashboard_login_form {
+    height: 370px;
+    width: 325px;
+    background-color: rgba(255, 255, 255, 0.13);
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 53%;
+    left: 50%;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    border: 2px solid;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding-top: 20px;
+    padding-bottom: 35px;
+    padding-left: 35px;
+    padding-right: 35px;
+    margin-top: 25px;
+}
+
 #payment_form {
     height: 560px;
     width: 350px;
@@ -391,6 +417,15 @@ td a:hover {
 #login_form h2 {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+#dashboard_login_form h2 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.table_metadata h2 {
+    text-transform: uppercase;
 }
 
 #logout_form {
@@ -415,6 +450,33 @@ td a:hover {
     margin-left: 5%;
     margin-right: 5%;
     margin-top: 125px;
+}
+
+#insert_star_form {
+    background-color: rgba(255, 255, 255, 0.13);
+    height: 325px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 40px;
+}
+
+#insert_movie_form {
+    background-color: rgba(255, 255, 255, 0.13);
+    height: 555px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding-top: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 40px;
+    margin-bottom: 25px;
 }
 
 #browse_genres_list {
@@ -446,6 +508,23 @@ td a:hover {
     margin-right: 5%;
     margin-top: 25px;
     margin-bottom: 25px;
+}
+
+#metadata_list {
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: 0;
+    background-color: rgba(255, 255, 255, 0.13);
+    height: 390px;
+    border-radius: 10px;
+    box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
+    padding: 25px;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 132px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #genres_list {
@@ -503,6 +582,14 @@ td a:hover {
     border: none;
 }
 
+#dashboard_login_form *{
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
+    border: none;
+}
+
 #logout_form *{
     font-family: "Oswald", sans-serif;
     color: #222222;
@@ -511,6 +598,20 @@ td a:hover {
 }
 
 #search_form *{
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
+}
+
+#insert_star_form *{
+    font-family: "Oswald", sans-serif;
+    color: seashell;
+    letter-spacing: 0.5px;
+    outline: none;
+}
+
+#insert_movie_form *{
     font-family: "Oswald", sans-serif;
     color: seashell;
     letter-spacing: 0.5px;
@@ -626,7 +727,7 @@ button:hover {
     color: seashell;
 }
 
-#search_title_label, #search_year_label, #search_director_label, #search_star_label {
+#search_title_label, #search_year_label, #search_director_label, #search_star_label, #insert_star_name_label, #insert_star_year_label, #insert_movie_title_label, #insert_movie_year_label, #insert_movie_director_label, #insert_movie_star_label, #insert_movie_genre_label {
     display: inline-block;
     width: 47.8%;
     margin-right: 2%;
@@ -636,18 +737,22 @@ button:hover {
     font-size: 18px;
 }
 
-#search_title, #search_year, #search_director, #search_star {
+#search_title, #search_year, #search_director, #search_star, #insert_star_name, #insert_star_year, #insert_movie_title, #insert_movie_director, #insert_movie_year, #insert_movie_star, #insert_movie_genre {
     display: inline-block;
     width: 46%;
     border: none;
     margin-right: 2%;
 }
 
+#insert_movie_title {
+    width: 96%;
+}
+
 #payment_first_name, #payment_last_name, #payment_credit_card_number, #payment_expiration_date {
     border: none;
 }
 
-#search_button, #payment_button {
+#search_button, #payment_button, #insert_star_button, #insert_movie_button {
     width: 15%;
     color: #080710;
     background-color: seashell;
@@ -655,7 +760,7 @@ button:hover {
     left: 1095px;
 }
 
-#search_button:hover, #payment_button:hover {
+#search_button:hover, #payment_button:hover, #insert_star_button:hover, #insert_movie_button:hover {
     background-color: #f26661;
     color: seashell;
 }
@@ -672,7 +777,7 @@ button:hover {
     background-color: #080710;
 }
 
-#login_error_message {
+#login_error_message, #dashboard_login_error_message, #insert_star_message p, #insert_movie_message p {
     color: #f26661;
     font-size: 16px;
     text-align: center;

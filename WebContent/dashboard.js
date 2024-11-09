@@ -110,8 +110,22 @@ function handleMetadata(data) {
     }
 }
 
-function handleInsertStar(data) {
-    console.log("API Response: ", data);
+function handleInsertStar(resultDataJson) {
+    console.log("API Response: ", resultDataJson);
+    document.getElementById("insert_star_message").innerHTML = `<p>Star ID: ${resultDataJson["starId"]}, Name: ${resultDataJson["name"]}, Year: ${resultDataJson["year"]}</p>`;
+}
+
+function handleInsertMovie(resultDataJson) {
+    console.log("API Response: ", resultDataJson);
+    let movieId = resultDataJson["movieId"];
+    let starId = resultDataJson["starId"];
+    let genreId = resultDataJson["genreId"];
+
+    if (movieId != null) {
+        document.getElementById("insert_movie_message").innerHTML = `<p>Movie ID: ${movieId}, Star ID: ${starId}, Genre ID: ${genreId}</p>`;
+    } else {
+        document.getElementById("insert_movie_message").innerHTML = `<p>Error: Movie already in database.</p>`;
+    }
 }
 
 // /**
@@ -172,16 +186,25 @@ $("#insert_star_form").submit(function (event) {
     }
     apiURL += searchQuery;
 
-    jQuery.ajax({
-       dataType: "json",
-       method: "GET",
-       url: apiURL,
-       success: (resultData) => handleInsertStar(resultData),
-       error: (jqXHR, textStatus, errorThrown) => {
-           console.error("error inserting star:", errorThrown);
-           alert("failed to insert star.")
-       }
-    });
+    $.ajax(
+      apiURL, {
+          method: "GET",
+            data: $("#insert_star_form"),
+            success: handleInsertStar,
+            error: handleInsertStar
+        }
+    );
+
+    // jQuery.ajax({
+    //    dataType: "json",
+    //    method: "GET",
+    //    url: apiURL,
+    //    success: (resultData) => handleInsertStar(resultData),
+    //    error: (jqXHR, textStatus, errorThrown) => {
+    //        console.error("error inserting star:", errorThrown);
+    //        alert("failed to insert star.")
+    //    }
+    // });
 
     // $.ajax("api/index?action=searchMovies", {
     //     method: "GET",
@@ -194,9 +217,43 @@ $("#insert_star_form").submit(function (event) {
     //     }
     // });
 
-    let queryParams = $.param({name:name, year:year})
+    // let queryParams = $.param({name:name, year:year})
 
     // window.location.href = `movies.html?${queryParams}`;
+});
+
+$("#insert_movie_form").submit(function (event) {
+    event.preventDefault();
+    let apiURL = "api/dashboard";
+    let title = $("#insert_movie_title").val();
+    let year = $("#insert_movie_year").val();
+    let director = $("#insert_movie_director").val();
+    let star = $("#insert_movie_star").val();
+    let genre = $("#insert_movie_genre").val();
+    let searchQuery = "";
+
+    searchQuery += `?action=insertMovie&title=${title}&year=${year}&director=${director}&star=${star}&genre=${genre}`;
+    apiURL += searchQuery;
+
+    $.ajax(
+      apiURL, {
+          method: "GET",
+            data: $("#insert_movie_form"),
+            success: handleInsertMovie,
+            error: handleInsertMovie
+        }
+    );
+
+    // jQuery.ajax({
+    //    dataType: "json",
+    //    method: "GET",
+    //    url: apiURL,
+    //    success: (resultData) => handleInsertMovie(resultData),
+    //    error: (jqXHR, textStatus, errorThrown) => {
+    //        console.error("error inserting star:", errorThrown);
+    //        alert("failed to insert star.")
+    //    }
+    // });
 });
 
 $.ajax(

@@ -15,10 +15,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -56,8 +53,16 @@ public class DashboardServlet extends HttpServlet {
 //                searchMovies(request, response);
 //                break;
                 String name = request.getParameter("name");
+                String birthYear = request.getParameter("year");
+                insertStar(request, response, name, birthYear);
+                break;
+            case "insertMovie":
+                String title = request.getParameter("title");
                 String year = request.getParameter("year");
-                insertStar(request, response, name, year);
+                String director = request.getParameter("director");
+                String star = request.getParameter("star");
+                String genre = request.getParameter("genre");
+                insertMovie(request, response, title, year, director, star, genre);
                 break;
             default:
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
@@ -171,22 +176,21 @@ public class DashboardServlet extends HttpServlet {
 //    }
 
     private void insertStar(HttpServletRequest request, HttpServletResponse response, String name, String year) throws IOException {
+        JsonObject responseJsonObject = new JsonObject();
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
         try (Connection conn = dataSource.getConnection()) {
-            if (maxStarId == -1) {
-                String maxIdQuery = "SELECT MAX(id) as max_id FROM stars";
-                PreparedStatement maxIdStatement = conn.prepareStatement(maxIdQuery);
-                ResultSet idrs = maxIdStatement.executeQuery();
+            String maxIdQuery = "SELECT MAX(id) as max_id FROM stars";
+            PreparedStatement maxIdStatement = conn.prepareStatement(maxIdQuery);
+            ResultSet idrs = maxIdStatement.executeQuery();
 
-                if (idrs.next()) {
-                    String maxId = idrs.getString("max_id");
-                    if (maxId != null && maxId.startsWith("nm")) {
-                        maxStarId = Integer.parseInt(maxId.substring(2));
-                    } else {
-                        maxStarId = 1000000;
-                    }
+            if (idrs.next()) {
+                String maxId = idrs.getString("max_id");
+                if (maxId != null && maxId.startsWith("nm")) {
+                    maxStarId = Integer.parseInt(maxId.substring(2));
+                } else {
+                    maxStarId = 1000000;
                 }
             }
 
@@ -200,10 +204,64 @@ public class DashboardServlet extends HttpServlet {
             statement.setString(3, year);
             statement.executeUpdate();
 
-            Star star = new Star(starId, name, year);
+//            Star star = new Star(starId, name, year);
+            responseJsonObject.addProperty("starId", starId);
+            responseJsonObject.addProperty("name", name);
+            responseJsonObject.addProperty("year", year);
 
             statement.close();
-            out.write(new Gson().toJson(star));
+            out.write(responseJsonObject.toString());
+            out.flush();
+            response.setStatus(200);
+        } catch (Exception e) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("errorMessage", e.getMessage());
+            out.write(jsonObject.toString());
+            response.setStatus(500);
+        } finally {
+            out.close();
+        }
+    }
+
+    private void insertMovie(HttpServletRequest request, HttpServletResponse response, String title, String year, String director, String star, String genre) throws IOException {
+        JsonObject responseJsonObject = new JsonObject();
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+
+//      NEED TO MAKE SURE THAT ADD_MOVIE IS IN DATABASE
+
+        try (Connection conn = dataSource.getConnection()) {
+            String query = "{CALL add_movie(?, ?, ?, ?, ?, ?, ?, ?)}";
+            CallableStatement statement = conn.prepareCall(query);
+            statement.setString(1, title);
+            statement.setString(2, year);
+            statement.setString(3, director);
+            statement.setString(4, star);
+            statement.setString(5, genre);
+            statement.registerOutParameter(6, Types.VARCHAR);
+            statement.registerOutParameter(7, Types.VARCHAR);
+            statement.registerOutParameter(8, Types.INTEGER);
+            statement.execute();
+
+            System.out.println("Title: " + title);
+            System.out.println("Year: " + year);
+            System.out.println("Director: " + director);
+            System.out.println("Star: " + star);
+            System.out.println("Genre: " + genre);
+            String movieId = statement.getString(6);
+            String starId = statement.getString(7);
+            String genreId = statement.getString(8);
+            System.out.println("Movie ID: " + movieId);
+            System.out.println("Star ID: " + starId);
+            System.out.println("Genre ID: " + genreId);
+
+            responseJsonObject.addProperty("movieId", movieId);
+            responseJsonObject.addProperty("starId", starId);
+            responseJsonObject.addProperty("genreId", genreId);
+
+            statement.close();
+            out.write(responseJsonObject.toString());
+            out.flush();
             response.setStatus(200);
         } catch (Exception e) {
             JsonObject jsonObject = new JsonObject();

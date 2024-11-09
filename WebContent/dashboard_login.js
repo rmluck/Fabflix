@@ -1,4 +1,4 @@
-let login_form = $("#login_form");
+let login_form = $("#dashboard_login_form");
 console.log("at dashboard login page");
 
 /**
