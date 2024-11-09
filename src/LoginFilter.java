@@ -10,7 +10,8 @@ import java.util.ArrayList;
  */
 @WebFilter(filterName = "LoginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
-    private final ArrayList<String> allowedURIs = new ArrayList<>();
+    private final ArrayList<String> allowedURIsForUsers = new ArrayList<>();
+    private final ArrayList<String> allowedURIsForAdmins = new ArrayList<>();
 
     /**
      * @see Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
@@ -21,43 +22,70 @@ public class LoginFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         System.out.println("LoginFilter: " + httpRequest.getRequestURI());
+        String requestedURI = httpRequest.getRequestURI();
 
-        // Check if this URL is allowed to access without logging in
-        if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
-            // Keep default action: pass along the filter chain
-            chain.doFilter(request, response);
-            return;
-        }
+        if (requestedURI.contains("dashboard")) {
+            System.out.println(requestedURI + " contains dashboard");
+            if (this.isURLAllowedWithoutAdminLogin(requestedURI)) {
+                System.out.println(requestedURI + " does not need admin login");
+                chain.doFilter(request, response);
+                return;
+            }
 
-        // Redirect to login page if the "user" attribute doesn't exist in session
-        if (httpRequest.getSession().getAttribute("user") == null) {
-            httpResponse.sendRedirect("login.html");
+            if (httpRequest.getSession().getAttribute("admin") == null) {
+                System.out.println(requestedURI + " needs admin login, does not have it");
+                httpResponse.sendRedirect("dashboard_login.html");
+            } else {
+                System.out.println(requestedURI + " has admin login");
+                chain.doFilter(request, response);
+            }
         } else {
-            chain.doFilter(request, response);
+            System.out.println(requestedURI + " does not contain dashboard");
+            if (this.isUrlAllowedWithoutUserLogin(requestedURI)) {
+                System.out.println(requestedURI + " does not need user login");
+                chain.doFilter(request, response);
+                return;
+            }
+
+            if (httpRequest.getSession().getAttribute("user") == null) {
+                System.out.println(requestedURI + " needs user login, does not have it");
+                httpResponse.sendRedirect("login.html");
+            } else {
+                System.out.println(requestedURI + " has user login");
+                chain.doFilter(request, response);
+            }
         }
     }
 
-    private boolean isUrlAllowedWithoutLogin(String requestURI) {
+    private boolean isUrlAllowedWithoutUserLogin(String requestURI) {
         /*
          Setup your own rules here to allow accessing some resources without logging in
          Always allow your own login related requests(html, js, servlet, etc..)
          You might also want to allow some CSS files, etc.
          */
-        return allowedURIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
+        return allowedURIsForUsers.stream().anyMatch(requestURI.toLowerCase()::endsWith);
+    }
+
+    private boolean isURLAllowedWithoutAdminLogin(String requestURI) {
+        /*
+         Setup your own rules here to allow accessing some resources without logging in
+         Always allow your own login related requests(html, js, servlet, etc..)
+         You might also want to allow some CSS files, etc.
+         */
+        return allowedURIsForAdmins.stream().anyMatch(requestURI.toLowerCase()::endsWith);
     }
 
     public void init(FilterConfig fConfig) {
-        allowedURIs.add("login.html");
-        allowedURIs.add("login.js");
-        allowedURIs.add("api/login");
-        allowedURIs.add("api/logout");
-        allowedURIs.add(".css");
-        allowedURIs.add("dashboard_login.html");
-        allowedURIs.add("dashboard.html");
-        allowedURIs.add("dashboard_login.js");
-        allowedURIs.add("dashboard.js");
-        allowedURIs.add("api/dashboard_login");
-        allowedURIs.add("api/dashboard");
+        allowedURIsForUsers.add("login.html");
+        allowedURIsForUsers.add("login.js");
+        allowedURIsForUsers.add("api/login");
+        allowedURIsForUsers.add("api/logout");
+        allowedURIsForUsers.add(".css");
+
+        allowedURIsForAdmins.add("dashboard_login.html");
+        allowedURIsForAdmins.add("dashboard_login.js");
+        allowedURIsForAdmins.add("api/dashboard_login");
+        allowedURIsForAdmins.add(".css");
     }
 
     public void destroy() {

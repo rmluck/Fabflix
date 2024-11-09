@@ -56,6 +56,7 @@ public class DashboardLoginServlet extends HttpServlet {
 
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
+            request.getSession().setAttribute("admin", "admin");
             responseJsonObject.addProperty("status", "success");
             responseJsonObject.addProperty("message", "Successfully logged in");
             System.out.println("Test admin login success: " + email);
@@ -75,6 +76,7 @@ public class DashboardLoginServlet extends HttpServlet {
                     String encryptedPassword = resultSet.getString("password");
 
                     if(passwordEncryptor.checkPassword(password, encryptedPassword)) {
+                        request.getSession().setAttribute("admin", "admin");
                         responseJsonObject.addProperty("status", "success");
                         responseJsonObject.addProperty("message", "Successfully logged in");
                         System.out.println("Admin login success: " + email);

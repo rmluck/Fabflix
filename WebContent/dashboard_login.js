@@ -1,5 +1,4 @@
 let login_form = $("#dashboard_login_form");
-console.log("at dashboard login page");
 
 /**
  * Handle the data returned by LoginServlet
