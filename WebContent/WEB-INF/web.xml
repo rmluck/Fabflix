@@ -19,7 +19,7 @@
         <extension>css</extension>
         <mime-type>text/css</mime-type>
     </mime-mapping>
-<!--
+
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>HTTPSOnly</web-resource-name>
@@ -29,5 +29,5 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
--->
+
 </web-app>
