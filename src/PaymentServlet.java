@@ -89,14 +89,14 @@ public class PaymentServlet extends HttpServlet {
         String query = "SELECT * FROM creditcards WHERE firstName = ? AND lastName = ? AND id = ? AND expiration = ?";
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement statement = conn.prepareStatement(query)) {
 
-            stmt.setString(1, firstName);
-            stmt.setString(2, lastName);
-            stmt.setString(3, creditCardNumber);
-            stmt.setString(4, expirationDate);
+            statement.setString(1, firstName);
+            statement.setString(2, lastName);
+            statement.setString(3, creditCardNumber);
+            statement.setString(4, expirationDate);
 
-            try (ResultSet resultSet = stmt.executeQuery()) {
+            try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next();
             }
         } catch (SQLException e) {
@@ -110,13 +110,13 @@ public class PaymentServlet extends HttpServlet {
         String query = "INSERT INTO sales (customerId, movieId, quantity, saleDate) VALUES (?, ?, ?, CURDATE())";
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+             PreparedStatement statement = conn.prepareStatement(query)) {
 
-            stmt.setInt(1, customerId);
-            stmt.setString(2, movieId);
-            stmt.setInt(3, quantity);
+            statement.setInt(1, customerId);
+            statement.setString(2, movieId);
+            statement.setInt(3, quantity);
 
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
 
             if (rowsAffected > 0) {
                 System.out.println("Sale recorded successfully.");

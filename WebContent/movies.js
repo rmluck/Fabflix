@@ -260,7 +260,6 @@ $(document).ready(function() {
     $('#cart_container').hide();
 
     $("#movies_view_cart_button").on("click", function() {
-        loadCartItems();
         window.location.href = "movie-cart.html";
     });
 

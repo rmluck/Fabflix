@@ -1,6 +1,6 @@
 $(document).ready(function() {
     loadCartItems();
-    $('#proceed_to_payment').on('click', function() {
+    $('#proceed_to_payment_button').on('click', function() {
         window.location.href = 'payment.html'; // Redirect to the payment page
     });
     function loadCartItems() {
@@ -14,17 +14,30 @@ $(document).ready(function() {
                 if (cartItems.length === 0) {
                     $('#cart_table_body').append('<tr><td colspan="4">No movies in cart</td></tr>');
                 } else {
+                    let totalPrice = 0.00;
+                    console.log("total price 0: " + totalPrice);
                     cartItems.forEach(movie => {
-                        const totalPrice = (20 * movie.quantity).toFixed(2);
+                        const price = (20 * movie.quantity).toFixed(2);
+                        totalPrice += parseFloat(price);
+                        console.log("price: " + price);
+                        console.log("total price: " + totalPrice);
                         $('#cart_table_body').append(`
                             <tr>
                                 <td><a href='single-movie.html?id=${movie.id}'>${movie.title}</a></td>
                                 <td><input type="number" id="quantity_input" class="quantity-input" data-movie-id="${movie.id}" value="${movie.quantity}" min="0" /></td>
-                                <td>$${totalPrice}</td>
+                                <td>$${price}</td>
                                 <td id="remove_from_cart"><button id="remove_from_cart_button" class='remove' data-movie-id='${movie.id}'>Remove</button></td>
                             </tr>
                         `);
                     });
+                    $('#cart_table_body').append(`
+                        <tr id="total_price">
+                            <td></td>
+                            <td></td>
+                            <td>$${totalPrice.toFixed(2)}</td>
+                            <td></td>
+                        </tr>
+                    `);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
@@ -49,7 +62,7 @@ $(document).ready(function() {
             },
             success: function() {
                 loadCartItems();
-                $('#success-message').text('Quantity updated successfully!').show().delay(3000).fadeOut();
+                $('#cart_success_message').text('Quantity updated successfully!').show().delay(3000).fadeOut();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error("Error updating quantity:", textStatus, errorThrown);
@@ -71,7 +84,7 @@ $(document).ready(function() {
                 },
                 success: function() {
                     loadCartItems();
-                    $('#success-message').text('Movie removed successfully!').show().delay(3000).fadeOut();
+                    $('#cart_success_message').text('Movie removed successfully!').show().delay(3000).fadeOut();
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     const errorMessage = jqXHR.responseText || "Error removing movie from cart.";

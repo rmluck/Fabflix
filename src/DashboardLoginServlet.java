@@ -15,9 +15,9 @@ import com.google.gson.JsonObject;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-// Declaring a WebServlet called LoginServlet, which maps to url "/api/login"
-@WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
-public class LoginServlet extends HttpServlet {
+// Declaring a WebServlet called LoginServlet, which maps to url "/api/_dashboard_login"
+@WebServlet(name = "DashboardLoginServlet", urlPatterns = "/api/_dashboard_login")
+public class DashboardLoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.xml
@@ -35,38 +35,37 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String recaptchaResponse = request.getParameter("g-recaptcha-response");
+//        String recaptchaResponse = request.getParameter("g-recaptcha-response");
         JsonObject responseJsonObject = new JsonObject();
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-        try {
-            RecaptchaVerifyUtils.verify(recaptchaResponse);
-        } catch (Exception e) {
-            responseJsonObject.addProperty("status", "fail");
-            responseJsonObject.addProperty("message", "reCAPTCHA verification failed");
-            out.write(responseJsonObject.toString());
-            out.flush();
-            out.close();
-            return;
-        }
+//        try {
+//            RecaptchaVerifyUtils.verify(recaptchaResponse);
+//        } catch (Exception e) {
+//            responseJsonObject.addProperty("status", "fail");
+//            responseJsonObject.addProperty("message", "reCAPTCHA verification failed");
+//            out.write(responseJsonObject.toString());
+//            out.flush();
+//            out.close();
+//            return;
+//        }
 
         PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
-            request.getSession().setAttribute("user", new User(email));
-            request.getSession().setAttribute("customerId", 1);
+            request.getSession().setAttribute("admin", "admin");
             responseJsonObject.addProperty("status", "success");
             responseJsonObject.addProperty("message", "Successfully logged in");
-            System.out.println("Test user login success: " + email);
+            System.out.println("Test admin login success: " + email);
         } else {
-            request.getServletContext().log("Test user login fail: " + email);
+            request.getServletContext().log("Test admin login fail: " + email);
 
             // Create new connection to database
             try (Connection conn = dataSource.getConnection()) {
-                String query = "SELECT * FROM customers WHERE email = ?"; // AND password = ?";
+                String query = "SELECT * FROM employees WHERE email = ?"; // AND password = ?";
                 PreparedStatement statement = conn.prepareStatement(query);
                 statement.setString(1, email);
                 //statement.setString(2, password);
@@ -77,12 +76,10 @@ public class LoginServlet extends HttpServlet {
                     String encryptedPassword = resultSet.getString("password");
 
                     if(passwordEncryptor.checkPassword(password, encryptedPassword)) {
-                        int customerId = resultSet.getInt("id");
-                        request.getSession().setAttribute("user", new User(email));
-                        request.getSession().setAttribute("customerId", customerId);
+                        request.getSession().setAttribute("admin", "admin");
                         responseJsonObject.addProperty("status", "success");
                         responseJsonObject.addProperty("message", "Successfully logged in");
-                        System.out.println("User login success: " + email);
+                        System.out.println("Admin login success: " + email);
                     } else {
                         // Login fail
                         responseJsonObject.addProperty("status", "fail");

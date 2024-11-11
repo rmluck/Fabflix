@@ -12,12 +12,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  <title>Login to Fabflix</title>
+  <title>Login to Dashboard</title>
 </head>
 <body id="login_body">
 
 <div id="header_container">
-  <h1>FABFLIX</h1>
+  <h1><a href="index.html">FABFLIX</a></h1>
 </div>
 
 <div id="login_background">
@@ -26,23 +26,23 @@
 </div>
 <!-- Set the method to POST to avoid showing the username/password in the URL
      The default action is disabled to allow your own implementation. -->
-<form id="login_form" method="POST" action="/api/login">
-  <h2>User Login</h2>
+<form id="dashboard_login_form" method="POST" action="/api/_dashboard_login">
+  <h2>Admin Login</h2>
 
   <label id="email_label" for="email">Email</label>
   <input id="email" name="email" placeholder="Email" type="email" required>
 
   <label id="password_label" for="password">Password</label>
   <input id="password" name="password" placeholder="Password" type="password" required><br>
-  <div class="g-recaptcha" data-sitekey="6LcJsG8qAAAAACAmKGHRVZSUNQOh8pdzZ4z7gyxk"></div>
-  <div id="login_error_message"></div>
+<!--  <div class="g-recaptcha" data-sitekey="6LcJsG8qAAAAACAmKGHRVZSUNQOh8pdzZ4z7gyxk"></div>-->
+  <div id="dashboard_login_error_message"></div>
   <button id="login_button">Login</button>
 </form>
 
 <!-- include jQuery-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <!-- include our own JS file -->
-<script src="./login.js"></script>
+<script src="./dashboard_login.js"></script>
 
 </body>
 </html>

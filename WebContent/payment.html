@@ -1,30 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Page</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="payment.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+
+    <link rel="stylesheet" href="fabflix.css">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-<h1>Payment Page</h1>
-<p>Total Price: <span id="total-price">$0.00</span></p>
-<form id="payment-form">
-  <label for="first-name">First Name:</label>
-  <input type="text" id="first-name" name="firstName" required>
+<body id="payment_cart_body">
 
-  <label for="last-name">Last Name:</label>
-  <input type="text" id="last-name" name="lastName" required>
+<div id="header_container">
+    <h1><a href="index.html" onclick="clearSession()">FABFLIX</a></h1>
+    <form id="logout_form" method="POST" action="/api/logout">
+        <button class="logout_button" id="payment_logout_button">Logout</button>
+    </form>
+</div>
 
-  <label for="credit-card-number">Credit Card Number:</label>
-  <input type="text" id="credit-card-number" name="creditCardNumber" required>
+<h3 id="payment_info">Total Price: <span id="total-price">$0.00</span></h3>
 
-  <label for="expiration-date">Expiration Date:</label>
-  <input type="text" id="expiration-date" name="expirationDate" placeholder="YYYY/MM/DD" required>
+<form id="payment_form">
+    <h2>Payment</h2>
 
-  <button type="submit">Place Order</button>
+    <label id="payment_first_name_label" for="payment_first_name">First Name</label>
+    <input id="payment_first_name" name="payment_first_name" placeholder="First Name" type="text" required>
+
+    <label id="payment_last_name_label" for="payment_last_name">Last Name</label>
+    <input id="payment_last_name" name="payment_last_name" placeholder="Last Name" type="text" required>
+
+    <label id="payment_credit_card_label" for="payment_credit_card_number">Credit Card Number</label>
+    <input id="payment_credit_card_number" name="payment_credit_card_number" placeholder="Credit Card Number" type="text" required>
+
+    <label id="payment_expiration_label" for="payment_expiration_date">Expiration Date</label>
+    <input id="payment_expiration_date" name="payment_expiration_date" placeholder="YYYY/MM/DD" type="text" required>
+
+    <button id="payment_button" type="submit">Place Order</button>
 </form>
-<div id="payment-error" style="display:none; color:red;"></div>
+
+<div id="payment_error"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="payment.js"></script>
 </body>
 </html>
