@@ -76,7 +76,7 @@ public class PaymentServlet extends HttpServlet {
 
             session.removeAttribute("cartItems");
 
-            response.sendRedirect("confirmation.html");
+            response.sendRedirect("/fabflix_com_war/confirmation.html");
         } else {
             response.sendRedirect("payment.html?error=Invalid payment information");
         }
