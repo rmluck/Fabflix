@@ -35,22 +35,22 @@ public class DashboardLoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-//        String recaptchaResponse = request.getParameter("g-recaptcha-response");
+        String recaptchaResponse = request.getParameter("g-recaptcha-response");
         JsonObject responseJsonObject = new JsonObject();
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-//        try {
-//            RecaptchaVerifyUtils.verify(recaptchaResponse);
-//        } catch (Exception e) {
-//            responseJsonObject.addProperty("status", "fail");
-//            responseJsonObject.addProperty("message", "reCAPTCHA verification failed");
-//            out.write(responseJsonObject.toString());
-//            out.flush();
-//            out.close();
-//            return;
-//        }
+        try {
+            RecaptchaVerifyUtils.verify(recaptchaResponse);
+        } catch (Exception e) {
+            responseJsonObject.addProperty("status", "fail");
+            responseJsonObject.addProperty("message", "reCAPTCHA verification failed");
+            out.write(responseJsonObject.toString());
+            out.flush();
+            out.close();
+            return;
+        }
 
         PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 

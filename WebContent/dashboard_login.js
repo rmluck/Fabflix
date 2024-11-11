@@ -17,7 +17,7 @@ function handleLoginResult(resultDataJson) {
         // error messages on <div> with id "login_error_message"
         console.log("show error message");
         console.log(resultDataJson["message"]);
-        $("#login_error_message").text(resultDataJson["message"]);
+        $("#dashboard_login_error_message").text(resultDataJson["message"]);
     }
 }
 
@@ -34,12 +34,12 @@ function submitLoginForm(formSubmitEvent) {
      */
     formSubmitEvent.preventDefault();
 
-    // let recaptchaResponse = grecaptcha.getResponse();
-    //
-    // if (recaptchaResponse.length === 0) {
-    //     $("#login_error_message").text("Please complete the reCAPTCHA.");
-    //     return;
-    // }
+    let recaptchaResponse = grecaptcha.getResponse();
+
+    if (recaptchaResponse.length === 0) {
+        $("#login_error_message").text("Please complete the reCAPTCHA.");
+        return;
+    }
 
     $.ajax(
         "api/_dashboard_login", {
@@ -54,3 +54,7 @@ function submitLoginForm(formSubmitEvent) {
 
 // Bind the submit action of the form to a handler function
 login_form.submit(submitLoginForm);
+
+// login_form.on("submit", function() {
+//     console.log("Form submission detected");
+// });

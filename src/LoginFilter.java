@@ -25,33 +25,25 @@ public class LoginFilter implements Filter {
         String requestedURI = httpRequest.getRequestURI();
 
         if (requestedURI.contains("dashboard")) {
-            System.out.println(requestedURI + " contains dashboard");
             if (this.isURLAllowedWithoutAdminLogin(requestedURI)) {
-                System.out.println(requestedURI + " does not need admin login");
                 chain.doFilter(request, response);
                 return;
             }
 
             if (httpRequest.getSession().getAttribute("admin") == null) {
-                System.out.println(requestedURI + " needs admin login, does not have it");
-                httpResponse.sendRedirect("dashboard_login.html");
+                httpResponse.sendRedirect(((HttpServletRequest) request).getContextPath() + "/dashboard_login.html");
             } else {
-                System.out.println(requestedURI + " has admin login");
                 chain.doFilter(request, response);
             }
         } else {
-            System.out.println(requestedURI + " does not contain dashboard");
             if (this.isUrlAllowedWithoutUserLogin(requestedURI)) {
-                System.out.println(requestedURI + " does not need user login");
                 chain.doFilter(request, response);
                 return;
             }
 
             if (httpRequest.getSession().getAttribute("user") == null) {
-                System.out.println(requestedURI + " needs user login, does not have it");
-                httpResponse.sendRedirect("login.html");
+                httpResponse.sendRedirect(((HttpServletRequest) request).getContextPath() + "/login.html");
             } else {
-                System.out.println(requestedURI + " has user login");
                 chain.doFilter(request, response);
             }
         }
@@ -76,15 +68,15 @@ public class LoginFilter implements Filter {
     }
 
     public void init(FilterConfig fConfig) {
-        allowedURIsForUsers.add("login.html");
-        allowedURIsForUsers.add("login.js");
-        allowedURIsForUsers.add("api/login");
-        allowedURIsForUsers.add("api/logout");
+        allowedURIsForUsers.add("/login.html");
+        allowedURIsForUsers.add("/login.js");
+        allowedURIsForUsers.add("/api/login");
+        allowedURIsForUsers.add("/api/logout");
         allowedURIsForUsers.add(".css");
 
-        allowedURIsForAdmins.add("dashboard_login.html");
-        allowedURIsForAdmins.add("dashboard_login.js");
-        allowedURIsForAdmins.add("api/dashboard_login");
+        allowedURIsForAdmins.add("/dashboard_login.html");
+        allowedURIsForAdmins.add("/dashboard_login.js");
+        allowedURIsForAdmins.add("/api/_dashboard_login");
         allowedURIsForAdmins.add(".css");
     }
 
