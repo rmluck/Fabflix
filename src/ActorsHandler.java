@@ -4,7 +4,9 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,7 +20,8 @@ import java.util.logging.SimpleFormatter;
 
 public class ActorsHandler extends DefaultHandler {
 
-    private static final Logger logger = Logger.getLogger(ActorsHandler.class.getName());
+    private static final Logger detailedLogger = Logger.getLogger("DetailedLogger");
+    private static final Logger summaryLogger = Logger.getLogger("SummaryLogger");
     private static int actorCounter = 1;
     private Set<String> actorCache;
     private Connection conn;
@@ -45,13 +48,16 @@ public class ActorsHandler extends DefaultHandler {
         return actorCache.contains(actorId) || actorCache.contains(stagename);
     }
 
-    // Method to insert actor data into the database
     private void insertActorIntoDatabase(String actorId, String stagename, String dob) throws SQLException {
         String query = "INSERT INTO stars (id, name, birthYear) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, actorId);
             stmt.setString(2, stagename);
-            stmt.setInt(3, dob != null ? Integer.parseInt(dob) : null);
+            if (dob != null) {
+                stmt.setInt(3, Integer.parseInt(dob));
+            } else {
+                stmt.setNull(3, java.sql.Types.INTEGER);
+            }
             stmt.executeUpdate();
             actorCache.add(actorId);
             actorCache.add(stagename);
@@ -69,23 +75,21 @@ public class ActorsHandler extends DefaultHandler {
             try {
                 if (stagename == null || stagename.isEmpty()) {
                     errorCount++;
-                    logger.warning("Skipping actor due to missing data: " + stagename);
+                    detailedLogger.warning("Skipping actor due to missing data: " + stagename);
                 } else {
-
                     String actorId = generateActorId();
-
                     if (isDuplicate(actorId, stagename)) {
                         duplicateCount++;
-                        logger.info("Duplicate actor skipped: " + stagename);
+                        detailedLogger.info("Duplicate actor skipped: " + stagename);
                     } else {
                         insertActorIntoDatabase(actorId, stagename, dob);
-                        logger.info("Inserted actor: " + stagename);
+                        detailedLogger.info("Inserted actor: " + stagename);
                         insertActors++;
                     }
                 }
             } catch (Exception e) {
                 errorCount++;
-                logger.severe("Error processing actor: " + stagename + " - " + e.getMessage());
+                detailedLogger.severe("Error processing actor: " + stagename + " - " + e.getMessage());
             }
             stagename = dob = null;
         }
@@ -119,30 +123,55 @@ public class ActorsHandler extends DefaultHandler {
         return insertActors;
     }
 
+    public void logSummary() {
+
+        try (PrintWriter out = new PrintWriter(new FileWriter("parseSummary.txt", true))) {
+            out.println();
+            out.println("Parsing completed for ActorsHandler.");
+            out.println("Actors Inserted: " + getInsertActors());
+            out.println("Errors encountered: " + getErrorCount());
+            out.println("Duplicates skipped: " + getDuplicateCount());
+            out.println();
+        } catch (IOException e) {
+            detailedLogger.severe("Error writing summary to parser.txt: " + e.getMessage());
+        } finally {
+            closeConnection();
+        }
+    }
+
+    public void closeConnection() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            detailedLogger.severe("Error closing database connection: " + e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
         try {
-            Logger logger = Logger.getLogger(ActorsHandler.class.getName());
+            FileHandler detailedFileHandler = new FileHandler("ActorsInfo.txt", true);
+            detailedFileHandler.setFormatter(new SimpleFormatter());
+            detailedFileHandler.setLevel(Level.INFO);
+            detailedLogger.addHandler(detailedFileHandler);
+            detailedLogger.setUseParentHandlers(false);
 
-            FileHandler fileHandler = new FileHandler("ActorsInfo.txt", true); // Append to the file
-            fileHandler.setFormatter(new SimpleFormatter());
-            fileHandler.setLevel(Level.INFO);
-            logger.addHandler(fileHandler);
-
-            logger.setUseParentHandlers(false);
+            FileHandler summaryFileHandler = new FileHandler("parseSummary.txt", true);
+            summaryFileHandler.setFormatter(new SimpleFormatter());
+            summaryFileHandler.setLevel(Level.INFO);
+            summaryLogger.addHandler(summaryFileHandler);
+            summaryLogger.setUseParentHandlers(false);
 
             try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "mytestuser", "My6$Password")) {
                 SAXParserFactory factory = SAXParserFactory.newInstance();
                 SAXParser parser = factory.newSAXParser();
 
                 ActorsHandler handler = new ActorsHandler(conn);
-
                 File xmlFile = new File("data/xml/actors63.xml");
                 parser.parse(xmlFile, handler);
 
-                logger.info("Parsing completed!");
-                logger.info("Actors Inserted: " + handler.getInsertActors());
-                logger.info("Errors encountered: " + handler.getErrorCount());
-                logger.info("Duplicates skipped: " + handler.getDuplicateCount());
+                handler.logSummary();
 
             } catch (Exception e) {
                 e.printStackTrace();

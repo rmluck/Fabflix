@@ -17,11 +17,14 @@ public class MainsHandler extends DefaultHandler {
 
     private static final Logger logger = Logger.getLogger(MainsHandler.class.getName());
     private String currentElement;
-    private String fid, title, year, director;
+    private String fid, title, year, director, currentGenre;
     private int insertedCount = 0;
     private int duplicateCount = 0;
     private int errorCount = 0;
+    private int insertedGenreCount = 0;
+    private int insertedGenreInMoviesCount = 0;
     private HashSet<String> movieCache = new HashSet<>();
+    private HashSet<String> genreCache = new HashSet<>();
     private Connection conn;
 
     public MainsHandler() {
@@ -36,6 +39,8 @@ public class MainsHandler extends DefaultHandler {
             FileHandler fh = new FileHandler("MovieInfo.txt", true);
             fh.setFormatter(new SimpleFormatter());
             logger.addHandler(fh);
+
+            loadGenres();
 
         } catch (IOException | SQLException e) {
             logger.severe("Error setting up database connection or logger: " + e.getMessage());
@@ -72,6 +77,8 @@ public class MainsHandler extends DefaultHandler {
             year = data;
         } else if (currentElement.equals("dirn")) {
             director = data;
+        } else if (currentElement.equals("cat")) {
+            currentGenre = data;
         }
     }
 
@@ -96,6 +103,9 @@ public class MainsHandler extends DefaultHandler {
                 }
             }
             fid = title = year = director = null;
+        } else if (qName.equals("cat") && currentGenre != null) {
+            addGenreToMovie(currentGenre, fid);
+            currentGenre = null;
         }
         currentElement = "";
     }
@@ -128,14 +138,20 @@ public class MainsHandler extends DefaultHandler {
     }
 
     private void insertMovieIntoDatabase(String id, String title, String year, String director) {
-        String sql = "INSERT INTO movies (id, title, year, director) VALUES (?, ?, ?, ?)";
+        String insertMovieSql = "INSERT INTO movies (id, title, year, director) VALUES (?, ?, ?, ?)";
+        String insertRatingSql = "INSERT INTO ratings (movieId, rating, numVotes) VALUES (?, 0, 0)";
 
-        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, id);
-            pstmt.setString(2, title);
-            pstmt.setInt(3, Integer.parseInt(year));
-            pstmt.setString(4, director);
-            pstmt.executeUpdate();
+        try (PreparedStatement movieStmt = conn.prepareStatement(insertMovieSql);
+             PreparedStatement ratingStmt = conn.prepareStatement(insertRatingSql)) {
+
+            movieStmt.setString(1, id);
+            movieStmt.setString(2, title);
+            movieStmt.setInt(3, Integer.parseInt(year));
+            movieStmt.setString(4, director);
+            movieStmt.executeUpdate();
+
+            ratingStmt.setString(1, id);
+            ratingStmt.executeUpdate();
 
             insertedCount++;
             movieCache.add(id + title + year + director);
@@ -143,8 +159,83 @@ public class MainsHandler extends DefaultHandler {
 
         } catch (SQLException e) {
             errorCount++;
-            logger.severe("Error inserting movie: " + title + " - " + e.getMessage());
+            logger.severe("Error inserting movie or rating for: " + title + " - " + e.getMessage());
         }
+    }
+
+    private void loadGenres() throws SQLException {
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT name FROM genres")) {
+            while (rs.next()) {
+                genreCache.add(rs.getString("name"));
+            }
+        }
+    }
+
+    private void addGenreToMovie(String genreName, String movieId) {
+        try {
+            if (!movieExists(movieId)) {
+                logger.severe("Movie not found for genre assignment: " + movieId);
+                return;
+            }
+
+            if (!genreCache.contains(genreName)) {
+                int genreId = insertGenre(genreName);
+                genreCache.add(genreName);
+                insertGenreInMovie(genreId, movieId);
+                insertedGenreCount++;
+            } else {
+                try (PreparedStatement pstmt = conn.prepareStatement(
+                        "SELECT id FROM genres WHERE name = ?")) {
+                    pstmt.setString(1, genreName);
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        if (rs.next()) {
+                            insertGenreInMovie(rs.getInt("id"), movieId);
+                        }
+                    }
+                }
+            }
+            insertedGenreInMoviesCount++;
+        } catch (SQLException e) {
+            errorCount++;
+            logger.severe("Error adding genre to movie: " + genreName + " - " + e.getMessage());
+        }
+    }
+
+    private int insertGenre(String genreName) throws SQLException {
+        String sql = "INSERT INTO genres (name) VALUES (?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, genreName);
+            pstmt.executeUpdate();
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        }
+        throw new SQLException("Failed to retrieve genre ID for: " + genreName);
+    }
+
+    private void insertGenreInMovie(int genreId, String movieId) throws SQLException {
+        String sql = "INSERT INTO genres_in_movies (genreId, movieId) VALUES (?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, genreId);
+            pstmt.setString(2, movieId);
+            pstmt.executeUpdate();
+        }
+    }
+
+    private boolean movieExists(String movieId) throws SQLException {
+        String query = "SELECT COUNT(*) FROM movies WHERE id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, movieId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
     }
 
     private void logSummary() {
@@ -152,24 +243,17 @@ public class MainsHandler extends DefaultHandler {
         logger.info("Movies inserted: " + insertedCount);
         logger.info("Duplicates skipped: " + duplicateCount);
         logger.info("Errors encountered: " + errorCount);
+        logger.info("Genres inserted: " + insertedGenreCount);
+        logger.info("Genres_in_movies inserted: " + insertedGenreInMoviesCount);
 
-        try (PrintWriter out = new PrintWriter(new FileWriter("MovieInfo.txt", true))) {
-            out.println("Parsing completed.");
-            out.println("Movies inserted: " + insertedCount);
-            out.println("Duplicates skipped: " + duplicateCount);
-            out.println("Errors encountered: " + errorCount);
+        try (PrintWriter summaryWriter = new PrintWriter(new FileWriter("parseSummary.txt", true))) {
+            summaryWriter.println("Movies inserted: " + insertedCount);
+            summaryWriter.println("Duplicates skipped: " + duplicateCount);
+            summaryWriter.println("Errors encountered: " + errorCount);
+            summaryWriter.println("Genres inserted: " + insertedGenreCount);
+            summaryWriter.println("Genres_in_movies inserted: " + insertedGenreInMoviesCount);
         } catch (IOException e) {
-            logger.severe("Error writing summary to file: " + e.getMessage());
-        }
-    }
-
-    public void closeConnection() {
-        try {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-        } catch (SQLException e) {
-            logger.severe("Error closing database connection: " + e.getMessage());
+            logger.severe("Error writing summary: " + e.getMessage());
         }
     }
 }
