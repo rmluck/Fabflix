@@ -24,13 +24,15 @@ public class MainsHandler extends DefaultHandler {
     private HashSet<String> movieCache = new HashSet<>();
     private Connection conn;
 
-    // Initialize the handler with connection setup and logger configuration
     public MainsHandler() {
         try {
-            // Initialize database connection
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "mytestuser", "My6$Password");
 
-            // Set up logger to write to MovieInfo.txt
+            Logger rootLogger = Logger.getLogger("");
+            for (var handler : rootLogger.getHandlers()) {
+                rootLogger.removeHandler(handler);
+            }
+
             FileHandler fh = new FileHandler("MovieInfo.txt", true);
             fh.setFormatter(new SimpleFormatter());
             logger.addHandler(fh);
@@ -76,7 +78,6 @@ public class MainsHandler extends DefaultHandler {
     @Override
     public void endElement(String uri, String localName, String qName) {
         if (qName.equals("film")) {
-            // Validate and process movie data
             if (fid == null || fid.isEmpty() || title == null || title.isEmpty() ||
                     year == null || year.isEmpty() || director == null || director.isEmpty()) {
                 errorCount++;
@@ -102,12 +103,10 @@ public class MainsHandler extends DefaultHandler {
     private boolean isDuplicate(String id, String title, String year, String director) {
         String uniqueKey = id + title + year + director;
 
-        // Check cache first
         if (movieCache.contains(uniqueKey)) {
             return true;
         }
 
-        // If not in cache, check database for existing movie
         try (PreparedStatement pstmt = conn.prepareStatement(
                 "SELECT COUNT(*) FROM movies WHERE id = ? AND title = ? AND year = ? AND director = ?")) {
 
@@ -118,7 +117,7 @@ public class MainsHandler extends DefaultHandler {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
-                    movieCache.add(uniqueKey); // Cache this movie as duplicate
+                    movieCache.add(uniqueKey);
                     return true;
                 }
             }
@@ -139,7 +138,7 @@ public class MainsHandler extends DefaultHandler {
             pstmt.executeUpdate();
 
             insertedCount++;
-            movieCache.add(id + title + year + director); // Cache this movie as inserted
+            movieCache.add(id + title + year + director);
             logger.info("Inserted movie: " + title);
 
         } catch (SQLException e) {
@@ -148,14 +147,12 @@ public class MainsHandler extends DefaultHandler {
         }
     }
 
-    // Log summary of parsing results to console and a log file
     private void logSummary() {
         logger.info("Parsing completed.");
         logger.info("Movies inserted: " + insertedCount);
         logger.info("Duplicates skipped: " + duplicateCount);
         logger.info("Errors encountered: " + errorCount);
 
-        // Write summary to MovieInfo.txt
         try (PrintWriter out = new PrintWriter(new FileWriter("MovieInfo.txt", true))) {
             out.println("Parsing completed.");
             out.println("Movies inserted: " + insertedCount);
@@ -166,7 +163,6 @@ public class MainsHandler extends DefaultHandler {
         }
     }
 
-    // Close database connection when done
     public void closeConnection() {
         try {
             if (conn != null && !conn.isClosed()) {
