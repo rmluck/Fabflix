@@ -3,61 +3,56 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
 public class CastsHandler extends DefaultHandler {
 
-    private static int actorCounter = 1; // Initialize counter for actor IDs
-    private Set<String> actorCache; // Cache to track actors already seen
-    private Connection conn; // Database connection
-    private int errorCount = 0; // Track number of errors
-    private int duplicateCount = 0; // Track duplicates skipped
+    private static int actorCounter = 1;
+    private Set<String> actorCache;
+    private Connection conn;
+    private int errorCount = 0;
+    private int duplicateCount = 0;
     private int insertActors = 0;
-    private int movieNotFoundCount = 0; // Track movies not found
+    private int movieNotFoundCount = 0;
 
     private String currentElement = "";
     private String movieId = null;
     private String movieTitle = null;
     private String actorName = null;
 
-    private FileWriter logWriter; // FileWriter for logging
+    private FileWriter detailedLogWriter;
+    private FileWriter summaryLogWriter;
 
-    // Constructor to initialize the database connection and log file
-    public CastsHandler(Connection conn, String logFilePath) throws IOException {
+    public CastsHandler(Connection conn, String detailedLogFilePath, String summaryLogFilePath) throws IOException {
         this.conn = conn;
         this.actorCache = new HashSet<>();
-        this.logWriter = new FileWriter(logFilePath, true); // Open the log file in append mode
+        this.detailedLogWriter = new FileWriter(detailedLogFilePath, true);
+        this.summaryLogWriter = new FileWriter(summaryLogFilePath, true);
     }
 
-    // Method to generate unique actor IDs in the format "xmlXXXXXXX"
     private String generateActorId() {
-        String id = "xml" + String.format("%07d", actorCounter); // Format with leading zeros
-        actorCounter++; // Increment for the next actor
+        String id = "xml" + String.format("%07d", actorCounter);
+        actorCounter++;
         return id;
     }
 
-    // Method to check if the actor is a duplicate based on actor name
     private boolean isDuplicate(String actorName) {
-        return actorCache.contains(actorName); // Cache check for duplicate
+        return actorCache.contains(actorName);
     }
 
-    // Method to insert actor data into the database
     private void insertActorIntoDatabase(String actorId, String actorName) throws SQLException {
         String query = "INSERT INTO stars (id, name) VALUES (?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, actorId);
             stmt.setString(2, actorName);
             stmt.executeUpdate();
-            actorCache.add(actorName); // Add the actor name to the cache
+            actorCache.add(actorName);
         }
     }
 
-    // Method to insert the relationship between actor and movie into stars_in_movies table
     private void insertActorMovieRelation(String actorId, String movieId) throws SQLException {
         String query = "INSERT INTO stars_in_movies (starId, movieId) VALUES (?, ?)";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -67,7 +62,6 @@ public class CastsHandler extends DefaultHandler {
         }
     }
 
-    // Method to check if the movie exists in the database
     private boolean movieExists(String movieId) throws SQLException {
         String query = "SELECT COUNT(*) FROM movies WHERE id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -80,39 +74,31 @@ public class CastsHandler extends DefaultHandler {
         return false;
     }
 
-    // SAX event when an element starts
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
-        currentElement = qName; // Set current element name
+        currentElement = qName;
     }
 
-    // SAX event when an element ends
     @Override
     public void endElement(String uri, String localName, String qName) {
         if (qName.equals("m")) {
             try {
-                // Skip entries with missing data
                 if (movieId == null || movieId.isEmpty() || movieTitle == null || movieTitle.isEmpty() || actorName == null || actorName.isEmpty()) {
                     errorCount++;
-                    logWriter.write("Skipping entry due to missing data: " + actorName + "\n");
+                    detailedLogWriter.write("Skipping entry due to missing data: " + actorName + "\n");
                 } else {
-                    // Check if the movie exists
                     if (!movieExists(movieId)) {
                         movieNotFoundCount++;
-                        logWriter.write("Movie not found in database: " + movieTitle + "\n");
+                        detailedLogWriter.write("Movie not found in database: " + movieTitle + "\n");
                     } else {
-                        // Check if the actor is a duplicate
                         if (isDuplicate(actorName)) {
                             duplicateCount++;
-                            logWriter.write("Duplicate actor skipped: " + actorName + "\n");
+                            detailedLogWriter.write("Duplicate actor skipped: " + actorName + "\n");
                         } else {
-                            // Generate a unique actor ID and insert the actor into the database
                             String actorId = generateActorId();
                             insertActorIntoDatabase(actorId, actorName);
-
-                            // Insert the relationship between the actor and movie
                             insertActorMovieRelation(actorId, movieId);
-                            logWriter.write("Inserted actor and movie relation: " + actorName + " in " + movieTitle + "\n");
+                            detailedLogWriter.write("Inserted actor and movie relation: " + actorName + " in " + movieTitle + "\n");
                             insertActors++;
                         }
                     }
@@ -120,22 +106,20 @@ public class CastsHandler extends DefaultHandler {
             } catch (Exception e) {
                 errorCount++;
                 try {
-                    logWriter.write("Error processing entry: " + actorName + " in movie " + movieTitle + " - " + e.getMessage() + "\n");
+                    detailedLogWriter.write("Error processing entry: " + actorName + " in movie " + movieTitle + " - " + e.getMessage() + "\n");
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
             }
-            // Reset for next movie
             movieId = movieTitle = actorName = null;
         }
         currentElement = "";
     }
 
-    // SAX event when parsing characters within an element
     @Override
     public void characters(char[] ch, int start, int length) {
         String content = new String(ch, start, length).trim();
-        if (content.isEmpty()) return; // Skip empty content
+        if (content.isEmpty()) return;
 
         switch (currentElement) {
             case "f":
@@ -150,7 +134,6 @@ public class CastsHandler extends DefaultHandler {
         }
     }
 
-    // Getter methods to check counts of errors, duplicates, and inserted actors
     public int getErrorCount() {
         return errorCount;
     }
@@ -167,32 +150,46 @@ public class CastsHandler extends DefaultHandler {
         return movieNotFoundCount;
     }
 
-    // Main method to run the CastsHandler directly
+    public void closeConnection() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
+        } catch (SQLException e) {
+            try {
+                detailedLogWriter.write("Error closing database connection: " + e.getMessage() + "\n");
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
+    }
+
+    public void logSummary() throws IOException {
+        summaryLogWriter.write("Parsing completed!\n");
+        summaryLogWriter.write("Actors Inserted: " + getInsertActors() + "\n");
+        summaryLogWriter.write("Errors encountered: " + getErrorCount() + "\n");
+        summaryLogWriter.write("Duplicates skipped: " + getDuplicateCount() + "\n");
+        summaryLogWriter.write("Movies not found: " + getMovieNotFoundCount() + "\n");
+    }
+
     public static void main(String[] args) {
-        // Database connection setup
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb", "mytestuser", "My6$Password")) {
-            // Initialize the SAX parser and handler
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
 
-            // Specify the path to the log file
-            String logFilePath = "CastsInfo.txt";
+            String detailedLogFilePath = "CastsInfo.txt";
+            String summaryLogFilePath = "parseSummary.txt";
 
-            // Create an instance of the handler with file logging
-            CastsHandler handler = new CastsHandler(conn, logFilePath);
+            CastsHandler handler = new CastsHandler(conn, detailedLogFilePath, summaryLogFilePath);
 
-            // Parse the XML file
             File xmlFile = new File("data/xml/casts124.xml");
             parser.parse(xmlFile, handler);
 
-            // Output summary of errors and duplicates
-            try (FileWriter summaryWriter = new FileWriter(logFilePath, true)) {
-                summaryWriter.write("Parsing completed!\n");
-                summaryWriter.write("Actors Inserted: " + handler.getInsertActors() + "\n");
-                summaryWriter.write("Errors encountered: " + handler.getErrorCount() + "\n");
-                summaryWriter.write("Duplicates skipped: " + handler.getDuplicateCount() + "\n");
-                summaryWriter.write("Movies not found: " + handler.getMovieNotFoundCount() + "\n");
-            }
+            handler.logSummary();
+
+            handler.detailedLogWriter.close();
+            handler.summaryLogWriter.close();
+            handler.closeConnection();
 
         } catch (Exception e) {
             e.printStackTrace();
