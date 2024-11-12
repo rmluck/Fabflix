@@ -492,6 +492,8 @@ td a:hover {
     margin-left: 5%;
     margin-right: 5%;
     margin-top: 25px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #browse_alphabet_list {
