@@ -1,7 +1,7 @@
 # 2024-fall-cs-122b-team_greg_rohan
 
 ## PROJECT 3
-Prokect 3 demo: https://youtu.be/C2YxPHHHT3A?si=H2O6WGw38r3R2nRh
+Project 3 demo: [https://youtu.be/C2YxPHHHT3A?si=H2O6WGw38r3R2nRh](https://www.youtube.com/watch?v=ggu5y8HTk3s)
 Team Contributions:
 
 Gregory:
