@@ -24,7 +24,7 @@ BEGIN
     IF movie_id IS NULL THEN
 
         -- Step 2: Generate a new unique movie_id
-        SELECT MAX(`id`) INTO movie_id FROM movies;
+        SELECT MAX(`id`) INTO movie_id FROM movies WHERE `id` REGEXP '^tt[0-9]+$';
         IF movie_id IS NULL THEN
             SET movie_id = 'tt0000001';
         ELSE
@@ -45,7 +45,7 @@ BEGIN
 
         IF star_id IS NULL THEN
             -- Generate a new unique star_id if the star does not exist
-            SELECT MAX(`id`) INTO star_id FROM stars;
+            SELECT MAX(`id`) INTO star_id FROM stars WHERE `id` REGEXP '^nm[0-9]+$';
             IF star_id IS NULL THEN
                 SET star_id = 'nm0000001';
             ELSE
