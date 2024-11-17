@@ -78,6 +78,7 @@ public class MoviesServlet extends HttpServlet {
         String action = request.getParameter("action");
         switch (action) {
             case "searchMovies":
+                System.out.println(title);
                 searchMovies(title, year, director, star, sortParameters, moviesPerPage, String.valueOf(offset), response);
                 break;
             case "getMoviesByGenre":
@@ -119,7 +120,16 @@ public class MoviesServlet extends HttpServlet {
 
             int subcount = 0;
             if (title != null && !title.isEmpty()) {
-                query += " WHERE LOWER(m_inner.title) LIKE LOWER(?) ";
+//                query += " WHERE LOWER(m_inner.title) LIKE LOWER(?) ";
+//                subcount = 1;
+                query += " WHERE ";
+                String[] tokens = title.split("\\s+");
+                for (int i = 0; i < tokens.length; i++) {
+                    if (i > 0) {
+                        query += " AND ";
+                    }
+                    query += "LOWER(m_inner.title) LIKE LOWER(?) ";
+                }
                 subcount = 1;
             }
             if (year != null && !year.isEmpty()) {
@@ -158,7 +168,10 @@ public class MoviesServlet extends HttpServlet {
                     " WHERE 1=1 ";
 
             if (title != null && !title.isEmpty()) {
-                query += " AND LOWER(m.title) LIKE LOWER(?) ";
+                String[] tokens = title.split("\\s+");
+                for (int i = 0; i < tokens.length; i++) {
+                    query += " AND LOWER(m.title) LIKE LOWER(?) ";
+                }
             }
             if (year != null && !year.isEmpty()) {
                 query += " AND LOWER(m.year) = LOWER(?) ";
@@ -180,7 +193,11 @@ public class MoviesServlet extends HttpServlet {
 
             int index = 1;
             if (title != null && !title.isEmpty()) {
-                statement.setString(index++, "%" + title + "%");
+//                statement.setString(index++, "%" + title + "%");
+                String[] tokens = title.split("\\s+");
+                for (String token : tokens) {
+                    statement.setString(index++, "%" + token + "%");
+                }
             }
             if (year != null && !year.isEmpty()) {
                 statement.setString(index++, year);
@@ -192,7 +209,11 @@ public class MoviesServlet extends HttpServlet {
                 statement.setString(index++, "%" + star + "%");
             }
             if (title != null && !title.isEmpty()) {
-                statement.setString(index++, "%" + title + "%");
+//                statement.setString(index++, "%" + title + "%");
+                String[] tokens = title.split("\\s+");
+                for (String token : tokens) {
+                    statement.setString(index++, "%" + token + "%");
+                }
             }
             if (year != null && !year.isEmpty()) {
                 statement.setString(index++, year);
