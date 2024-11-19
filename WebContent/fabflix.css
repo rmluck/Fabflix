@@ -452,6 +452,39 @@ td a:hover {
     margin-top: 125px;
 }
 
+.ui-autocomplete {
+    background-color: seashell;
+    border: none;
+    outline: none;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    max-height: 220px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 3;
+}
+
+.ui-autocomplete .ui-menu-item {
+    cursor: pointer;
+    color: #080710;
+    border: none;
+    outline: none;
+    font-family: "Oswald", sans-serif;
+    font-size: 14px;
+}
+
+.ui-autocomplete .ui-menu-item .ui-state-active {
+    background-color: #f26661;
+    color: seashell;
+    font-weight: bold;
+    border: none;
+    outline: none;
+}
+
+.ui-autocomplete .ui-menu-item + .ui-menu-item {
+    border-top: 1px solid #eaeaea;
+}
+
 #insert_star_form {
     background-color: rgba(255, 255, 255, 0.13);
     height: 325px;

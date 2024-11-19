@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 // Declaring a WebServlet called MoviesServlet, which maps to url "/api/movies"
 @WebServlet(name = "MoviesServlet", urlPatterns = "/api/movies")
@@ -56,8 +57,8 @@ public class MoviesServlet extends HttpServlet {
         int currentPage = (page != null && !page.isEmpty()) ? Integer.parseInt(page) : 1;
         int offset = (currentPage - 1) * Integer.parseInt(moviesPerPage);
 
-        String[] sortOptions = sortParameters.split(",");
-        List<String> allowedSortOptions = Arrays.asList("m.title ASC", "m.title DESC", "r.rating ASC", "r.rating DESC");
+//        String[] sortOptions = sortParameters.split(",");
+//        List<String> allowedSortOptions = Arrays.asList("m.title ASC", "m.title DESC", "r.rating ASC", "r.rating DESC");
 
 //        for (String option : sortOptions) {
 //            if (!allowedSortOptions.contains(option.trim())) {
@@ -186,7 +187,21 @@ public class MoviesServlet extends HttpServlet {
             }
             query += " GROUP BY m.id, r.rating " +
                     " ORDER BY ";
-            query += sortParameters;
+            if (Objects.equals(sortParameters, "autocomplete")) {
+                query += " (LOWER(m.title) = LOWER(?)) DESC, (";
+
+                String[] tokens = title.split("\\s+");
+                for (int i = 1; i < tokens.length; i++) {
+                    query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END + ";
+                }
+                query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END) DESC, (";
+                for (int i = 1; i < tokens.length; i++) {
+                    query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END + ";
+                }
+                query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END) DESC, LOWER(m.title) ASC ";
+            } else {
+                query += sortParameters;
+            }
             query += " LIMIT ? OFFSET ?;";
 
             PreparedStatement statement = conn.prepareStatement(query);
@@ -223,6 +238,16 @@ public class MoviesServlet extends HttpServlet {
             }
             if (star != null && !star.isEmpty()) {
                 statement.setString(index++, "%" + star + "%");
+            }
+            if (Objects.equals(sortParameters, "autocomplete")) {
+                statement.setString(index++, title);
+                String[] tokens = title.split("\\s+");
+                for (String token : tokens) {
+                    statement.setString(index++,  token);
+                }
+                for (String token : tokens) {
+                    statement.setString(index++, token + "%");
+                }
             }
             statement.setInt(index++, Integer.parseInt(limit));
             statement.setInt(index++, Integer.parseInt(offset));
