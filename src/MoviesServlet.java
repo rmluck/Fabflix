@@ -121,8 +121,6 @@ public class MoviesServlet extends HttpServlet {
 
             int subcount = 0;
             if (title != null && !title.isEmpty()) {
-//                query += " WHERE LOWER(m_inner.title) LIKE LOWER(?) ";
-//                subcount = 1;
                 query += " WHERE ";
                 String[] tokens = title.split("\\s+");
                 for (int i = 0; i < tokens.length; i++) {
@@ -136,29 +134,29 @@ public class MoviesServlet extends HttpServlet {
             if (year != null && !year.isEmpty()) {
                 if (subcount == 1) {
                     query += " WHERE LOWER(m_inner.year) = LOWER(?) ";
-                    subcount = 1;
                 } else {
                     query += " AND LOWER(m_inner.year) = LOWER(?) ";
+                    subcount = 1;
                 }
             }
             if (director != null && !director.isEmpty()) {
                 if (subcount == 1) {
-                    query += " WHERE LOWER(m_inner.director) = LOWER(?) ";
-                    subcount = 1;
-                } else{
+                    query += " WHERE LOWER(m_inner.director) LIKE LOWER(?) ";
+                } else {
                     query += " AND LOWER(m_inner.director) LIKE LOWER(?) ";
+                    subcount = 1;
                 }
             }
             if (star != null && !star.isEmpty()) {
                 if (subcount == 1) {
                     query += " WHERE EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
-                    subcount = 1;
+                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))";
                 } else {
                     query += " AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
+                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))";
+                    subcount = 1;
                 }
             }
             query += ") AS filtered_movies " +
@@ -183,7 +181,7 @@ public class MoviesServlet extends HttpServlet {
             if (star != null && !star.isEmpty()) {
                 query += " AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
+                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))";
             }
             query += " GROUP BY m.id, r.rating " +
                     " ORDER BY ";
@@ -208,7 +206,6 @@ public class MoviesServlet extends HttpServlet {
 
             int index = 1;
             if (title != null && !title.isEmpty()) {
-//                statement.setString(index++, "%" + title + "%");
                 String[] tokens = title.split("\\s+");
                 for (String token : tokens) {
                     statement.setString(index++, "%" + token + "%");
@@ -224,7 +221,6 @@ public class MoviesServlet extends HttpServlet {
                 statement.setString(index++, "%" + star + "%");
             }
             if (title != null && !title.isEmpty()) {
-//                statement.setString(index++, "%" + title + "%");
                 String[] tokens = title.split("\\s+");
                 for (String token : tokens) {
                     statement.setString(index++, "%" + token + "%");

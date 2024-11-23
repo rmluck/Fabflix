@@ -70,6 +70,10 @@ h3 {
     margin-top: 100px;
 }
 
+a {
+    text-decoration: none;
+}
+
 /* ============================
    Layout
 ============================ */
@@ -203,7 +207,6 @@ td {
 td a {
     font-weight: bold;
     color: black;
-    text-decoration: underline;
 }
 
 td a:hover {
@@ -274,6 +277,7 @@ td a:hover {
 }
 
 .ui-autocomplete .ui-menu-item {
+    font-family: "Oswald", sans-serif;
     font-size: 14px;
     color: var(--black_theme);
     border: none;
@@ -435,7 +439,6 @@ td a:hover {
 
 #logout_form * {
     letter-spacing: 0.5px;
-    color: var(--gray_theme);
     outline: none;
 }
 
@@ -471,6 +474,7 @@ label {
 
 #movies_per_page {
     padding: 5px 10px;
+    font-family: "Oswald", sans-serif;
     font-size: 16px;
     color: var(--white_theme);
     background-color: #333333;
@@ -500,6 +504,7 @@ input {
     margin-top: 8px;
     padding-left: 10px;
     padding-right: 10px;
+    font-family: "Oswald", sans-serif;
     font-size: 14px;
     font-weight: 300;
     color: var(--white_theme);
@@ -537,6 +542,7 @@ input {
 }
 
 ::placeholder {
+    font-family: "Oswald", sans-serif;
     color: #e5e5e5;
 }
 
@@ -544,6 +550,7 @@ button {
     position: absolute;
     height: 50px;
     padding: 10px 15px;
+    font-family: "Oswald", sans-serif;
     font-size: 18px;
     font-weight: 600;
     color: var(--black_theme);
@@ -553,10 +560,10 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    color: var(--white_theme);
-    background-color: var(--red_theme);
-}
+/*button:hover {*/
+/*    color: var(--white_theme);*/
+/*    background-color: var(--red_theme);*/
+/*}*/
 
 #login_button {
     position: static;
@@ -565,6 +572,11 @@ button:hover {
     padding: 0 10px;
     color: var(--black_theme);
     background-color: var(--white_theme);
+}
+
+#login_button:hover {
+    color: var(--white_theme);
+    background-color: var(--gray_theme);
 }
 
 .logout_button {
@@ -605,6 +617,11 @@ button:hover {
     outline: none;
 }
 
+.view_cart_button:hover {
+    color: var(--white_theme);
+    background-color: var(--gray_theme);
+}
+
 #index_view_cart_button {
     top: -109px;
 }
@@ -637,6 +654,11 @@ button:hover {
     outline: none;
 }
 
+.back_button:hover {
+    color: var(--white_theme);
+    background-color: var(--gray_theme);
+}
+
 #movies_add_to_cart_button, #movie_add_to_cart_button, #single_star_add_to_cart_button, #remove_from_cart_button {
     position: static;
     display: flex;
@@ -649,6 +671,11 @@ button:hover {
     border: none;
     border-radius: 0;
     cursor: pointer;
+}
+
+#movies_add_to_cart_button:hover, #movie_add_to_cart_button:hover, #single_star_add_to_cart_button:hover, #remove_from_cart_button:hover {
+    color: var(--white_theme);
+    text-decoration: underline;
 }
 
 #movies_add_to_cart, #movie_add_to_cart, #single_star_add_to_cart, #remove_from_cart {
@@ -666,7 +693,7 @@ button:hover {
     left: 450px;
     bottom: 5px;
     width: 25%;
-    height: 12%;
+    height: 13%;
     color: var(--white_theme);
     background-color: var(--gray_theme);
 }
@@ -700,11 +727,7 @@ button:hover {
 }
 
 #next_button {
-    position: absolute;
-    right: 70px;
-    width: 100px;
-    margin-top: -10px;
-    text-align: center;
+    right: 5px;
 }
 
 #page_number {
