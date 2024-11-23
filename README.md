@@ -13,6 +13,16 @@ Rohan:
 - Autocomplete
 - JDBC connection pooling
 
+### Deployment Instructions
+- Database should already be stored in MySQL beforehand
+- Clone repository locally
+- Create new project from existing source (use cloned folder) in IntelliJ
+- Add new Tomcat local configuration, find Tomcat directory stored locally
+- Add .war file as external source for deployment, apply changes
+- Create Maven package
+- Run locally, application will open in browser
+- Connection to database already configured in context settings as long as database exists locally
+
 ### Connection Pooling
 - Configuration for JDBC connection pooling was implemented in /WebContent/META-INF/context.xml
 - factory, maxTotal, maxIdle, and maxWaitMillis attributes added
