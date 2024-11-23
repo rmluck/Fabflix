@@ -19,6 +19,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 // Declaring a WebServlet called MoviesServlet, which maps to url "/api/movies"
 @WebServlet(name = "MoviesServlet", urlPatterns = "/api/movies")
@@ -56,8 +57,8 @@ public class MoviesServlet extends HttpServlet {
         int currentPage = (page != null && !page.isEmpty()) ? Integer.parseInt(page) : 1;
         int offset = (currentPage - 1) * Integer.parseInt(moviesPerPage);
 
-        String[] sortOptions = sortParameters.split(",");
-        List<String> allowedSortOptions = Arrays.asList("m.title ASC", "m.title DESC", "r.rating ASC", "r.rating DESC");
+//        String[] sortOptions = sortParameters.split(",");
+//        List<String> allowedSortOptions = Arrays.asList("m.title ASC", "m.title DESC", "r.rating ASC", "r.rating DESC");
 
 //        for (String option : sortOptions) {
 //            if (!allowedSortOptions.contains(option.trim())) {
@@ -78,6 +79,7 @@ public class MoviesServlet extends HttpServlet {
         String action = request.getParameter("action");
         switch (action) {
             case "searchMovies":
+                System.out.println(title);
                 searchMovies(title, year, director, star, sortParameters, moviesPerPage, String.valueOf(offset), response);
                 break;
             case "getMoviesByGenre":
@@ -119,35 +121,42 @@ public class MoviesServlet extends HttpServlet {
 
             int subcount = 0;
             if (title != null && !title.isEmpty()) {
-                query += " WHERE LOWER(m_inner.title) LIKE LOWER(?) ";
+                query += " WHERE ";
+                String[] tokens = title.split("\\s+");
+                for (int i = 0; i < tokens.length; i++) {
+                    if (i > 0) {
+                        query += " AND ";
+                    }
+                    query += "LOWER(m_inner.title) LIKE LOWER(?) ";
+                }
                 subcount = 1;
             }
             if (year != null && !year.isEmpty()) {
                 if (subcount == 1) {
                     query += " WHERE LOWER(m_inner.year) = LOWER(?) ";
-                    subcount = 1;
                 } else {
                     query += " AND LOWER(m_inner.year) = LOWER(?) ";
+                    subcount = 1;
                 }
             }
             if (director != null && !director.isEmpty()) {
                 if (subcount == 1) {
-                    query += " WHERE LOWER(m_inner.director) = LOWER(?) ";
-                    subcount = 1;
-                } else{
+                    query += " WHERE LOWER(m_inner.director) LIKE LOWER(?) ";
+                } else {
                     query += " AND LOWER(m_inner.director) LIKE LOWER(?) ";
+                    subcount = 1;
                 }
             }
             if (star != null && !star.isEmpty()) {
                 if (subcount == 1) {
                     query += " WHERE EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
-                    subcount = 1;
+                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))";
                 } else {
                     query += " AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
+                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))";
+                    subcount = 1;
                 }
             }
             query += ") AS filtered_movies " +
@@ -158,7 +167,10 @@ public class MoviesServlet extends HttpServlet {
                     " WHERE 1=1 ";
 
             if (title != null && !title.isEmpty()) {
-                query += " AND LOWER(m.title) LIKE LOWER(?) ";
+                String[] tokens = title.split("\\s+");
+                for (int i = 0; i < tokens.length; i++) {
+                    query += " AND LOWER(m.title) LIKE LOWER(?) ";
+                }
             }
             if (year != null && !year.isEmpty()) {
                 query += " AND LOWER(m.year) = LOWER(?) ";
@@ -169,18 +181,35 @@ public class MoviesServlet extends HttpServlet {
             if (star != null && !star.isEmpty()) {
                 query += " AND EXISTS (SELECT 1 FROM stars_in_movies AS simov " +
                         " JOIN stars AS s ON simov.starId = s.id " +
-                        " WHERE simov.movieId = m.id AND LOWER (s.name) LIKE LOWER(?))";
+                        " WHERE simov.movieId = m.id AND LOWER(s.name) LIKE LOWER(?))";
             }
             query += " GROUP BY m.id, r.rating " +
                     " ORDER BY ";
-            query += sortParameters;
+            if (Objects.equals(sortParameters, "autocomplete")) {
+                query += " (LOWER(m.title) = LOWER(?)) DESC, (";
+
+                String[] tokens = title.split("\\s+");
+                for (int i = 1; i < tokens.length; i++) {
+                    query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END + ";
+                }
+                query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END) DESC, (";
+                for (int i = 1; i < tokens.length; i++) {
+                    query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END + ";
+                }
+                query += " CASE WHEN LOWER(m.title) LIKE LOWER(?) THEN 1 ELSE 0 END) DESC, LOWER(m.title) ASC ";
+            } else {
+                query += sortParameters;
+            }
             query += " LIMIT ? OFFSET ?;";
 
             PreparedStatement statement = conn.prepareStatement(query);
 
             int index = 1;
             if (title != null && !title.isEmpty()) {
-                statement.setString(index++, "%" + title + "%");
+                String[] tokens = title.split("\\s+");
+                for (String token : tokens) {
+                    statement.setString(index++, "%" + token + "%");
+                }
             }
             if (year != null && !year.isEmpty()) {
                 statement.setString(index++, year);
@@ -192,7 +221,10 @@ public class MoviesServlet extends HttpServlet {
                 statement.setString(index++, "%" + star + "%");
             }
             if (title != null && !title.isEmpty()) {
-                statement.setString(index++, "%" + title + "%");
+                String[] tokens = title.split("\\s+");
+                for (String token : tokens) {
+                    statement.setString(index++, "%" + token + "%");
+                }
             }
             if (year != null && !year.isEmpty()) {
                 statement.setString(index++, year);
@@ -202,6 +234,16 @@ public class MoviesServlet extends HttpServlet {
             }
             if (star != null && !star.isEmpty()) {
                 statement.setString(index++, "%" + star + "%");
+            }
+            if (Objects.equals(sortParameters, "autocomplete")) {
+                statement.setString(index++, title);
+                String[] tokens = title.split("\\s+");
+                for (String token : tokens) {
+                    statement.setString(index++,  token);
+                }
+                for (String token : tokens) {
+                    statement.setString(index++, token + "%");
+                }
             }
             statement.setInt(index++, Integer.parseInt(limit));
             statement.setInt(index++, Integer.parseInt(offset));

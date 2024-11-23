@@ -29,6 +29,9 @@ function handleSessionData(resultDataString) {
     loadTitleLetters();
 }
 
+// Bind the submit action of the form to a event handler function
+cart.submit(handleCartInfo);
+
 /**
  * Handle the items in item list
  * @param resultArray jsonObject, needs to be parsed to html
@@ -86,6 +89,37 @@ function handleCartInfo(cartEvent) {
     cart[0].reset();
 }
 
+let logout_form = $("#logout_form");
+
+function handleLogoutResult(resultDataJson) {
+    console.log("handle logout response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["status"]);
+
+    if (resultDataJson["status"] === "success") {
+        window.location.replace("logout.html");
+    } else {
+        console.log("show error message");
+        console.log(resultDataJson["message"]);
+    }
+}
+
+function submitLogoutForm(formSubmitEvent) {
+    console.log("submit logout form");
+
+    formSubmitEvent.preventDefault();
+
+    $.ajax(
+        "api/logout", {
+            method: "POST",
+            success: handleLogoutResult,
+            error: handleLogoutResult
+        }
+    );
+}
+
+logout_form.submit(submitLogoutForm)
+
 /**
  * Load genres and display as links for browsing movies by genre
  */
@@ -131,29 +165,6 @@ $(document).ready(function() {
     });
 });
 
-$("#search_form").submit(function (event) {
-    event.preventDefault();
-    let title = $("#search_title").val();
-    let year = $("#search_year").val();
-    let director = $("#search_director").val();
-    let star = $("#search_star").val();
-
-    // $.ajax("api/index?action=searchMovies", {
-    //     method: "GET",
-    //     data: {title : title, year : year, director : director, star : star},
-    //     success: function(movies) {
-    //         displayMovies(movies);
-    //     },
-    //     error: function (jqXHR, textStatus, errorThrown) {
-    //         alert("failed to search movies: " + errorThrown);
-    //     }
-    // });
-
-    let queryParams = $.param({title:title, year:year, director:director, star:star})
-
-    window.location.href = `movies.html?${queryParams}`;
-});
-
 $.ajax(
     "api/index", {
         method: "GET",
@@ -161,36 +172,130 @@ $.ajax(
     }
 );
 
-// Bind the submit action of the form to a event handler function
-cart.submit(handleCartInfo);
+let autocompleteCache = new Map();
+let autocompleteTimer;
+// let suggestionsContainer = document.getElementById("search_title_suggestions");
 
-let logout_form = $("#logout_form");
-
-function handleLogoutResult(resultDataJson) {
-    console.log("handle logout response");
-    console.log(resultDataJson);
-    console.log(resultDataJson["status"]);
-
-    if (resultDataJson["status"] === "success") {
-        window.location.replace("logout.html");
-    } else {
-        console.log("show error message");
-        console.log(resultDataJson["message"]);
-    }
-}
-
-function submitLogoutForm(formSubmitEvent) {
-    console.log("submit logout form");
-
-    formSubmitEvent.preventDefault();
-
-    $.ajax(
-        "api/logout", {
-            method: "POST",
-            success: handleLogoutResult,
-            error: handleLogoutResult
+$("#search_title").autocomplete({
+    source: function(request, doneCallback) {
+        const title = request.term;
+        if (title.length < 3) {
+            console.log("Title too short, skipping autocomplete.");
+            // suggestionsContainer.classList.add("hidden");
+            return;
         }
-    );
-}
 
-logout_form.submit(submitLogoutForm)
+        console.log("Autocomplete initiated for title: ", title);
+
+        if (autocompleteCache.has(title)) {
+            console.log("Using cached results for title: ", title);
+            let suggestions = autocompleteCache.get(title);
+            doneCallback(suggestions);
+            return;
+        }
+
+        clearTimeout(autocompleteTimer);
+        autocompleteTimer = setTimeout(() => {
+            console.log("Sending AJAX request for title: ", title);
+            let apiURL = `api/movies?action=searchMovies&title=${encodeURIComponent(title)}&sortOptions=autocomplete&moviesPerPage=10&page=1`;
+
+            $.ajax({
+                method: "GET",
+                url: apiURL,
+                success: function (data) {
+                    console.log("Received suggestions from server: ", data);
+                    let suggestions = data.movies.map(item => ({
+                        label: item["title"],
+                        value: item["title"],
+                        id: item["id"],
+                    }));
+                    autocompleteCache.set(title, suggestions);
+                    console.log("suggestions from database: ", suggestions);
+                    // showSuggestions(suggestions);
+                    doneCallback(suggestions);
+                },
+                error: function (xhr) {
+                    console.error("Error fetching suggestions: ", xhr.responseText);
+                    // suggestionsContainer.classList.add("hidden");
+                },
+            });
+        }, 300);
+    },
+    select: function(event, ui) {
+        console.log("Suggestion selected: ", ui.item);
+        window.location.href = `single-movie.html?id=${ui.item.id}`;
+    },
+});
+
+// function showSuggestions(suggestions) {
+//     activeSuggestion = -1;
+//     suggestionsContainer.innerHTML = "";
+//
+//     if (suggestions.length > 0) {
+//         suggestions.forEach((suggestion, index) => {
+//            const suggestionDiv = document.createElement("div");
+//            suggestionDiv.textContent = suggestion.value;
+//            suggestionDiv.classList.add("suggestion");
+//            suggestionDiv.dataset.index = index;
+//            suggestionDiv.addEventListener("click", () => {
+//                search_input.value = suggestion.value;
+//                window.location.href = `single-movie.html?id=${suggestion.id}`;
+//            });
+//            suggestionsContainer.appendChild(suggestionDiv);
+//         });
+//         suggestionsContainer.classList.remove("hidden");
+//     } else {
+//         suggestionsContainer.classList.add("hidden");
+//     }
+// }
+
+// search_input.addEventListener("keydown", (event) => {
+//     const suggestions = Array.from(suggestionsContainer.children);
+//
+//     if (event.key === "ArrowDown") {
+//         event.preventDefault();
+//         if (suggestions.length > 0) {
+//             activeSuggestion = (activeSuggestion + 1) % suggestions.length;
+//             updateActiveSuggestion(suggestions);
+//         }
+//     } else if (event.key === "ArrowUp") {
+//         event.preventDefault();
+//         if (suggestions.length > 0) {
+//             activeSuggestion = (activeSuggestion - 1 + suggestions.length) % suggestions.length;
+//             updateActiveSuggestion(suggestions);
+//         }
+//     } else if (event.key === "Enter") {
+//         if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
+//             event.preventDefault();
+//             suggestions[activeSuggestion].click();
+//         }
+//     }
+// });
+
+// function updateActiveSuggestion(suggestions) {
+//     suggestions.forEach((item, index) => {
+//         item.classList.toggle("active", index === activeSuggestion);
+//     });
+//
+//     if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
+//         search_input.value = suggestions[activeSuggestion].textContent;
+//     }
+// }
+
+// document.addEventListener("click", (event) => {
+//     if (!suggestionsContainer.contains(event.target) && event.target !== search_input) {
+//         suggestionsContainer.classList.add("hidden");
+//     }
+// });
+
+$("#search_form").submit(function (event) {
+    event.preventDefault();
+    let title = $("#search_title").val();
+    let year = $("#search_year").val();
+    let director = $("#search_director").val();
+    let star = $("#search_star").val();
+
+    let queryParams = $.param({title:title, year:year, director:director, star:star})
+
+    window.location.href = `movies.html?${queryParams}`;
+});
