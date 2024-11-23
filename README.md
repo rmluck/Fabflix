@@ -1,8 +1,35 @@
 # 2024-fall-cs-122b-team_greg_rohan
 
+## PROJECT 4
+
+### Team Contributions
+
+Gregory:
+- Master-slave replication
+- Scaling with cluster of MySQL/Tomcat and load balancer
+
+Rohan:
+- Full-text search
+- Autocomplete
+- JDBC connection pooling
+
+### Connection Pooling
+- Configuration for JDBC connection pooling was implemented in /WebContent/META-INF/context.xml
+- factory, maxTotal, maxIdle, and maxWaitMillis attributes added
+- JDBC connection url extended with flags: autoReconnect, allowPublicKeyRetrieval, useSSL, and cachePrepStmts (caches prepared statements)
+- Defines DataSource (connection pool) which is used by application to connect to database
+- In each servlet, application retrieves connection from connection pool by looking up jdbc/moviedbexample resource defined in context.xml file
+- Once connection to DataSource is confirmed, it is used to interact with database via PreparedStatements
+- PreparedStatements already implemented for all JDBC statements throughout project that involve user input and connecting to database
+
+### Master/Slave Replication
+- 
+
 ## PROJECT 3
-Project 3 demo: [https://youtu.be/C2YxPHHHT3A?si=H2O6WGw38r3R2nRh](https://www.youtube.com/watch?v=ggu5y8HTk3s)
-Team Contributions:
+
+https://www.youtube.com/watch?v=ggu5y8HTk3s
+
+### Team Contributions
 
 Gregory:
 - reCaptcha
@@ -16,28 +43,27 @@ Rohan:
 - Dashboard
 - Stored procedure
 
-Design decisions:
-1. all dupes are ignored, based on these conditions 
-2. actorsXML: actorId and name already in star table as an entry.
-3. mainXML: moveId and corresponding movie name already in movie table as an entry.
-4. castXML: if star id and movieId already match in stars_in_movie table.
+### Design Decisions
+1. All dupes are ignored, based on these conditions 
+2. actorsXML: actorId and name already in star table as an entry
+3. mainXML: moveId and corresponding movie name already in movie table as an entry
+4. castXML: if star id and movieId already match in stars_in_movie table
 5. While parsing casts, if actor name not in star table a new star id will be created for the actor if the movie name can be matched to a movie id in movie table, then the star is inserted into star table, if movie id cannot be matched, entry is ignored
-6. While parsing main and actor, if id is taken but entry is not considered a dupe, a new id is created.  
+6. While parsing main and actor, if id is taken but entry is not considered a dupe, a new id is created  
 
-Performance Tuning:
-	1.	Bare Minimum Dupe checking
-	2. INSERT IGNORE INTO,  to avoid dupe. 
-	3. Batch Insertion
-	4. Data inserted into db in batches.
-	5. Memory Caching
-	6. Cache maps for quick lookups of the data.
-
+### Performance Tuning
+1. Bare Minimum Dupe checking
+2. INSERT IGNORE INTO,  to avoid dupe. 
+3. Batch Insertion
+4. Data inserted into db in batches.
+5. Memory Caching
+6. Cache maps for quick lookups of the data.
 
 ## PROJECT 2
 
 https://www.youtube.com/watch?v=_sUNhE-zZCw
 
-Team Contributions:
+### Team Contributions
 
 Gregory:
 - Login page, redirecting to login page
@@ -56,19 +82,20 @@ Rohan:
 - Jump functionality
 - All CSS styling
 
-LIKE predicate for substring pattern matching used in MoviesServlet.java file (lines 123-157) to match inexact patterns for titles, directors, and stars.
+### LIKE Predicate
+- LIKE predicate for substring pattern matching used in MoviesServlet.java file (lines 123-157) to match inexact patterns for titles, directors, and stars.
 
 ## PROJECT 1
 
 https://youtu.be/m8RwyEqivXw?si=A8lPKEtABFEE_7sL
 
-Team Contributions:
+### Team Contributions
 
 Gregory:
--Movie List page
--Single Movie page
+- Movie list page
+- Single movie page
 
 Rohan:
--Single Star Page
--CSS for site 
--return to top 20 throughout pages
+- Single star page
+- All CSS
+- Return to main page
