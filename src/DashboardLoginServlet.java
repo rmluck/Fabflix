@@ -5,7 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
+import jakarta.servlet.ServletContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -21,13 +21,15 @@ public class DashboardLoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.xml
-    private DataSource dataSource;
+    private DatabaseConnectionManager dbManager;
 
+    @Override
     public void init(ServletConfig config) {
-        try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
-        } catch (NamingException e) {
-            e.printStackTrace();
+        ServletContext context = config.getServletContext();
+        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
+
+        if (dbManager == null) {
+            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
         }
     }
 
@@ -64,7 +66,7 @@ public class DashboardLoginServlet extends HttpServlet {
             request.getServletContext().log("Test admin login fail: " + email);
 
             // Create new connection to database
-            try (Connection conn = dataSource.getConnection()) {
+            try (Connection conn = dbManager.getConnection("READ")) {
                 String query = "SELECT * FROM employees WHERE email = ?"; // AND password = ?";
                 PreparedStatement statement = conn.prepareStatement(query);
                 statement.setString(1, email);

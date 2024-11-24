@@ -1,6 +1,7 @@
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +22,15 @@ public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.xml
-    private DataSource dataSource;
+    private DatabaseConnectionManager dbManager;
 
+    @Override
     public void init(ServletConfig config) {
-        try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
-        } catch (NamingException e) {
-            e.printStackTrace();
+        ServletContext context = config.getServletContext();
+        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
+
+        if (dbManager == null) {
+            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
         }
     }
 
@@ -65,7 +68,7 @@ public class LoginServlet extends HttpServlet {
             request.getServletContext().log("Test user login fail: " + email);
 
             // Create new connection to database
-            try (Connection conn = dataSource.getConnection()) {
+            try (Connection conn = dbManager.getConnection("READ")) {
                 String query = "SELECT * FROM customers WHERE email = ?"; // AND password = ?";
                 PreparedStatement statement = conn.prepareStatement(query);
                 statement.setString(1, email);

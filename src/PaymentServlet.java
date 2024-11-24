@@ -1,4 +1,5 @@
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,13 +22,15 @@ public class PaymentServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which is registered in web.xml
-    private DataSource dataSource;
+    private DatabaseConnectionManager dbManager;
 
+    @Override
     public void init(ServletConfig config) {
-        try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
-        } catch (NamingException e) {
-            e.printStackTrace();
+        ServletContext context = config.getServletContext();
+        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
+
+        if (dbManager == null) {
+            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
         }
     }
 
@@ -88,7 +91,7 @@ public class PaymentServlet extends HttpServlet {
 
         String query = "SELECT * FROM creditcards WHERE firstName = ? AND lastName = ? AND id = ? AND expiration = ?";
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = dbManager.getConnection("READ");
              PreparedStatement statement = conn.prepareStatement(query)) {
 
             statement.setString(1, firstName);
@@ -99,7 +102,7 @@ public class PaymentServlet extends HttpServlet {
             try (ResultSet resultSet = statement.executeQuery()) {
                 return resultSet.next();
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -109,7 +112,7 @@ public class PaymentServlet extends HttpServlet {
     private void recordSale(int customerId, String movieId, int quantity) {
         String query = "INSERT INTO sales (customerId, movieId, quantity, saleDate) VALUES (?, ?, ?, CURDATE())";
 
-        try (Connection conn = dataSource.getConnection();
+        try (Connection conn = dbManager.getConnection("WRITE");
              PreparedStatement statement = conn.prepareStatement(query)) {
 
             statement.setInt(1, customerId);
@@ -123,7 +126,7 @@ public class PaymentServlet extends HttpServlet {
             } else {
                 System.out.println("Failed to record sale.");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

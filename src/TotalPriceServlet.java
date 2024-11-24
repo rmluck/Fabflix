@@ -1,4 +1,5 @@
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,13 +18,15 @@ import java.util.ArrayList;
 public class TotalPriceServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    private DataSource dataSource;
+    private DatabaseConnectionManager dbManager;
 
+    @Override
     public void init(ServletConfig config) {
-        try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
-        } catch (NamingException e) {
-            e.printStackTrace();
+        ServletContext context = config.getServletContext();
+        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
+
+        if (dbManager == null) {
+            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
         }
     }
 

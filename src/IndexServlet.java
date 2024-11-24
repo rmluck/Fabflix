@@ -3,6 +3,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -30,13 +31,15 @@ import java.util.List;
 @WebServlet(name = "IndexServlet", urlPatterns = "/api/index")
 public class IndexServlet extends HttpServlet {
     // Create a dataSource which registered in web.xml
-    private DataSource dataSource;
+    private DatabaseConnectionManager dbManager;
 
+    @Override
     public void init(ServletConfig config) {
-        try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
-        } catch (NamingException e) {
-            e.printStackTrace();
+        ServletContext context = config.getServletContext();
+        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
+
+        if (dbManager == null) {
+            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
         }
     }
 
@@ -189,7 +192,7 @@ public class IndexServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         // Fetch genres from database
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dbManager.getConnection("READ")) {
             String query = "SELECT id, name FROM genres ORDER BY name";
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet rs = statement.executeQuery();

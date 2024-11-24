@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,13 +28,15 @@ public class MoviesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.xml
-    private DataSource dataSource;
+    private DatabaseConnectionManager dbManager;
 
+    @Override
     public void init(ServletConfig config) {
-        try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
-        } catch (NamingException e) {
-            e.printStackTrace();
+        ServletContext context = config.getServletContext();
+        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
+
+        if (dbManager == null) {
+            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
         }
     }
 
@@ -97,7 +100,7 @@ public class MoviesServlet extends HttpServlet {
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dbManager.getConnection("READ")) {
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ',') " +
                     " FROM (SELECT g.id, g.name " +
@@ -292,7 +295,7 @@ public class MoviesServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         // Fetch movies by genre from database
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dbManager.getConnection("READ")) {
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(CONCAT(three_genres.id, ':', three_genres.name) SEPARATOR ',') " +
                     " FROM (SELECT g.id, g.name " +
@@ -364,7 +367,7 @@ public class MoviesServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         // Fetch movies by title from database
-        try (Connection conn = dataSource.getConnection()) {
+        try (Connection conn = dbManager.getConnection("READ")) {
             String query;
             PreparedStatement statement;
 
