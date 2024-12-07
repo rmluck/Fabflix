@@ -34,13 +34,6 @@ function submitLoginForm(formSubmitEvent) {
      */
     formSubmitEvent.preventDefault();
 
-    let recaptchaResponse = grecaptcha.getResponse();
-
-    if (recaptchaResponse.length === 0) {
-        $("#login_error_message").text("Please complete the reCAPTCHA.");
-        return;
-    }
-
     $.ajax(
         "api/login", {
             method: "POST",

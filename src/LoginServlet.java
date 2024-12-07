@@ -38,24 +38,12 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String recaptchaResponse = request.getParameter("g-recaptcha-response");
+
         JsonObject responseJsonObject = new JsonObject();
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-        try {
-            RecaptchaVerifyUtils.verify(recaptchaResponse);
-        } catch (Exception e) {
-            responseJsonObject.addProperty("status", "fail");
-            responseJsonObject.addProperty("message", "reCAPTCHA verification failed");
-            out.write(responseJsonObject.toString());
-            out.flush();
-            out.close();
-            return;
-        }
-
-        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
@@ -77,9 +65,9 @@ public class LoginServlet extends HttpServlet {
 
                 // If user is found
                 if (resultSet.next()) {
-                    String encryptedPassword = resultSet.getString("password");
+                    String enteredPassword = resultSet.getString("password");
 
-                    if(passwordEncryptor.checkPassword(password, encryptedPassword)) {
+                    if(password.equals(enteredPassword)) {
                         int customerId = resultSet.getInt("id");
                         request.getSession().setAttribute("user", new User(email));
                         request.getSession().setAttribute("customerId", customerId);
