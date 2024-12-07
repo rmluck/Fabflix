@@ -1,6 +1,8 @@
 # 2024-fall-cs-122b-team_greg_rohan
 
 ## PROJECT 4
+### DEMO LINK
+https://youtu.be/VcpDOyQKEfg
 
 ### Team Contributions
 
@@ -32,8 +34,11 @@ Rohan:
 - Once connection to DataSource is confirmed, it is used to interact with database via PreparedStatements
 - PreparedStatements already implemented for all JDBC statements throughout project that involve user input and connecting to database
 
-### Master/Slave Replication
-- 
+### Master/Slave Replication and Read/Write Routing
+- Changes were made in the web.xml and context.xml in order to handle the load balancing portion of this assignment.
+- Changes to xml were for JDNI references to the main db, we now incorporated JDNI references to master and slave dbs, with the appropriate IPs for the instance.
+- To put these changes into effect we had to change the way we create our db connections. Instead of creating a datesource referencing our local main db, we had to reference one of the master/slave dbs based on what we were trying to do.
+- This led us to create DatabaseConnectionManager.java and DatabaseConnectionManagerListener.java in order to be able to handle the new way we instantiate and create db connections. 
 
 ## PROJECT 3
 
