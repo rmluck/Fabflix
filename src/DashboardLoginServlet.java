@@ -1,5 +1,3 @@
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,8 +10,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import com.google.gson.JsonObject;
-import org.jasypt.util.password.PasswordEncryptor;
-import org.jasypt.util.password.StrongPasswordEncryptor;
 
 // Declaring a WebServlet called LoginServlet, which maps to url "/api/_dashboard_login"
 @WebServlet(name = "DashboardLoginServlet", urlPatterns = "/api/_dashboard_login")
@@ -37,24 +33,12 @@ public class DashboardLoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String recaptchaResponse = request.getParameter("g-recaptcha-response");
+
         JsonObject responseJsonObject = new JsonObject();
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-        try {
-            RecaptchaVerifyUtils.verify(recaptchaResponse);
-        } catch (Exception e) {
-            responseJsonObject.addProperty("status", "fail");
-            responseJsonObject.addProperty("message", "reCAPTCHA verification failed");
-            out.write(responseJsonObject.toString());
-            out.flush();
-            out.close();
-            return;
-        }
-
-        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
@@ -75,9 +59,9 @@ public class DashboardLoginServlet extends HttpServlet {
 
                 // If user is found
                 if (resultSet.next()) {
-                    String encryptedPassword = resultSet.getString("password");
+                    String storedPassword = resultSet.getString("password");
 
-                    if(passwordEncryptor.checkPassword(password, encryptedPassword)) {
+                    if(password.equals(storedPassword)) {
                         request.getSession().setAttribute("admin", "admin");
                         responseJsonObject.addProperty("status", "success");
                         responseJsonObject.addProperty("message", "Successfully logged in");
