@@ -64,22 +64,21 @@ public class PaymentServlet extends HttpServlet {
 
         if (isValid) {
             HttpSession session = request.getSession();
-            Integer customerId = (Integer) session.getAttribute("customerId");
+            int customerId = (Integer) session.getAttribute("customerId");
 
             ArrayList<Movie> cartItems = (ArrayList<Movie>) session.getAttribute("cartItems");
 
             if (cartItems != null) {
                 for (Movie movie : cartItems) {
                     String movieId = movie.getId();
-                    int quantity = movie.getQuantity();
 
-                    recordSale(customerId, movieId, quantity);
+                    recordSale(customerId, movieId);
                 }
             }
 
             session.removeAttribute("cartItems");
 
-            response.sendRedirect("/fabflix_com_war/confirmation.html");
+            response.sendRedirect("/fabflix.com/confirmation.html");
         } else {
             response.sendRedirect("payment.html?error=Invalid payment information");
         }
@@ -109,15 +108,14 @@ public class PaymentServlet extends HttpServlet {
     }
 
 
-    private void recordSale(int customerId, String movieId, int quantity) {
-        String query = "INSERT INTO sales (customerId, movieId, quantity, saleDate) VALUES (?, ?, ?, CURDATE())";
+    private void recordSale(int customerId, String movieId) {
+        String query = "INSERT INTO sales (customerId, movieId, saleDate) VALUES (?, ?, ?, CURDATE())";
 
         try (Connection conn = dbManager.getConnection("WRITE");
              PreparedStatement statement = conn.prepareStatement(query)) {
 
             statement.setInt(1, customerId);
             statement.setString(2, movieId);
-            statement.setInt(3, quantity);
 
             int rowsAffected = statement.executeUpdate();
 
