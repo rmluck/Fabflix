@@ -1,7 +1,7 @@
 # 2024-fall-cs-122b-team_greg_rohan
 ## PROJECT 5
 ### DEMO LINK
-https://youtu.be/VcpDOyQKEfg
+https://youtu.be/_DZ5r_2oQzE?si=btR2TQEDnw_YckyI
 
 ### Team Contributions
 
@@ -16,7 +16,7 @@ Rohan:
 | Configuration                          | Throughput (req/s) |
 |----------------------------------------|--------------------|
 | 3 Worker Nodes, 2 Fabflix Pods         | 363.909/minute     |
-| 4 Worker Nodes, 3 Fabflix Pods         | 257.840/minute     |
+| 4 Worker Nodes, 3 Fabflix Pods         | 3,913.42/minute    |
 
 ## PROJECT 4
 ### DEMO LINK
