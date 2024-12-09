@@ -1,4 +1,22 @@
 # 2024-fall-cs-122b-team_greg_rohan
+## PROJECT 5
+### DEMO LINK
+https://youtu.be/VcpDOyQKEfg
+
+### Team Contributions
+
+Gregory:
+- Set up K8s cluster on AWS
+- JMeter performance measurement
+
+Rohan:
+- Creation of Fabflix in Docker container
+- Deployment of Fabflix to K8s cluster on AWS
+#### Throughput numbers
+| Configuration                          | Throughput (req/s) |
+|----------------------------------------|--------------------|
+| 3 Worker Nodes, 2 Fabflix Pods         | 363.909/minute     |
+| 4 Worker Nodes, 3 Fabflix Pods         | 257.840/minute     |
 
 ## PROJECT 4
 ### DEMO LINK
