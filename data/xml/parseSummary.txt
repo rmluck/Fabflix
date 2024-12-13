@@ -1,0 +1,21 @@
+Movies inserted: 12014
+Duplicates skipped: 15
+Errors encountered: 86
+Genres inserted: 14
+Genres_in_movies inserted: 42
+Movies inserted: 0
+Duplicates skipped: 12029
+Errors encountered: 153
+Genres inserted: 108
+Genres_in_movies inserted: 9747
+
+Parsing completed for ActorsHandler.
+Actors Inserted: 6790
+Errors encountered: 49
+Duplicates skipped: 24
+
+Parsing completed!
+Actors Inserted: 15508
+Errors encountered: 6793
+Duplicates skipped: 25831
+Movies not found: 806

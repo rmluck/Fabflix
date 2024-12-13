@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,15 +24,14 @@ public class SingleMovieServlet extends HttpServlet {
     private static final long serialVersionUID = 2L;
 
     // Create a dataSource which registered in web.xml
-    private DatabaseConnectionManager dbManager;
+    private DataSource dataSource;
 
     @Override
     public void init(ServletConfig config) {
-        ServletContext context = config.getServletContext();
-        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
-
-        if (dbManager == null) {
-            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
+        try {
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
     }
 
@@ -53,7 +51,7 @@ public class SingleMovieServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         // Get a connection from dataSource and let resource manager close the connection after usage
-        try (Connection conn = dbManager.getConnection("READ")) {
+        try (Connection conn = dataSource.getConnection();) {
             // Construct query with parameter represented by "?"
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating, " +
                     "(SELECT GROUP_CONCAT(CONCAT(all_genres.id, ':', all_genres.name) SEPARATOR ',') " +

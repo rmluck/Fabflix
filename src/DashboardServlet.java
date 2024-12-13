@@ -3,7 +3,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 
 import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,17 +25,16 @@ import java.util.*;
 @WebServlet(name = "DashboardServlet", urlPatterns = "/api/_dashboard")
 public class DashboardServlet extends HttpServlet {
     // Create a dataSource which registered in web.xml
-    private DatabaseConnectionManager dbManager;
+    private DataSource dataSource;
     private static int maxStarId;
 
-    @Override
     public void init(ServletConfig config) {
-        ServletContext context = config.getServletContext();
-        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
-
-        if (dbManager == null) {
-            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
+        try {
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
+        maxStarId = -1;
     }
 
     /**
@@ -182,7 +180,7 @@ public class DashboardServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-        try (Connection conn = dbManager.getConnection("WRITE")) {
+        try (Connection conn = dataSource.getConnection()) {
             String maxIdQuery = "SELECT MAX(id) as max_id FROM stars";
             PreparedStatement maxIdStatement = conn.prepareStatement(maxIdQuery);
             ResultSet idrs = maxIdStatement.executeQuery();
@@ -232,7 +230,7 @@ public class DashboardServlet extends HttpServlet {
 
 //      NEED TO MAKE SURE THAT ADD_MOVIE IS IN DATABASE
 
-        try (Connection conn = dbManager.getConnection("WRITE")) {
+        try (Connection conn = dataSource.getConnection()) {
             String query = "{CALL add_movie(?, ?, ?, ?, ?, ?, ?, ?)}";
             CallableStatement statement = conn.prepareCall(query);
             statement.setString(1, title);
@@ -279,7 +277,7 @@ public class DashboardServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
-        try (Connection conn = dbManager.getConnection("READ")) {
+        try (Connection conn = dataSource.getConnection()) {
             String query = "SHOW TABLES";
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet rs = statement.executeQuery();
@@ -331,7 +329,7 @@ public class DashboardServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         // Fetch genres from database
-        try (Connection conn = dbManager.getConnection("READ")) {
+        try (Connection conn = dataSource.getConnection()) {
             String query = "SELECT id, name FROM genres ORDER BY name";
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet rs = statement.executeQuery();

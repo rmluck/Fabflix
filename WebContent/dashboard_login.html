@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="fabflix.css">
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <title>Login to Dashboard</title>
 </head>
 <body id="login_body">
@@ -34,7 +34,7 @@
 
   <label id="password_label" for="password">Password</label>
   <input id="password" name="password" placeholder="Password" type="password" required><br>
-
+  <div class="g-recaptcha" data-sitekey="6LcJsG8qAAAAACAmKGHRVZSUNQOh8pdzZ4z7gyxk"></div>
   <div id="dashboard_login_error_message"></div>
   <button id="login_button" type="submit">Login</button>
 </form>

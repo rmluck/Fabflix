@@ -1,7 +1,6 @@
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,15 +21,13 @@ public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.xml
-    private DatabaseConnectionManager dbManager;
+    private DataSource dataSource;
 
-    @Override
     public void init(ServletConfig config) {
-        ServletContext context = config.getServletContext();
-        dbManager = (DatabaseConnectionManager) context.getAttribute("DatabaseConnectionManager");
-
-        if (dbManager == null) {
-            throw new IllegalStateException("DatabaseConnectionManager is not initialized in the context.");
+        try {
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
+        } catch (NamingException e) {
+            e.printStackTrace();
         }
     }
 
@@ -38,13 +35,24 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-
+        String recaptchaResponse = request.getParameter("g-recaptcha-response");
         JsonObject responseJsonObject = new JsonObject();
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
 
+        try {
+            RecaptchaVerifyUtils.verify(recaptchaResponse);
+        } catch (Exception e) {
+            responseJsonObject.addProperty("status", "fail");
+            responseJsonObject.addProperty("message", "reCAPTCHA verification failed");
+            out.write(responseJsonObject.toString());
+            out.flush();
+            out.close();
+            return;
+        }
 
+        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
         if (email.equals("test@uci.edu") && password.equals("123456")) {
             // Test login successful
             request.getSession().setAttribute("user", new User(email));
@@ -56,7 +64,7 @@ public class LoginServlet extends HttpServlet {
             request.getServletContext().log("Test user login fail: " + email);
 
             // Create new connection to database
-            try (Connection conn = dbManager.getConnection("READ")) {
+            try (Connection conn = dataSource.getConnection()) {
                 String query = "SELECT * FROM customers WHERE email = ?"; // AND password = ?";
                 PreparedStatement statement = conn.prepareStatement(query);
                 statement.setString(1, email);
@@ -65,9 +73,9 @@ public class LoginServlet extends HttpServlet {
 
                 // If user is found
                 if (resultSet.next()) {
-                    String enteredPassword = resultSet.getString("password");
+                    String encryptedPassword = resultSet.getString("password");
 
-                    if(password.equals(enteredPassword)) {
+                    if(passwordEncryptor.checkPassword(password, encryptedPassword)) {
                         int customerId = resultSet.getInt("id");
                         request.getSession().setAttribute("user", new User(email));
                         request.getSession().setAttribute("customerId", customerId);

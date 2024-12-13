@@ -8,18 +8,9 @@
     </welcome-file-list>
 
     <!-- Register the DataSource which defined in META-INF/context.xml-->
-    <!-- Master Data Source Reference -->
     <resource-ref>
-        <description>Master Database</description>
-        <res-ref-name>jdbc/masterMoviedb</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-
-    <!-- Slave Data Source Reference -->
-    <resource-ref>
-        <description>Slave Database</description>
-        <res-ref-name>jdbc/slaveMoviedb</res-ref-name>
+        <description>MySQL DataSource example</description>
+        <res-ref-name>jdbc/moviedbexample</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
     </resource-ref>
@@ -28,15 +19,15 @@
         <extension>css</extension>
         <mime-type>text/css</mime-type>
     </mime-mapping>
-<!--
-    <security-constraint>
-        <web-resource-collection>
-            <web-resource-name>HTTPSOnly</web-resource-name>
-            <url-pattern>/*</url-pattern>
-        </web-resource-collection>
-        <user-data-constraint>
-            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-        </user-data-constraint>
-    </security-constraint>
--->
+
+<!--    <security-constraint>-->
+<!--        <web-resource-collection>-->
+<!--            <web-resource-name>HTTPSOnly</web-resource-name>-->
+<!--            <url-pattern>/*</url-pattern>-->
+<!--        </web-resource-collection>-->
+<!--        <user-data-constraint>-->
+<!--            <transport-guarantee>CONFIDENTIAL</transport-guarantee>-->
+<!--        </user-data-constraint>-->
+<!--    </security-constraint>-->
+
 </web-app>
