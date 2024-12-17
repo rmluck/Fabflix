@@ -762,7 +762,18 @@ button {
 
 #payment_error, #cart_loading_message, #cart_success_message {
     display: none;
+    position: absolute;
     color: var(--red_theme);
+}
+
+#payment_error {
+    left: 43%;
+    bottom: 2.5%;
+}
+
+#cart_loading_message, #cart_success_message {
+    left: 63%;
+    top: 54.5%;
 }
 
 #login_background .login_shape {
